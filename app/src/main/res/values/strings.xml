@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RCC Map</string>
+    <string name="map_button">Map</string>
+    <string name="settings_button">Settings</string>
+</resources>
