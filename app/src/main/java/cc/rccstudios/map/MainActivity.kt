@@ -1,9 +1,13 @@
 package cc.rccstudios.map
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -20,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,31 +41,63 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import cc.rccstudios.map.data.local.location.LocationTracker
 import cc.rccstudios.map.ui.theme.RCCMapTheme
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            getLocationAndLog()
+        } else {
+            Log.d("SVO", "Donbass Dumbass")
+        }
+    }
+
+    private lateinit var locationTracker: LocationTracker
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val fusedClient = LocationServices.getFusedLocationProviderClient(this)
+        locationTracker = LocationTracker(this, fusedClient)
         enableEdgeToEdge()
         setContent {
             RCCMapTheme {
-                RCCMapApp()
+                LaunchedEffect(Unit) {
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+                RCCMapApp(
+                    {
+                        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    }
+                )
+            }
+        }
+    }
+    private fun getLocationAndLog() {
+        lifecycleScope.launch {
+            val location = locationTracker.getLastLocation()
+            if (location != null) {
+                Log.d("SVO", "la lo ${location.latitude}, ${location.longitude}")
+            } else {
+                Log.d("SVO", "fsdjklfjlk")
             }
         }
     }
 }
 
 @Composable
-fun RCCMapApp(modifier: Modifier = Modifier){
+fun RCCMapApp(onMapClick: () -> Unit, modifier: Modifier = Modifier){
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        Settings(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center)
-        )
         BottomMenu(
+            onMapTabSelected = onMapClick,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -69,16 +106,14 @@ fun RCCMapApp(modifier: Modifier = Modifier){
 }
 
 @Composable
-fun BottomMenu(modifier: Modifier = Modifier){
-    var selectedItem by remember { mutableIntStateOf(0) }
-    
+fun BottomMenu(onMapTabSelected: () -> Unit, modifier: Modifier = Modifier){
     Row (
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         val imageSize = 28.dp
-        val color = Color.White
+        val color = Color.Black
         val fontSize = 16.sp
         BottomMenuButton(
             icon = R.drawable.map_icon,
@@ -87,8 +122,9 @@ fun BottomMenu(modifier: Modifier = Modifier){
             color = color,
             fontSize = fontSize,
             imageContentDescription = "Map Icon",
-            modifier = Modifier.weight(1f)
-        ) { }
+            modifier = Modifier.weight(1f),
+            onMapTabSelected
+        )
         BottomMenuButton(
             icon = R.drawable.settings_icon,
             text = R.string.settings_button,
@@ -96,7 +132,7 @@ fun BottomMenu(modifier: Modifier = Modifier){
             color = color,
             fontSize = fontSize,
             imageContentDescription = "Settings Icon",
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         ) { }
     }
 }
@@ -146,6 +182,5 @@ fun Settings(
 @Composable
 fun RCCMapPreview() {
     RCCMapTheme {
-        RCCMapApp()
     }
 }
