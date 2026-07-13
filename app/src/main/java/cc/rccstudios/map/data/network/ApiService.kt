@@ -1,13 +1,19 @@
 package cc.rccstudios.map.data.network
 
-import okhttp3.RequestBody
+import cc.rccstudios.map.data.network.model.RegisterDto
+import cc.rccstudios.map.data.network.model.TelemetryDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface ApiService {
-    @POST("telemetry")
-    suspend fun sendTelemetryRaw(
-        @Body body: RequestBody
+    @POST("sendData")
+    suspend fun sendTelemetry(
+        @Body body: TelemetryDto
+    ): Response<Unit>
+
+    @POST("register")
+    suspend fun register(
+        @Body body: RegisterDto
     ): Response<Unit>
 }

@@ -1,14 +1,14 @@
-package cc.rccstudios.map.data.local.battery
+package cc.rccstudios.map.data.tracker.battery
 
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 
-class BatteryTracker(
+class BatteryTrackerImpl(
     private val context: Context
-){
-    fun getBatteryStatus(): Int? {
+) : cc.rccstudios.map.domain.tracker.BatteryTracker {
+    override fun getBatteryStatus(): Int? {
         val batteryStatus: Intent? =
             IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { ifilter ->
                 context.registerReceiver(null, ifilter)

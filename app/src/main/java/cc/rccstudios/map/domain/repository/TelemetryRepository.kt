@@ -7,5 +7,5 @@ interface TelemetryRepository {
 //    suspend fun saveTelemetryToDB(telemetry: Telemetry): Boolean
 //    suspend fun getTelemetryFromDB(): Telemetry
 //    suspend fun removeTelemetryFromDB(): Boolean
-    suspend fun sendTelemetry(telemetry: Telemetry): Boolean
+    suspend fun sendTelemetry(telemetry: Telemetry): Result<Unit>
 }
