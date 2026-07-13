@@ -11,14 +11,19 @@ class LocationTracker(
     private val context: Context,
     private val fusedLocationClient: FusedLocationProviderClient
 ) {
-    suspend fun getLastLocation(): Location? {
+    suspend fun getLastLocation(): Pair<Double, Double>? {
         val hasPermission = ContextCompat.checkSelfPermission(
             context,
             android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
         if (!hasPermission) return null
         return try {
-            fusedLocationClient.lastLocation.await()
+            val location = fusedLocationClient.lastLocation.await()
+            if (location != null) {
+                Pair(location.latitude, location.longitude)
+            } else {
+                null
+            }
         } catch (e: Exception) {
             null
         }
