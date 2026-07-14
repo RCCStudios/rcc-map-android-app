@@ -2,8 +2,9 @@ package cc.rccstudios.map.data.tracker.location
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.CurrentLocationRequest
+import com.google.android.gms.location.Priority
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.tasks.await
 
@@ -18,7 +19,12 @@ class LocationTrackerImpl(
         ) == PackageManager.PERMISSION_GRANTED
         if (!hasPermission) return null
         return try {
-            val location = fusedLocationClient.Location.await()
+            val request = CurrentLocationRequest.Builder()
+                .setPriority(Priority.PRIORITY_HIGH_ACCURACY)
+                .setMaxUpdateAgeMillis(0)
+                .setDurationMillis(30000)
+                .build()
+            val location = fusedLocationClient.getCurrentLocation(request, null).await();
             if (location != null) {
                 Pair(location.latitude, location.longitude)
             } else {
