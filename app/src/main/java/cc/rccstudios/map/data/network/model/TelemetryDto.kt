@@ -37,8 +37,6 @@ object ScreenLockSerializer : KSerializer<Any> {
 data class TelemetryDto(
     @SerialName("token")
     val token: String,
-    @SerialName("state")
-    val state: Int,
     @SerialName("latitude")
     val latitude: Double?,
     @SerialName("longitude")
@@ -54,7 +52,6 @@ data class TelemetryDto(
 
 fun Telemetry.toDto() = TelemetryDto(
     token = this.token,
-    state = this.state,
     latitude = this.latitude,
     longitude = this.longitude,
     batteryPercentage = this.batteryPercentage,

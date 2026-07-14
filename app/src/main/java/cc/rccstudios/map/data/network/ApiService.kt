@@ -1,6 +1,7 @@
 package cc.rccstudios.map.data.network
 
 import cc.rccstudios.map.data.network.model.RegisterDto
+import cc.rccstudios.map.data.network.model.RegisterResponseDto
 import cc.rccstudios.map.data.network.model.TelemetryDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -18,5 +19,5 @@ interface ApiService {
     suspend fun register(
         @Url url: String,
         @Body body: RegisterDto
-    ): Response<Unit>
+    ): Response<RegisterResponseDto>
 }

@@ -39,14 +39,14 @@ class TelemetryRepositoryImpl(
 
     override suspend fun collectTelemetry(): Telemetry {
         return withContext(kotlinx.coroutines.Dispatchers.IO) {
+            val token = settingsRepository.getToken() ?: ""
             val batteryStatus = batteryTracker.getBatteryStatus()
             val locationStatus = locationTracker.getLocationStatus()
             val networkStatus = networkTracker.getNetworkStatus()
             val screenLockStatus = screenLockTracker.getScreenLockStatus()
 
             Telemetry(
-                token = "fixme",
-                state = 2,
+                token = token,
                 latitude = locationStatus?.first,
                 longitude = locationStatus?.second,
                 batteryPercentage = batteryStatus,
