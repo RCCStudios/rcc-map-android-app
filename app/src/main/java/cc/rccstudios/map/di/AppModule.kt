@@ -24,18 +24,27 @@ val appModule = module {
 
     single<ScreenLockTracker> { ScreenLockTrackerImpl(context = androidContext()) }
 
-    single { LocationServices.getFusedLocationProviderClient(androidContext()) }
-
     single<LocationTracker> {
         LocationTrackerImpl(
             context = androidContext(),
-            fusedLocationClient = get()
+            fusedLocationClient = get(),
+            locationRequest = get()
         )
+    }
+
+    single { LocationServices.getFusedLocationProviderClient(androidContext()) }
+
+    single {
+        com.google.android.gms.location.CurrentLocationRequest.Builder()
+            .setPriority(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY)
+            .setMaxUpdateAgeMillis(0)
+            .setDurationMillis(30000)
+            .build()
     }
 
     single {
         Retrofit.Builder()
-            .baseUrl("https://api.yourbackend.com/")
+            .baseUrl("")
             .build()
     }
 
