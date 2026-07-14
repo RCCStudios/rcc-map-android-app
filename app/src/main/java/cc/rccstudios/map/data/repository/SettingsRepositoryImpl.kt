@@ -34,21 +34,21 @@ class SettingsRepositoryImpl(
         }
     }
 
-    override suspend fun saveRegisterData(registerData: Pair<String, String>) {
-        dataStore.edit { preferences ->
-            preferences[REGISTER_DATA.first] = registerData.first
-            preferences[REGISTER_DATA.second] = registerData.second
-        }
-    }
-
-    override suspend fun getRegisterData(): Pair<String?, String?> {
-        return dataStore.data
-            .map { preferences -> Pair(
-                preferences[REGISTER_DATA.first],
-                preferences[REGISTER_DATA.second]
-            ) }
-            .first()
-    }
+//    override suspend fun saveRegisterData(registerData: Pair<String, String>) {
+//        dataStore.edit { preferences ->
+//            preferences[REGISTER_DATA.first] = registerData.first
+//            preferences[REGISTER_DATA.second] = registerData.second
+//        }
+//    }
+//
+//    override suspend fun getRegisterData(): Pair<String?, String?> {
+//        return dataStore.data
+//            .map { preferences -> Pair(
+//                preferences[REGISTER_DATA.first],
+//                preferences[REGISTER_DATA.second]
+//            ) }
+//            .first()
+//    }
 
     override suspend fun getBackendUrl(): String? {
         return dataStore.data

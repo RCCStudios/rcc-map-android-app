@@ -11,21 +11,21 @@ class RegisterRepositoryImpl(
     private val apiService: ApiService,
     private val settingsRepository: SettingsRepository
 ) : RegisterRepository {
-    override suspend fun getRegisterData(): Register? {
-        return withContext(kotlinx.coroutines.Dispatchers.IO) {
-            val registerData = settingsRepository.getRegisterData()
-            val key = registerData.first
-            val name = registerData.second
+//    override suspend fun getRegisterData(): Register? {
+//        return withContext(kotlinx.coroutines.Dispatchers.IO) {
+//            val registerData = settingsRepository.getRegisterData()
+//            val key = registerData.first
+//            val name = registerData.second
+//
+//            if (key != null && name != null) {
+//                Register(key, name)
+//            } else {
+//                null
+//            }
+//        }
+//    }
 
-            if (key != null && name != null) {
-                Register(key, name)
-            } else {
-                null
-            }
-        }
-    }
-
-    override suspend fun register(register: Register?): Result<Unit> {
+    override suspend fun register(register: Register): Result<Unit> {
         return try {
             val baseUrl = settingsRepository.getBackendUrl() ?: return Result.failure(Exception("No baseUrl"))
 
