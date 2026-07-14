@@ -3,6 +3,7 @@ package cc.rccstudios.map.data.repository
 import cc.rccstudios.map.data.network.ApiService
 import cc.rccstudios.map.data.network.model.toDto
 import cc.rccstudios.map.domain.model.Telemetry
+import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.repository.TelemetryRepository
 import cc.rccstudios.map.domain.tracker.BatteryTracker
 import cc.rccstudios.map.domain.tracker.LocationTracker
@@ -12,6 +13,7 @@ import kotlinx.coroutines.withContext
 
 class TelemetryRepositoryImpl(
     private val apiService: ApiService,
+    private val settingsRepository: SettingsRepository,
     private val batteryTracker: BatteryTracker,
     private val locationTracker: LocationTracker,
     private val networkTracker: NetworkTracker,
@@ -19,7 +21,11 @@ class TelemetryRepositoryImpl(
 ) : TelemetryRepository {
     override suspend fun sendTelemetry(telemetry: Telemetry): Result<Unit> {
         return try {
-            val response = apiService.sendTelemetry(telemetry.toDto())
+            val baseUrl = settingsRepository.getBackendUrl() ?: return Result.failure(Exception("No baseUrl"))
+
+            val fullUrl = if (baseUrl.endsWith("/")) "${baseUrl}sendData" else "$baseUrl/sendData"
+
+            val response = apiService.sendTelemetry(fullUrl, telemetry.toDto())
 
             if (response.isSuccessful) {
                 Result.success(Unit)

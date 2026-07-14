@@ -1,10 +1,14 @@
 package cc.rccstudios.map.di
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import cc.rccstudios.map.data.repository.SettingsRepositoryImpl
 import cc.rccstudios.map.data.tracker.battery.BatteryTrackerImpl
 import cc.rccstudios.map.data.tracker.location.LocationTrackerImpl
 import cc.rccstudios.map.data.tracker.network.NetworkTrackerImpl
 import cc.rccstudios.map.data.tracker.screenlock.ScreenLockTrackerImpl
 import cc.rccstudios.map.data.repository.TelemetryRepositoryImpl
+import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.repository.TelemetryRepository
 import cc.rccstudios.map.domain.tracker.BatteryTracker
 import cc.rccstudios.map.domain.tracker.LocationTracker
@@ -15,6 +19,9 @@ import com.google.android.gms.location.LocationServices
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
+import androidx.datastore.preferences.preferencesDataStore
+
+private val Context.dataStore by preferencesDataStore(name = "app_settings")
 
 val appModule = module {
 
@@ -48,11 +55,16 @@ val appModule = module {
             .build()
     }
 
+    single { androidContext().dataStore }
+
+    single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
+
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 
     single<TelemetryRepository> {
         TelemetryRepositoryImpl(
             apiService = get(),
+            settingsRepository = get(),
             batteryTracker = get(),
             locationTracker = get(),
             networkTracker = get(),
