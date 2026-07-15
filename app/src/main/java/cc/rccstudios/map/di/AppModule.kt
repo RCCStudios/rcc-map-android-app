@@ -82,7 +82,6 @@ val appModule = module {
     viewModel {
         MainModelView(
             settingsRepository = get(),
-            registerRepository = get(),
             collectAndSendTelemetryUseCase = get(),
             registerUseCase = get()
         )

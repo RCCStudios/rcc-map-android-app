@@ -23,7 +23,6 @@ data class UiState(
 
 class MainModelView(
     private val settingsRepository: SettingsRepository,
-    private val registerRepository: RegisterRepository,
     private val registerUseCase: RegisterUseCase,
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase
 ) : ViewModel() {
