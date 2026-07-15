@@ -1,5 +1,21 @@
 <resources>
     <string name="app_name">RCC Map</string>
+    <!-- Bottom Menu -->
     <string name="map_button">Map</string>
     <string name="settings_button">Settings</string>
+    <!-- Settings Screen -->
+    <string name="location_tracking">Location tracking</string>
+    <string name="battery_tracking">Battery tracking</string>
+    <string name="network_tracking">Network tracking</string>
+    <string name="network_tracking_desc">Checks your network status, e.g. “WI-FI” or “CELLULAR”</string>
+    <string name="screen_lock_tracking">Screen lock tracking</string>
+    <string name="backend_server_url">Backend server URL</string>
+    <string name="backend_server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
+    <!-- Register Screen -->
+    <string name="register_title">Welcome to RCC Map</string>
+    <string name="register_button">Register</string>
+    <string name="register_key">Key</string>
+    <string name="register_key_placeholder">e.g. a1b2c3d4</string>
+    <string name="register_name">Name</string>
+    <string name="register_name_placeholder">e.g. ResoluteRaccoon42</string>
 </resources>
