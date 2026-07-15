@@ -20,6 +20,9 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import androidx.datastore.preferences.preferencesDataStore
+import cc.rccstudios.map.domain.usecase.RegisterUseCase
+import cc.rccstudios.map.ui.MainModelView
+import org.koin.core.module.dsl.viewModel
 
 private val Context.dataStore by preferencesDataStore(name = "app_settings")
 
@@ -73,4 +76,15 @@ val appModule = module {
     }
 
     factory { CollectAndSendTelemetryUseCase(repository = get()) }
+
+    factory { RegisterUseCase(repository = get()) }
+
+    viewModel {
+        MainModelView(
+            settingsRepository = get(),
+            registerRepository = get(),
+            collectAndSendTelemetryUseCase = get(),
+            registerUseCase = get()
+        )
+    }
 }
