@@ -26,7 +26,7 @@ fun MapScreen(
         modifier = modifier.fillMaxSize()
     ) {
         Text(
-            text = "Map had to be here,\nbut it didn't load",
+            text = "Map have to be here,\nbut it didn't load",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge
         )
@@ -43,7 +43,7 @@ fun MapPreview() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Map had to be here,\nbut it didn't load",
+                text = "Map have to be here,\nbut it didn't load",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge
             )
