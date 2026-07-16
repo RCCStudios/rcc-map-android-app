@@ -2,6 +2,7 @@
     <string name="app_name">RCC Map</string>
     <!-- Bottom Menu -->
     <string name="map_button">Map</string>
+    <string name="home_button">Home</string>
     <string name="settings_button">Settings</string>
     <!-- Settings Screen -->
     <string name="location_tracking">Location tracking</string>
@@ -17,5 +18,5 @@
     <string name="register_key">Key</string>
     <string name="register_key_placeholder">e.g. a1b2c3d4</string>
     <string name="register_name">Name</string>
-    <string name="register_name_placeholder">e.g. ResoluteRaccoon42</string>
+    <string name="register_name_placeholder">e.g. John Smith</string>
 </resources>

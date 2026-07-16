@@ -30,10 +30,10 @@ import cc.rccstudios.map.R
 
 @Composable
 fun RegisterScreen(
-//    viewModel: MainModelView,
+    viewModel: MainModelView,
     modifier: Modifier = Modifier
 ) {
-//    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier,
@@ -127,6 +127,61 @@ fun RegisterTextField(
 @Composable
 fun RegisterPreview() {
     RCCMapTheme {
-        RegisterScreen(modifier = Modifier.fillMaxSize())
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.register_title),
+                textAlign = TextAlign.Center,
+                fontSize = 28.sp
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 16.dp
+                    )
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 24.dp
+                    )
+            ) {
+                RegisterTextField(
+                    text = stringResource(R.string.register_name),
+                    placeholder = stringResource(R.string.register_name_placeholder),
+                    value = "",
+                    onValueChange = {}
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                RegisterTextField(
+                    text = stringResource(R.string.register_key),
+                    placeholder = stringResource(R.string.register_key_placeholder),
+                    value = "",
+                    onValueChange = {}
+                )
+                Spacer(modifier = Modifier.size(8.dp))
+                RegisterTextField(
+                    text = stringResource(R.string.backend_server_url),
+                    placeholder = stringResource(R.string.backend_server_url_placeholder),
+                    value = "",
+                    onValueChange = {}
+                )
+            }
+            Button(
+                onClick = {},
+                content = {
+                    Text(
+                        text = stringResource(R.string.register_button),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+            )
+        }
     }
 }
