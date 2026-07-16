@@ -43,13 +43,27 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.Top
     ) {
         Spacer(modifier = Modifier.size(8.dp))
-        SettingSwitch(text = stringResource(R.string.location_tracking))
-        SettingSwitch(text = stringResource(R.string.battery_tracking))
+        SettingSwitch(
+            text = stringResource(R.string.battery_tracking),
+            checked = state.isBatteryTrackingEnabled,
+            onCheckedChange = { viewModel.onBatteryTrackingChanged(it) }
+        )
+        SettingSwitch(
+            text = stringResource(R.string.location_tracking),
+            checked = state.isLocationTrackingEnabled,
+            onCheckedChange = { viewModel.onLocationTrackingChanged(it) }
+        )
         SettingSwitch(
             text = stringResource(R.string.network_tracking),
+            checked = state.isNetworkTrackingEnabled,
+            onCheckedChange = { viewModel.onNetworkTrackingChanged(it) },
             description = stringResource(R.string.network_tracking_desc)
         )
-        SettingSwitch(text = stringResource(R.string.screen_lock_tracking))
+        SettingSwitch(
+            text = stringResource(R.string.screen_lock_tracking),
+            checked = state.isScreenLockTrackingEnabled,
+            onCheckedChange = { viewModel.onScreenLockTrackingChanged(it) }
+        )
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
@@ -67,11 +81,11 @@ fun SettingsScreen(
 @Composable
 fun SettingSwitch(
     text: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    description: String? = null,
+    description: String? = null
 ) {
-    var checked by remember { mutableStateOf(true) }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -107,9 +121,7 @@ fun SettingSwitch(
 
         Switch(
             checked = checked,
-            onCheckedChange = {
-                checked = it
-            }
+            onCheckedChange = onCheckedChange
         )
     }
 }
@@ -152,34 +164,5 @@ fun SettingTextField(
                 )
             }
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SettingsPreview() {
-    RCCMapTheme {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top
-        ) {
-            Spacer(modifier = Modifier.size(8.dp))
-            SettingSwitch(text = stringResource(R.string.location_tracking))
-            SettingSwitch(text = stringResource(R.string.battery_tracking))
-            SettingSwitch(
-                text = stringResource(R.string.network_tracking),
-                description = stringResource(R.string.network_tracking_desc)
-            )
-            SettingSwitch(text = stringResource(R.string.screen_lock_tracking))
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
-            )
-            SettingTextField(
-                text = stringResource(R.string.backend_server_url),
-                placeholder = stringResource(R.string.backend_server_url_placeholder),
-                value = "api.justarist.cc/map/",
-                onValueChange = { }
-            )
-        }
     }
 }
