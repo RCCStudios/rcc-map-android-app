@@ -71,7 +71,7 @@ class MainModelView(
         saveUrlJob?.cancel()
 
         saveUrlJob = viewModelScope.launch {
-            delay(1000)
+            delay(1000L)
             settingsRepository.saveBackendUrl(newUrl)
             _uiState.update { it.copy(logMessage = "Backend URL saved automatically") }
         }
@@ -83,7 +83,7 @@ class MainModelView(
         saveKeyJob?.cancel()
 
         saveKeyJob = viewModelScope.launch {
-            delay(1000)
+            delay(1000L)
             val currentName = _uiState.value.registerName
             settingsRepository.saveRegisterData(
                 Pair(
@@ -101,7 +101,7 @@ class MainModelView(
         saveNameJob?.cancel()
 
         saveNameJob = viewModelScope.launch {
-            delay(1000)
+            delay(1000L)
             val currentKey = _uiState.value.registerKey
             settingsRepository.saveRegisterData(
                 Pair(
