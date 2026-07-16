@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -62,34 +63,71 @@ fun RegisterScreen(
             RegisterTextField(
                 text = stringResource(R.string.register_name),
                 placeholder = stringResource(R.string.register_name_placeholder),
-                value = "",
-                onValueChange = {}
+                value = state.registerName,
+                onValueChange = {
+                    viewModel.onNameChange(it)
+                }
             )
             Spacer(modifier = Modifier.size(8.dp))
             RegisterTextField(
                 text = stringResource(R.string.register_key),
                 placeholder = stringResource(R.string.register_key_placeholder),
-                value = "",
-                onValueChange = {}
+                value = state.registerKey,
+                onValueChange = {
+                    viewModel.onKeyChange(it)
+                }
             )
             Spacer(modifier = Modifier.size(8.dp))
             RegisterTextField(
                 text = stringResource(R.string.backend_server_url),
                 placeholder = stringResource(R.string.backend_server_url_placeholder),
-                value = "",
-                onValueChange = {}
+                value = state.backendUrl,
+                onValueChange = {
+                    viewModel.onUrlChange(it)
+                }
             )
         }
+
+        val isButtonEnabled = state.registerName.isNotBlank() &&
+                state.registerKey.isNotBlank() &&
+                state.backendUrl.isNotBlank() &&
+                !state.isLoading
+
         Button(
-            onClick = {},
-            content = {
+            onClick = {
+                viewModel.register()
+            },
+            enabled = isButtonEnabled,
+        ) {
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    strokeWidth = 2.dp
+                )
+            } else {
                 Text(
                     text = stringResource(R.string.register_button),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleLarge
                 )
-            },
-        )
+            }
+        }
+
+        if (state.logMessage.isNotEmpty()) {
+            Spacer(modifier = Modifier.size(16.dp))
+            Text(
+                text = state.logMessage,
+                color = if (state.logMessage.contains("Error", ignoreCase = true)) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.primary
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 32.dp)
+            )
+        }
     }
 }
 
@@ -113,6 +151,7 @@ fun RegisterTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
             placeholder = {
                 Text(
                     text = placeholder,
@@ -155,7 +194,9 @@ fun RegisterPreview() {
                     text = stringResource(R.string.register_name),
                     placeholder = stringResource(R.string.register_name_placeholder),
                     value = "",
-                    onValueChange = {}
+                    onValueChange = {
+
+                    }
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 RegisterTextField(
@@ -173,15 +214,14 @@ fun RegisterPreview() {
                 )
             }
             Button(
-                onClick = {},
-                content = {
-                    Text(
-                        text = stringResource(R.string.register_button),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-            )
+                onClick = {}
+            ) {
+                Text(
+                    text = stringResource(R.string.register_button),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
         }
     }
 }
