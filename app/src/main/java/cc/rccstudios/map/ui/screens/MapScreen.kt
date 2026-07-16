@@ -32,21 +32,3 @@ fun MapScreen(
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun MapPreview() {
-    RCCMapTheme() {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Map have to be here,\nbut it didn't load",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-    }
-}
