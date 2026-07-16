@@ -53,6 +53,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
     implementation("io.insert-koin:koin-android:4.2.2")
+    implementation("io.insert-koin:koin-compose:4.2.2")
+    implementation("io.insert-koin:koin-core-viewmodel:4.2.2")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
