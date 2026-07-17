@@ -20,6 +20,8 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import androidx.datastore.preferences.preferencesDataStore
+import cc.rccstudios.map.data.repository.RegisterRepositoryImpl
+import cc.rccstudios.map.domain.repository.RegisterRepository
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.ui.MainModelView
 import org.koin.core.module.dsl.viewModel
@@ -61,6 +63,19 @@ val appModule = module {
     single { androidContext().dataStore }
 
     single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
+
+    single<RegisterRepository> { RegisterRepositoryImpl(get(), get()) }
+
+    single<TelemetryRepository> {
+        TelemetryRepositoryImpl(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 

@@ -2,7 +2,6 @@ package cc.rccstudios.map.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import cc.rccstudios.map.domain.repository.RegisterRepository
 import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
