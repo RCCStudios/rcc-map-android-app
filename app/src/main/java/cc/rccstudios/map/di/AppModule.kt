@@ -54,7 +54,7 @@ val appModule = module {
 
     single {
         Retrofit.Builder()
-            .baseUrl("")
+            .baseUrl("https://example.com/")
             .build()
     }
 
