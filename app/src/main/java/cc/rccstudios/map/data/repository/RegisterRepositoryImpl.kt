@@ -26,15 +26,7 @@ class RegisterRepositoryImpl(
 
     override suspend fun register(register: Register): Result<Unit> {
         return try {
-            val baseUrl = settingsRepository.getServerUrl() ?: return Result.failure(Exception("No baseUrl"))
-
-            val sanitizedBaseUrl = when {
-                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> "$baseUrl/api"
-                else -> "https://$baseUrl/api"
-            }
-            val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/register"
-
-            val response = apiService.register(fullUrl, register.toDto())
+            val response = apiService.register(register.toDto())
 
             if (response.isSuccessful) {
                 val body = response.body()

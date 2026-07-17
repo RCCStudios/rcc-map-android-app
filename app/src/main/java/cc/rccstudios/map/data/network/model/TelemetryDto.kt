@@ -1,6 +1,7 @@
 package cc.rccstudios.map.data.network.model
 
 import cc.rccstudios.map.domain.model.Telemetry
+import com.google.android.gms.common.api.Status
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.KSerializer
@@ -14,8 +15,6 @@ import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
 data class TelemetryDto(
-    @SerialName("token")
-    val token: String,
     @SerialName("latitude")
     val latitude: Double?,
     @SerialName("longitude")
@@ -23,16 +22,15 @@ data class TelemetryDto(
     @SerialName("batteryLevel")
     val batteryPercentage: Int?,
     @SerialName("network")
-    val networkType: Int?,
+    val networkStatus: Int?,
     @SerialName("screenLock")
     val screenLockStatus: Long?,
 )
 
 fun Telemetry.toDto() = TelemetryDto(
-    token = this.token,
     latitude = this.latitude,
     longitude = this.longitude,
     batteryPercentage = this.batteryPercentage,
-    networkType = this.networkStatus ?: 0,
+    networkStatus = this.networkStatus ?: 0,
     screenLockStatus = this.screenLockStatus
 )

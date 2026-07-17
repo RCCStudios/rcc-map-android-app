@@ -21,15 +21,7 @@ class TelemetryRepositoryImpl(
 ) : TelemetryRepository {
     override suspend fun sendTelemetry(telemetry: Telemetry): Result<Unit> {
         return try {
-            val baseUrl = settingsRepository.getServerUrl() ?: return Result.failure(Exception("No baseUrl"))
-
-            val sanitizedBaseUrl = when {
-                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> "$baseUrl/api"
-                else -> "https://$baseUrl/api"
-            }
-            val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/sendTelemetry"
-
-            val response = apiService.sendTelemetry(fullUrl, telemetry.toDto())
+            val response = apiService.sendTelemetry(telemetry.toDto())
 
             if (response.isSuccessful) {
                 Result.success(Unit)

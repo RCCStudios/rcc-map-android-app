@@ -24,6 +24,11 @@ import cc.rccstudios.map.data.repository.RegisterRepositoryImpl
 import cc.rccstudios.map.domain.repository.RegisterRepository
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.ui.MainModelView
+import kotlinx.coroutines.runBlocking
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.dsl.viewModel
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -56,8 +61,55 @@ val appModule = module {
     }
 
     single {
+        val settingsRepository: SettingsRepository = get()
+
+        val authInterceptor = okhttp3.Interceptor { chain ->
+            val originalRequest = chain.request()
+            val requestBuilder = originalRequest.newBuilder()
+            val (token, serverUrl) = runBlocking {
+                val t = settingsRepository.getToken() ?: ""
+                val u = settingsRepository.getServerUrl() ?: ""
+                t to u
+            }
+            if (serverUrl.isNotEmpty()) {
+                val formattedUrl =
+                    if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
+                        serverUrl
+                    } else {
+                        "https://$serverUrl"
+                    }
+                formattedUrl.toHttpUrlOrNull()?.let { parsedUrl ->
+                    val newUrl = originalRequest.url.newBuilder()
+                        .scheme(parsedUrl.scheme)
+                        .host(parsedUrl.host)
+                        .port(parsedUrl.port)
+                        .build()
+                    requestBuilder.url(newUrl)
+                }
+            }
+
+            if (originalRequest.header("Auth") == "Bearer") {
+                requestBuilder.removeHeader("Auth")
+                if (token.isNotEmpty()) {
+                    requestBuilder.header("Authorization", "Bearer $token")
+                }
+            }
+
+            chain.proceed(requestBuilder.build())
+        }
+
+        OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
+    }
+
+    single {
         Retrofit.Builder()
-            .baseUrl("https://example.com/")
+            .baseUrl("https://localhost/")
+            .client(get<OkHttpClient>())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -67,17 +119,6 @@ val appModule = module {
     single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
 
     single<RegisterRepository> { RegisterRepositoryImpl(get(), get()) }
-
-    single<TelemetryRepository> {
-        TelemetryRepositoryImpl(
-            get(),
-            get(),
-            get(),
-            get(),
-            get(),
-            get()
-        )
-    }
 
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 
