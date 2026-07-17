@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -75,6 +77,41 @@ fun SettingsScreen(
                 viewModel.onUrlChange(newValue)
             }
         )
+
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
+
+        val isSendTelemetryButtonEnabled = !state.token.isNullOrBlank() &&
+                state.backendUrl.isNotBlank() &&
+                !state.isLoading
+
+        SettingButton(
+            text = stringResource(R.string.send_telemetry_button),
+            onClick = {
+                viewModel.sendTelemetry()
+            },
+            enabled = isSendTelemetryButtonEnabled,
+            isLoading = state.isLoading
+        )
+
+        if (state.logMessage.isNotEmpty()) {
+            Text(
+                text = state.logMessage,
+                color = if (state.logMessage.contains("Error", ignoreCase = true)) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.primary
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 12.dp
+                    )
+            )
+        }
     }
 }
 
@@ -164,5 +201,38 @@ fun SettingTextField(
                 )
             }
         )
+    }
+}
+
+@Composable
+fun SettingButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean,
+    isLoading: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = modifier
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
     }
 }

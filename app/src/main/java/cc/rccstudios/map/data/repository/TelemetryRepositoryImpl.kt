@@ -23,14 +23,18 @@ class TelemetryRepositoryImpl(
         return try {
             val baseUrl = settingsRepository.getBackendUrl() ?: return Result.failure(Exception("No baseUrl"))
 
-            val fullUrl = if (baseUrl.endsWith("/")) "${baseUrl}sendData" else "$baseUrl/sendData"
+            val sanitizedBaseUrl = when {
+                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> baseUrl
+                else -> "https://$baseUrl"
+            }
+            val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/register"
 
             val response = apiService.sendTelemetry(fullUrl, telemetry.toDto())
 
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("CODE: ${response.code()}"))
+                Result.failure(Exception("HTTP code: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

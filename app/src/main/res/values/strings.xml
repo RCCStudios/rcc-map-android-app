@@ -12,6 +12,7 @@
     <string name="screen_lock_tracking">Screen lock tracking</string>
     <string name="backend_server_url">Backend server URL</string>
     <string name="backend_server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
+    <string name="send_telemetry_button">Send telemetry</string>
     <!-- Register Screen -->
     <string name="register_title">Welcome to RCC Map</string>
     <string name="register_button">Register</string>
