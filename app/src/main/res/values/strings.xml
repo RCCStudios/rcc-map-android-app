@@ -10,8 +10,8 @@
     <string name="network_tracking">Network tracking</string>
     <string name="network_tracking_desc">Checks your network status, e.g. “WI-FI” or “CELLULAR”</string>
     <string name="screen_lock_tracking">Screen lock tracking</string>
-    <string name="backend_server_url">Backend server URL</string>
-    <string name="backend_server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
+    <string name="server_url">Backend server URL</string>
+    <string name="server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
     <string name="send_telemetry_button">Send telemetry</string>
     <string name="logcat_empty">Empty</string>
     <!-- Register Screen -->

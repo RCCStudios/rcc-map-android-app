@@ -21,11 +21,11 @@ class TelemetryRepositoryImpl(
 ) : TelemetryRepository {
     override suspend fun sendTelemetry(telemetry: Telemetry): Result<Unit> {
         return try {
-            val baseUrl = settingsRepository.getBackendUrl() ?: return Result.failure(Exception("No baseUrl"))
+            val baseUrl = settingsRepository.getServerUrl() ?: return Result.failure(Exception("No baseUrl"))
 
             val sanitizedBaseUrl = when {
-                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> baseUrl
-                else -> "https://$baseUrl"
+                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> "$baseUrl/api"
+                else -> "https://$baseUrl/api"
             }
             val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/register"
 

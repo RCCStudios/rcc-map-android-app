@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 data class UiState(
     val token: String? = null,
-    val backendUrl: String = "",
+    val serverUrl: String = "",
     val registerKey: String = "",
     val registerName: String = "",
     val isBatteryTrackingEnabled: Boolean = true,
@@ -40,7 +40,7 @@ class MainModelView(
     init {
         viewModelScope.launch {
             val savedToken = settingsRepository.getToken()
-            val savedUrl = settingsRepository.getBackendUrl() ?: ""
+            val savedUrl = settingsRepository.getServerUrl() ?: ""
             val savedRegisterData = settingsRepository.getRegisterData()
             val savedRegisterKey = savedRegisterData.first ?: ""
             val savedRegisterName = savedRegisterData.second ?: ""
@@ -52,7 +52,7 @@ class MainModelView(
             _uiState.update {
                 it.copy(
                     token = savedToken,
-                    backendUrl = savedUrl,
+                    serverUrl = savedUrl,
                     registerKey = savedRegisterKey,
                     registerName = savedRegisterName,
                     isBatteryTrackingEnabled = savedBatteryTrackerEnabled,
@@ -65,14 +65,14 @@ class MainModelView(
     }
 
     fun onUrlChange(newUrl: String) {
-        _uiState.update { it.copy(backendUrl = newUrl) }
+        _uiState.update { it.copy(serverUrl = newUrl) }
 
         saveUrlJob?.cancel()
 
         saveUrlJob = viewModelScope.launch {
             delay(1000L)
-            settingsRepository.saveBackendUrl(newUrl)
-            _uiState.update { it.copy(logMessage = "Backend URL saved automatically") }
+            settingsRepository.saveServerUrl(newUrl)
+            _uiState.update { it.copy(logMessage = "Server URL saved automatically") }
         }
     }
 

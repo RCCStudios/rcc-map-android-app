@@ -5,7 +5,6 @@ import cc.rccstudios.map.data.network.model.toDto
 import cc.rccstudios.map.domain.model.Register
 import cc.rccstudios.map.domain.repository.RegisterRepository
 import cc.rccstudios.map.domain.repository.SettingsRepository
-import kotlinx.coroutines.withContext
 
 class RegisterRepositoryImpl(
     private val apiService: ApiService,
@@ -27,11 +26,11 @@ class RegisterRepositoryImpl(
 
     override suspend fun register(register: Register): Result<Unit> {
         return try {
-            val baseUrl = settingsRepository.getBackendUrl() ?: return Result.failure(Exception("No baseUrl"))
+            val baseUrl = settingsRepository.getServerUrl() ?: return Result.failure(Exception("No baseUrl"))
 
             val sanitizedBaseUrl = when {
-                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> baseUrl
-                else -> "https://$baseUrl"
+                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> "$baseUrl/api"
+                else -> "https://$baseUrl/api"
             }
             val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/register"
 

@@ -18,7 +18,7 @@ class SettingsRepositoryImpl(
             stringPreferencesKey("register_key"),
             stringPreferencesKey("register_name")
         )
-        private val BACKEND_URL = stringPreferencesKey("backend_url")
+        private val SERVER_URL = stringPreferencesKey("server_url")
         private val BATTERY_TRACKER_ENABLED = booleanPreferencesKey("battery_tracker_enabled")
         private val LOCATION_TRACKER_ENABLED = booleanPreferencesKey("location_tracker_enabled")
         private val NETWORK_TRACKER_ENABLED = booleanPreferencesKey("network_tracker_enabled")
@@ -53,15 +53,15 @@ class SettingsRepositoryImpl(
             .first()
     }
 
-    override suspend fun saveBackendUrl(url: String) {
+    override suspend fun saveServerUrl(url: String) {
         dataStore.edit { preferences ->
-            preferences[BACKEND_URL] = url
+            preferences[SERVER_URL] = url
         }
     }
 
-    override suspend fun getBackendUrl(): String? {
+    override suspend fun getServerUrl(): String? {
         return dataStore.data
-            .map { preferences -> preferences[BACKEND_URL] }
+            .map { preferences -> preferences[SERVER_URL] }
             .first()
     }
 

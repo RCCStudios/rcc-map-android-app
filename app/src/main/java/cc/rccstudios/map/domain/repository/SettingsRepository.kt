@@ -5,8 +5,8 @@ interface SettingsRepository {
     suspend fun saveToken(token: String)
     suspend fun getRegisterData(): Pair<String?, String?>
     suspend fun saveRegisterData(registerData: Pair<String, String>)
-    suspend fun getBackendUrl(): String?
-    suspend fun saveBackendUrl(url: String)
+    suspend fun getServerUrl(): String?
+    suspend fun saveServerUrl(url: String)
     suspend fun saveBatteryTrackingEnabled(enabled: Boolean)
     suspend fun getBatteryTrackingEnabled(): Boolean?
     suspend fun saveLocationTrackingEnabled(enabled: Boolean)
