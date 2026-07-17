@@ -35,7 +35,6 @@ class TelemetryRepositoryImpl(
 
     override suspend fun collectTelemetry(): Telemetry {
         return withContext(kotlinx.coroutines.Dispatchers.IO) {
-            val token = settingsRepository.getToken() ?: ""
             val isBatteryTrackingEnabled = settingsRepository.getBatteryTrackingEnabled() ?: true
             val isLocationTrackingEnabled = settingsRepository.getLocationTrackingEnabled() ?: true
             val isNetworkTrackingEnabled = settingsRepository.getNetworkTrackingEnabled() ?: true
@@ -46,7 +45,6 @@ class TelemetryRepositoryImpl(
             val screenLockStatus = if (isScreenLockTrackingEnabled) screenLockTracker.getScreenLockStatus() else null
 
             Telemetry(
-                token = token,
                 latitude = locationStatus?.first,
                 longitude = locationStatus?.second,
                 batteryPercentage = batteryStatus,
