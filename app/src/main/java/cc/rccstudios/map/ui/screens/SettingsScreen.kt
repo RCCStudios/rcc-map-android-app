@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -27,6 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,9 +44,11 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val scrollState = rememberScrollState()
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.Top
+        modifier = modifier
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.Top,
     ) {
         Spacer(modifier = Modifier.size(8.dp))
         SettingSwitch(
@@ -77,6 +83,37 @@ fun SettingsScreen(
                 viewModel.onUrlChange(newValue)
             }
         )
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
+        Text(
+            text = "Logcat",
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Left,
+            modifier = Modifier
+                .padding(
+                    horizontal = 32.dp,
+                    vertical = 12.dp
+                )
+        )
+        Text(
+            text = state.logMessage.ifEmpty { stringResource(R.string.logcat_empty) },
+            color = if (state.logMessage.isEmpty()) {
+                MaterialTheme.colorScheme.secondary
+            } else if (state.logMessage.contains("Error", ignoreCase = true)) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.primary
+            },
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier
+                .padding(
+                    horizontal = 32.dp,
+                    vertical = 12.dp
+                )
+        )
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
@@ -95,23 +132,7 @@ fun SettingsScreen(
             isLoading = state.isLoading
         )
 
-        if (state.logMessage.isNotEmpty()) {
-            Text(
-                text = state.logMessage,
-                color = if (state.logMessage.contains("Error", ignoreCase = true)) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.primary
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(
-                        horizontal = 32.dp,
-                        vertical = 12.dp
-                    )
-            )
-        }
+        Spacer(modifier = Modifier.size(8.dp))
     }
 }
 
@@ -220,6 +241,7 @@ fun SettingButton(
                 horizontal = 16.dp,
                 vertical = 8.dp
             )
+            .fillMaxWidth()
     ) {
         if (isLoading) {
             CircularProgressIndicator(
