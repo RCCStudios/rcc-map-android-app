@@ -25,6 +25,7 @@ import cc.rccstudios.map.domain.repository.RegisterRepository
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.ui.MainModelView
 import org.koin.core.module.dsl.viewModel
+import retrofit2.converter.gson.GsonConverterFactory
 
 private val Context.dataStore by preferencesDataStore(name = "app_settings")
 
@@ -57,6 +58,7 @@ val appModule = module {
     single {
         Retrofit.Builder()
             .baseUrl("https://example.com/")
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 

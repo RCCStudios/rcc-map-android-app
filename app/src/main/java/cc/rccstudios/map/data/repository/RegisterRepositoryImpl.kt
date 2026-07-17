@@ -29,7 +29,11 @@ class RegisterRepositoryImpl(
         return try {
             val baseUrl = settingsRepository.getBackendUrl() ?: return Result.failure(Exception("No baseUrl"))
 
-            val fullUrl = if (baseUrl.endsWith("/")) "${baseUrl}register" else "$baseUrl/register"
+            val sanitizedBaseUrl = when {
+                baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> baseUrl
+                else -> "https://$baseUrl"
+            }
+            val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/register"
 
             val response = apiService.register(fullUrl, register.toDto())
 
@@ -42,7 +46,7 @@ class RegisterRepositoryImpl(
                     Result.failure(Exception("Got null from server"))
                 }
             } else {
-                Result.failure(Exception("CODE: ${response.code()}"))
+                Result.failure(Exception("HTTP code: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)

@@ -41,11 +41,11 @@ data class TelemetryDto(
     val latitude: Double?,
     @SerialName("longitude")
     val longitude: Double?,
-    @SerialName("battery")
+    @SerialName("batteryLevel")
     val batteryPercentage: Int?,
     @SerialName("network")
     val networkType: Int?,
-    @SerialName("screenlock")
+    @SerialName("screenLock")
     @Serializable(with = ScreenLockSerializer::class)
     val screenLockStatus: Any,
 )
