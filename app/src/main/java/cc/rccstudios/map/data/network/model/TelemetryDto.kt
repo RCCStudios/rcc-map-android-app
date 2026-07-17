@@ -12,27 +12,6 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonEncoder
 import kotlinx.serialization.json.JsonPrimitive
 
-object ScreenLockSerializer : KSerializer<Any> {
-    override val descriptor: SerialDescriptor =
-        PrimitiveSerialDescriptor("ScreenLock", PrimitiveKind.STRING)
-
-    override fun serialize(encoder: Encoder, value: Any) {
-        val jsonEncoder = encoder as? JsonEncoder
-            ?: throw java.lang.IllegalStateException("This serializer can only be used with Json")
-
-        when (value) {
-            is Boolean -> jsonEncoder.encodeJsonElement(JsonPrimitive(value))
-            is Long -> jsonEncoder.encodeJsonElement(JsonPrimitive(value))
-            is Int -> jsonEncoder.encodeJsonElement(JsonPrimitive(value.toLong()))
-            else -> jsonEncoder.encodeJsonElement(JsonPrimitive(false))
-        }
-    }
-
-    override fun deserialize(decoder: Decoder): Any {
-        return false
-    }
-}
-
 @Serializable
 data class TelemetryDto(
     @SerialName("token")
@@ -46,8 +25,7 @@ data class TelemetryDto(
     @SerialName("network")
     val networkType: Int?,
     @SerialName("screenLock")
-    @Serializable(with = ScreenLockSerializer::class)
-    val screenLockStatus: Any,
+    val screenLockStatus: Long?,
 )
 
 fun Telemetry.toDto() = TelemetryDto(

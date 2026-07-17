@@ -51,7 +51,7 @@ class TelemetryRepositoryImpl(
             val batteryStatus = if (isBatteryTrackingEnabled) batteryTracker.getBatteryStatus() else null
             val locationStatus = if (isLocationTrackingEnabled) locationTracker.getLocationStatus() else null
             val networkStatus = if (isNetworkTrackingEnabled) networkTracker.getNetworkStatus() else null
-            val screenLockStatus = if (isScreenLockTrackingEnabled) screenLockTracker.getScreenLockStatus() else false
+            val screenLockStatus = if (isScreenLockTrackingEnabled) screenLockTracker.getScreenLockStatus() else null
 
             Telemetry(
                 token = token,

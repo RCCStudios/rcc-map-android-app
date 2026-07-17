@@ -8,7 +8,7 @@ class ScreenLockTrackerImpl(
 ) : cc.rccstudios.map.domain.tracker.ScreenLockTracker {
     val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
     private var lockTimestamp: Long? = null
-    override fun getScreenLockStatus(): Any {
+    override fun getScreenLockStatus(): Long {
         val isLocked = keyguardManager.isDeviceLocked
         return if (isLocked) {
             if (lockTimestamp == null) {
@@ -17,7 +17,7 @@ class ScreenLockTrackerImpl(
             lockTimestamp ?: System.currentTimeMillis()
         } else {
             lockTimestamp = null
-            false
+            0L
         }
     }
 }

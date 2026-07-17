@@ -6,5 +6,5 @@ data class Telemetry(
     val longitude: Double?,
     val batteryPercentage: Int?,
     val networkStatus: Int?,
-    val screenLockStatus: Any
+    val screenLockStatus: Long?
 )
