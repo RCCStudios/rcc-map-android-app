@@ -27,7 +27,7 @@ class TelemetryRepositoryImpl(
                 baseUrl.startsWith("http://") || baseUrl.startsWith("https://") -> "$baseUrl/api"
                 else -> "https://$baseUrl/api"
             }
-            val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/register"
+            val fullUrl = sanitizedBaseUrl.removeSuffix("/") + "/sendTelemetry"
 
             val response = apiService.sendTelemetry(fullUrl, telemetry.toDto())
 
