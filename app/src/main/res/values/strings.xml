@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">RCC Map</string>
+    <string name="app_name" translatable="false">RCC Map</string>
     <!-- Bottom Menu -->
     <string name="map_button">Map</string>
-    <string name="home_button">Home</string>
+    <string name="profile_button">Profile</string>
     <string name="settings_button">Settings</string>
     <!-- Settings Screen -->
     <string name="location_tracking">Location tracking</string>
@@ -14,11 +14,15 @@
     <string name="server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
     <string name="send_telemetry_button">Send telemetry</string>
     <string name="logcat_empty">Empty</string>
+    <string name="github_link">GitHub Repos</string>
+    <string name="github_link_desc">Star our repos and follow us!</string>
+    <string name="tos_link">Server Terms of Service</string>
+    <string name="tos_link_desc">See ToS to find out how server uses your data</string>
     <!-- Register Screen -->
     <string name="register_title">Welcome to RCC Map</string>
     <string name="register_button">Register</string>
-    <string name="register_key">Key</string>
-    <string name="register_key_placeholder">e.g. a1b2c3d4</string>
-    <string name="register_name">Name</string>
-    <string name="register_name_placeholder">e.g. John Smith</string>
+    <string name="otp">OTP</string>
+    <string name="otp_placeholder">e.g. a1b2c3d4</string>
+    <string name="username">Username</string>
+    <string name="username_placeholder">e.g. John Smith</string>
 </resources>

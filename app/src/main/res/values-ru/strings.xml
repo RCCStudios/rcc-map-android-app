@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_button">Карта</string>
+    <string name="profile_button">Профиль</string>
+    <string name="settings_button">Настройки</string>
+    <string name="location_tracking">Отслеживание местоположения</string>
+    <string name="battery_tracking">Отслеживание заряда батареи</string>
+    <string name="network_tracking">Отслеживание сети</string>
+    <string name="network_tracking_desc">Проверяет статус вашей сети, например, \"Wi-Fi\" или \"Мобильный\"</string>
+    <string name="register_title">Добро пожаловать в RCC Map</string>
+    <string name="register_button">Зарегистрироваться</string>
+    <string name="otp">Одноразовый пароль</string>
+    <string name="otp_placeholder">например, a1b2c3d4</string>
+    <string name="screen_lock_tracking">Отслеживание блокировки экрана</string>
+    <string name="server_url">Ссылка на сервер</string>
+    <string name="server_url_placeholder">например, api.rccstudios.cc/map/</string>
+    <string name="username">Имя пользователя</string>
+    <string name="username_placeholder">например, Иван Петров</string>
+    <string name="send_telemetry_button">Отправить телеметрию</string>
+    <string name="logcat_empty">Пусто</string>
+    <string name="github_link">Репозитории GitHub</string>
+    <string name="github_link_desc">Поставьте 🌟 нашим репо и подпишитесь на нас!</string>
+    <string name="tos_link">Условия использования сервера</string>
+    <string name="tos_link_desc">Ознакомьтесь с условиями использования, чтобы узнать, как сервер использует ваши данные</string>
+</resources>
