@@ -58,8 +58,8 @@ fun RegisterScreen(
                 )
         ) {
             RegisterTextField(
-                text = stringResource(R.string.register_name),
-                placeholder = stringResource(R.string.register_name_placeholder),
+                text = stringResource(R.string.username),
+                placeholder = stringResource(R.string.username_placeholder),
                 value = state.registerName,
                 onValueChange = {
                     viewModel.onNameChange(it)
@@ -67,8 +67,8 @@ fun RegisterScreen(
             )
             Spacer(modifier = Modifier.size(8.dp))
             RegisterTextField(
-                text = stringResource(R.string.register_key),
-                placeholder = stringResource(R.string.register_key_placeholder),
+                text = stringResource(R.string.otp),
+                placeholder = stringResource(R.string.otp_placeholder),
                 value = state.registerKey,
                 onValueChange = {
                     viewModel.onKeyChange(it)

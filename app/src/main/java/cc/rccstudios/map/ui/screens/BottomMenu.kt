@@ -42,9 +42,9 @@ enum class Destination(
     ),
     HOME(
         "home",
-        R.string.home_button,
+        R.string.profile_button,
         Icons.Default.Home,
-        R.string.home_button
+        R.string.profile_button
     ),
     SETTINGS(
         "settings",
