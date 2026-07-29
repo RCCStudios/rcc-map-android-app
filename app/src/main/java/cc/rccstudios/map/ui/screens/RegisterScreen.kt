@@ -111,7 +111,7 @@ fun RegisterScreen(
             }
         }
 
-        if (state.logMessage.isNotEmpty()) {
+        if (state.logMessage.isNotBlank()) {
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = state.logMessage,

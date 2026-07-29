@@ -47,7 +47,7 @@ class TelemetryRepositoryImpl(
             Telemetry(
                 latitude = locationStatus?.first,
                 longitude = locationStatus?.second,
-                batteryPercentage = batteryStatus,
+                batteryStatus = batteryStatus,
                 networkStatus = networkStatus,
                 screenLockStatus = screenLockStatus
             )

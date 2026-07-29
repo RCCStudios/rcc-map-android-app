@@ -71,7 +71,7 @@ val appModule = module {
                 val u = settingsRepository.getServerUrl() ?: ""
                 t to u
             }
-            if (serverUrl.isNotEmpty()) {
+            if (serverUrl.isNotBlank()) {
                 val formattedUrl =
                     if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
                         serverUrl
@@ -90,7 +90,7 @@ val appModule = module {
 
             if (originalRequest.header("Auth") == "Bearer") {
                 requestBuilder.removeHeader("Auth")
-                if (token.isNotEmpty()) {
+                if (token.isNotBlank()) {
                     requestBuilder.header("Authorization", "Bearer $token")
                 }
             }

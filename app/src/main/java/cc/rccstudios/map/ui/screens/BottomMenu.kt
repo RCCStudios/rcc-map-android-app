@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -60,6 +61,8 @@ fun AppNavHost(
     startDestination: Destination,
     modifier: Modifier = Modifier
 ) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
     NavHost(
         navController,
         startDestination = startDestination.route
@@ -68,8 +71,7 @@ fun AppNavHost(
             composable(destination.route) {
                 when (destination) {
                     Destination.MAP -> MapScreen(
-                        viewModel = viewModel,
-                        modifier = modifier
+                        mapUrl = state.serverUrl
                     )
                     Destination.HOME -> RegisterScreen(
                         viewModel = viewModel,

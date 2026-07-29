@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(state.logMessage) {
-                    if (state.logMessage.isNotEmpty()) {
+                    if (state.logMessage.isNotBlank()) {
                         Toast.makeText(applicationContext, state.logMessage, Toast.LENGTH_SHORT).show()
                     }
                 }
