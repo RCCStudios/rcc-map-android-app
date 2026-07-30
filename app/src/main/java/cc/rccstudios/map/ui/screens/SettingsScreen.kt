@@ -21,7 +21,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -108,7 +107,7 @@ fun SettingsScreen(
         )
 
         Text(
-            text = "Logcat",
+            text = stringResource(R.string.logcat),
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Left,
             modifier = Modifier
@@ -347,9 +346,9 @@ fun SettingExternalLink(
             }
 
             Icon(
-                icon,
+                imageVector = icon,
                 contentDescription = text,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(40.dp)
             )
         }
     }

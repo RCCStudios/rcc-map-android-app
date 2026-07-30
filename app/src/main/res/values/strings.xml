@@ -13,6 +13,7 @@
     <string name="server_url">Backend server URL</string>
     <string name="server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
     <string name="send_telemetry_button">Send telemetry</string>
+    <string name="logcat" translatable="false">Logcat</string>
     <string name="logcat_empty">Empty</string>
     <string name="github_link">GitHub Repos</string>
     <string name="github_link_desc">Star our repos and follow us!</string>
@@ -25,4 +26,6 @@
     <string name="otp_placeholder">e.g. a1b2c3d4</string>
     <string name="username">Username</string>
     <string name="username_placeholder">e.g. John Smith</string>
+    <!-- Map Screen -->
+    <string name="map_placeholder">The map was supposed to be here, but it didn’t load</string>
 </resources>

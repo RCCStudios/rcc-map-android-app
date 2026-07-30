@@ -22,4 +22,5 @@
     <string name="github_link_desc">Поставьте 🌟 нашим репо и подпишитесь на нас!</string>
     <string name="tos_link">Условия использования сервера</string>
     <string name="tos_link_desc">Ознакомьтесь с условиями использования, чтобы узнать, как сервер использует ваши данные</string>
+    <string name="map_placeholder">Карта должна быть здесь, но она не загрузилась</string>
 </resources>
