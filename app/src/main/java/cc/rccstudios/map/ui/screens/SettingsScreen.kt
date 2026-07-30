@@ -38,13 +38,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.ui.MainModelView
+import cc.rccstudios.map.utils.toNormalizedUrl
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Github
-
-fun String.toNormalizedUrl(): String {
-    val url = if (startsWith("http://") || startsWith("https://")) this else "https://$this"
-    return url.removeSuffix("/")
-}
 
 @Composable
 fun SettingsScreen(

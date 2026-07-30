@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import cc.rccstudios.map.R
+import cc.rccstudios.map.utils.toNormalizedUrl
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -48,6 +49,8 @@ fun MapScreen(
             )
         }
     } else {
+        val formattedMapUrl = mapUrl.toNormalizedUrl()
+
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { context ->
@@ -62,12 +65,12 @@ fun MapScreen(
 
                     webViewClient = WebViewClient()
 
-                    loadUrl(mapUrl)
+                    loadUrl(formattedMapUrl)
                 }
             },
             update = { webView ->
-                if (webView.url != mapUrl) {
-                    webView.loadUrl(mapUrl)
+                if (webView.url != formattedMapUrl) {
+                    webView.loadUrl(formattedMapUrl)
                 }
             }
         )

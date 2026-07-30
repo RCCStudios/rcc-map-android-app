@@ -1,7 +1,6 @@
 package cc.rccstudios.map.di
 
 import android.content.Context
-import androidx.datastore.core.DataStore
 import cc.rccstudios.map.data.repository.SettingsRepositoryImpl
 import cc.rccstudios.map.data.tracker.battery.BatteryTrackerImpl
 import cc.rccstudios.map.data.tracker.location.LocationTrackerImpl
@@ -24,8 +23,8 @@ import cc.rccstudios.map.data.repository.RegisterRepositoryImpl
 import cc.rccstudios.map.domain.repository.RegisterRepository
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.ui.MainModelView
+import cc.rccstudios.map.utils.toNormalizedUrl
 import kotlinx.coroutines.runBlocking
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -72,13 +71,8 @@ val appModule = module {
                 t to u
             }
             if (serverUrl.isNotBlank()) {
-                val formattedUrl =
-                    if (serverUrl.startsWith("http://") || serverUrl.startsWith("https://")) {
-                        serverUrl
-                    } else {
-                        "https://$serverUrl"
-                    }
-                formattedUrl.toHttpUrlOrNull()?.let { parsedUrl ->
+                val formattedServerUrl = serverUrl.toNormalizedUrl()
+                formattedServerUrl.toHttpUrlOrNull()?.let { parsedUrl ->
                     val newUrl = originalRequest.url.newBuilder()
                         .scheme(parsedUrl.scheme)
                         .host(parsedUrl.host)
