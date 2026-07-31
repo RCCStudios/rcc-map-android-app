@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ fun MapScreen(
     mapUrl: String
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val isDarkTheme = isSystemInDarkTheme()
 
     LaunchedEffect(Unit) {
         viewModel.getOtp()
@@ -63,19 +65,18 @@ fun MapScreen(
             )
         }
     } else {
-        val finalUrl = remember(mapUrl, state.otp) {
+        val finalUrl = remember(mapUrl, state.otp, isDarkTheme) {
             if (mapUrl.isBlank()) return@remember ""
 
-            val baseUrl = mapUrl.toNormalizedUrl()
-            if (state.token.isNullOrBlank()) {
-                baseUrl
-            } else {
-                baseUrl.toUri()
-                    .buildUpon()
-                    .appendQueryParameter("otp", state.otp)
-                    .build()
-                    .toString()
+            val uriBuilder = mapUrl.toNormalizedUrl()
+                .toUri()
+                .buildUpon()
+                .appendQueryParameter("isDarkTheme", if (isDarkTheme) "true" else "false")
+            if (!state.token.isNullOrBlank()) {
+                uriBuilder.appendQueryParameter("otp", state.otp)
             }
+
+            uriBuilder.build().toString()
         }
 
         AndroidView(
