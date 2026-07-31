@@ -61,9 +61,10 @@ fun MapScreen(
             if (mapUrl.isBlank()) return@remember ""
 
             val baseUrl = mapUrl.toNormalizedUrl()
-            if (state.otp.isBlank()) {
+            if (state.token.isNullOrBlank()) {
                 baseUrl
             } else {
+                viewModel.getOtp()
                 baseUrl.toUri()
                     .buildUpon()
                     .appendQueryParameter("otp", state.otp)
