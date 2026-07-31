@@ -152,6 +152,7 @@ val appModule = module {
             settingsRepository = get(),
             collectAndSendTelemetryUseCase = get(),
             registerUseCase = get(),
+            getTokenUseCase = get(),
             getOtpUseCase = get()
         )
     }

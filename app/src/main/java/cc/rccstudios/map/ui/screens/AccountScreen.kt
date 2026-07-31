@@ -278,7 +278,7 @@ fun RegisterScreen(
             AuthTextField(
                 text = stringResource(R.string.otp),
                 placeholder = stringResource(R.string.otp_placeholder),
-                value = state.otp,
+                value = state.otp ?: "",
                 onValueChange = {
                     viewModel.onOtpChange(it)
                 }
@@ -301,7 +301,7 @@ fun RegisterScreen(
         )
 
         val isButtonEnabled = state.username.isNotBlank() &&
-                state.otp.isNotBlank() &&
+                !state.otp.isNullOrBlank() &&
                 state.serverUrl.isNotBlank() &&
                 !state.isLoading
 
@@ -352,7 +352,7 @@ fun LoginScreen(
             AuthTextField(
                 text = stringResource(R.string.otp),
                 placeholder = stringResource(R.string.otp_placeholder),
-                value = state.otp,
+                value = state.otp ?: "",
                 onValueChange = {
                     viewModel.onOtpChange(it)
                 }
@@ -374,7 +374,7 @@ fun LoginScreen(
             onClick = { viewModel.toggleAuthMode() }
         )
 
-        val isButtonEnabled = state.otp.isNotBlank() &&
+        val isButtonEnabled = !state.otp.isNullOrBlank() &&
                 state.serverUrl.isNotBlank() &&
                 !state.isLoading
 
@@ -466,7 +466,7 @@ fun ProfileScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = state.otp,
+                    value = state.otp ?: "",
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.otp)) },

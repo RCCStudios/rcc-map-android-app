@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
+import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,7 +31,7 @@ data class UiState(
     val token: String? = null,
     val serverUrl: String = "",
     val username: String = "",
-    val otp: String = "",
+    val otp: String? = null,
     val authMode: AuthMode = AuthMode.REGISTER,
     val avatarPath: String = "",
     val isBatteryTrackingEnabled: Boolean = true,
@@ -44,6 +45,7 @@ data class UiState(
 class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val registerUseCase: RegisterUseCase,
+    private val getTokenUseCase: GetTokenUseCase,
     private val getOtpUseCase: GetOtpUseCase,
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase
 ) : ViewModel() {
@@ -57,7 +59,7 @@ class MainViewModel(
         viewModelScope.launch {
             val savedToken = settingsRepository.getToken()
             val savedUrl = settingsRepository.getServerUrl() ?: ""
-            val savedOtp = settingsRepository.getOtp() ?: ""
+            val savedOtp = settingsRepository.getOtp()
             val savedUsername = settingsRepository.getUsername() ?: ""
             val savedAuthCode = settingsRepository.getAuthMode()
             val currentAuthMode = if (!savedToken.isNullOrBlank()) {
@@ -161,7 +163,7 @@ class MainViewModel(
             _uiState.update { it.copy(isLoading = true, logMessage = "") }
             val result = registerUseCase(
                 username = _uiState.value.username,
-                otp = _uiState.value.otp
+                otp = _uiState.value.otp ?: ""
             )
             if (result.isSuccess) {
                 val token = settingsRepository.getToken()
@@ -186,7 +188,7 @@ class MainViewModel(
     fun login() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, logMessage = "") }
-            val result = getOtpUseCase()
+            val result = getTokenUseCase()
             if (result.isSuccess) {
                 val token = settingsRepository.getToken()
                 _uiState.update {
@@ -212,10 +214,10 @@ class MainViewModel(
             _uiState.update { it.copy(logMessage = "") }
             val result = getOtpUseCase()
             if (result.isSuccess) {
-                val token = settingsRepository.getToken()
+                val otp = settingsRepository.getOtp()
                 _uiState.update {
                     it.copy(
-                        token = token,
+                        otp = otp,
                         isLoading = false,
                         logMessage = "Received OTP successfully"
                     )
