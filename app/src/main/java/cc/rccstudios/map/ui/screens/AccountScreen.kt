@@ -462,7 +462,7 @@ fun ProfileScreen(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
@@ -470,7 +470,7 @@ fun ProfileScreen(
                     onValueChange = {},
                     readOnly = true,
                     label = { Text(stringResource(R.string.otp)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f),
                     singleLine = true,
                     trailingIcon = {
                         IconButton(
@@ -536,7 +536,7 @@ fun ProfileScreen(
         AuthButton(
             text = stringResource(R.string.log_out_button),
             onClick = { TODO("Not implemented yet") },
-            enabled = true,
+            enabled = false,
             isLoading = state.isLoading,
             color = MaterialTheme.colorScheme.error
         )
