@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +38,11 @@ fun MapScreen(
     mapUrl: String
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.getOtp()
+    }
+
     if (mapUrl.isBlank()) {
         Column(
             modifier = Modifier
@@ -64,7 +70,6 @@ fun MapScreen(
             if (state.token.isNullOrBlank()) {
                 baseUrl
             } else {
-                viewModel.getOtp()
                 baseUrl.toUri()
                     .buildUpon()
                     .appendQueryParameter("otp", state.otp)
