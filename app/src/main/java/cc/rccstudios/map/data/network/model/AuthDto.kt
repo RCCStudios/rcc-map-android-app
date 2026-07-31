@@ -7,14 +7,14 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RegisterDto(
     @SerialName("username")
-    val username: String,
+    val name: String, // username
     @SerialName("otp")
-    val otp: String
+    val key: String // key
 )
 
 fun Register.toDto() = RegisterDto(
-    username = this.username,
-    otp = this.otp
+    name = this.username,
+    key = this.otp
 )
 
 @Serializable
