@@ -27,7 +27,7 @@ import cc.rccstudios.map.ui.MainModelView
 import cc.rccstudios.map.R
 
 @Composable
-fun RegisterScreen(
+fun AccountScreen(
     viewModel: MainModelView,
     modifier: Modifier = Modifier
 ) {
@@ -60,18 +60,18 @@ fun RegisterScreen(
             RegisterTextField(
                 text = stringResource(R.string.username),
                 placeholder = stringResource(R.string.username_placeholder),
-                value = state.registerName,
+                value = state.username,
                 onValueChange = {
-                    viewModel.onNameChange(it)
+                    viewModel.onUsernameChange(it)
                 }
             )
             Spacer(modifier = Modifier.size(8.dp))
             RegisterTextField(
                 text = stringResource(R.string.otp),
                 placeholder = stringResource(R.string.otp_placeholder),
-                value = state.registerKey,
+                value = state.otp,
                 onValueChange = {
-                    viewModel.onKeyChange(it)
+                    viewModel.onOtpChange(it)
                 }
             )
             Spacer(modifier = Modifier.size(8.dp))
@@ -85,8 +85,8 @@ fun RegisterScreen(
             )
         }
 
-        val isButtonEnabled = state.registerName.isNotBlank() &&
-                state.registerKey.isNotBlank() &&
+        val isButtonEnabled = state.username.isNotBlank() &&
+                state.otp.isNotBlank() &&
                 state.serverUrl.isNotBlank() &&
                 !state.isLoading
 

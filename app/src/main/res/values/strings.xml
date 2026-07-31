@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">RCC Map</string>
     <!-- Bottom Menu -->
     <string name="map_button">Map</string>
-    <string name="profile_button">Profile</string>
+    <string name="account_button">Account</string>
     <string name="settings_button">Settings</string>
     <!-- Settings Screen -->
     <string name="location_tracking">Location tracking</string>
@@ -10,7 +10,7 @@
     <string name="network_tracking">Network tracking</string>
     <string name="network_tracking_desc">Checks your network status, e.g. “WI-FI” or “CELLULAR”</string>
     <string name="screen_lock_tracking">Screen lock tracking</string>
-    <string name="server_url">Backend server URL</string>
+    <string name="server_url">Server URL</string>
     <string name="server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
     <string name="send_telemetry_button">Send telemetry</string>
     <string name="logcat" translatable="false">Logcat</string>

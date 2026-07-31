@@ -35,6 +35,12 @@ private val Context.dataStore by preferencesDataStore(name = "app_settings")
 
 val appModule = module {
 
+    single { androidContext().dataStore }
+
+    single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
+
+    single<RegisterRepository> { RegisterRepositoryImpl(get(), get()) }
+
     single<BatteryTracker> { BatteryTrackerImpl(context = androidContext()) }
 
     single<NetworkTracker> { NetworkTrackerImpl(context = androidContext()) }
@@ -65,10 +71,11 @@ val appModule = module {
         val authInterceptor = okhttp3.Interceptor { chain ->
             val originalRequest = chain.request()
             val requestBuilder = originalRequest.newBuilder()
-            val (token, serverUrl) = runBlocking {
+            val (token, otp, serverUrl) = runBlocking {
                 val t = settingsRepository.getToken() ?: ""
+                val o = settingsRepository.getOtp() ?: ""
                 val u = settingsRepository.getServerUrl() ?: ""
-                t to u
+                Triple(t, o, u)
             }
             if (serverUrl.isNotBlank()) {
                 val formattedServerUrl = serverUrl.toNormalizedUrl()
@@ -82,10 +89,19 @@ val appModule = module {
                 }
             }
 
-            if (originalRequest.header("Auth") == "Bearer") {
-                requestBuilder.removeHeader("Auth")
-                if (token.isNotBlank()) {
-                    requestBuilder.header("Authorization", "Bearer $token")
+            val authHeader = originalRequest.header("Auth")
+            when (authHeader) {
+                "Bearer {token}" -> {
+                    requestBuilder.removeHeader("Auth")
+                    if (token.isNotBlank()) {
+                        requestBuilder.header("Authorization", "Bearer $token")
+                    }
+                }
+                "Bearer {otp}" -> {
+                    requestBuilder.removeHeader("Auth")
+                    if (otp.isNotBlank()) {
+                        requestBuilder.header("Authorization", "Bearer $otp")
+                    }
                 }
             }
 
@@ -107,12 +123,6 @@ val appModule = module {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
-    single { androidContext().dataStore }
-
-    single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
-
-    single<RegisterRepository> { RegisterRepositoryImpl(get(), get()) }
 
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 

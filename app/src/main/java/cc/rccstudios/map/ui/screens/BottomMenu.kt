@@ -9,7 +9,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
@@ -34,17 +34,17 @@ enum class Destination(
     val icon: ImageVector,
     @StringRes val contentDescription: Int
 ) {
+    ACCOUNT(
+        "account",
+        R.string.account_button,
+        Icons.Default.AccountCircle,
+        R.string.account_button
+    ),
     MAP(
         "map",
         R.string.map_button,
         Icons.Default.Map,
         R.string.map_button
-    ),
-    HOME(
-        "home",
-        R.string.profile_button,
-        Icons.Default.Home,
-        R.string.profile_button
     ),
     SETTINGS(
         "settings",
@@ -70,12 +70,12 @@ fun AppNavHost(
         Destination.entries.forEach { destination ->
             composable(destination.route) {
                 when (destination) {
-                    Destination.MAP -> MapScreen(
-                        mapUrl = state.serverUrl
-                    )
-                    Destination.HOME -> RegisterScreen(
+                    Destination.ACCOUNT -> AccountScreen(
                         viewModel = viewModel,
                         modifier = modifier
+                    )
+                    Destination.MAP -> MapScreen(
+                        mapUrl = state.serverUrl
                     )
                     Destination.SETTINGS -> SettingsScreen(
                         viewModel = viewModel,
@@ -94,7 +94,7 @@ fun BottomMenu(
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val startDestination = Destination.HOME
+    val startDestination = Destination.MAP
     val currentDestination = navBackStackEntry?.destination
 
     Scaffold(

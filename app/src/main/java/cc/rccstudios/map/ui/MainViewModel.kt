@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 data class UiState(
     val token: String? = null,
     val serverUrl: String = "",
-    val registerKey: String = "",
-    val registerName: String = "",
+    val username: String = "",
+    val otp: String = "",
     val isBatteryTrackingEnabled: Boolean = true,
     val isLocationTrackingEnabled: Boolean = true,
     val isNetworkTrackingEnabled: Boolean = true,
@@ -34,16 +34,15 @@ class MainModelView(
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private var saveUrlJob: Job? = null
-    private var saveKeyJob: Job? = null
-    private var saveNameJob: Job? = null
+    private var saveOtpJob: Job? = null
+    private var saveUsernameJob: Job? = null
 
     init {
         viewModelScope.launch {
             val savedToken = settingsRepository.getToken()
             val savedUrl = settingsRepository.getServerUrl() ?: ""
-            val savedRegisterData = settingsRepository.getRegisterData()
-            val savedRegisterKey = savedRegisterData.first ?: ""
-            val savedRegisterName = savedRegisterData.second ?: ""
+            val savedOtp = settingsRepository.getOtp() ?: ""
+            val savedUsername = settingsRepository.getUsername() ?: ""
             val savedBatteryTrackerEnabled = settingsRepository.getBatteryTrackingEnabled() ?: true
             val savedLocationTrackerEnabled = settingsRepository.getLocationTrackingEnabled() ?: true
             val savedNetworkTrackerEnabled = settingsRepository.getNetworkTrackingEnabled() ?: true
@@ -53,8 +52,8 @@ class MainModelView(
                 it.copy(
                     token = savedToken,
                     serverUrl = savedUrl,
-                    registerKey = savedRegisterKey,
-                    registerName = savedRegisterName,
+                    otp = savedOtp,
+                    username = savedUsername,
                     isBatteryTrackingEnabled = savedBatteryTrackerEnabled,
                     isLocationTrackingEnabled = savedLocationTrackerEnabled,
                     isNetworkTrackingEnabled = savedNetworkTrackerEnabled,
@@ -76,39 +75,27 @@ class MainModelView(
         }
     }
 
-    fun onKeyChange(newKey: String) {
-        _uiState.update { it.copy(registerKey = newKey) }
+    fun onOtpChange(newOtp: String) {
+        _uiState.update { it.copy(otp = newOtp) }
 
-        saveKeyJob?.cancel()
+        saveOtpJob?.cancel()
 
-        saveKeyJob = viewModelScope.launch {
+        saveOtpJob = viewModelScope.launch {
             delay(1000L)
-            val currentName = _uiState.value.registerName
-            settingsRepository.saveRegisterData(
-                Pair(
-                    newKey,
-                    currentName
-                )
-            )
-            _uiState.update { it.copy(logMessage = "Key saved automatically") }
+            settingsRepository.saveOtp(newOtp)
+            _uiState.update { it.copy(logMessage = "OTP saved automatically") }
         }
     }
 
-    fun onNameChange(newName: String) {
-        _uiState.update { it.copy(registerName = newName) }
+    fun onUsernameChange(newUsername: String) {
+        _uiState.update { it.copy(username = newUsername) }
 
-        saveNameJob?.cancel()
+        saveUsernameJob?.cancel()
 
-        saveNameJob = viewModelScope.launch {
+        saveUsernameJob = viewModelScope.launch {
             delay(1000L)
-            val currentKey = _uiState.value.registerKey
-            settingsRepository.saveRegisterData(
-                Pair(
-                    currentKey,
-                    newName
-                )
-            )
-            _uiState.update { it.copy(logMessage = "Name saved automatically") }
+            settingsRepository.saveUsername(newUsername)
+            _uiState.update { it.copy(logMessage = "Username saved automatically") }
         }
     }
 
@@ -148,8 +135,8 @@ class MainModelView(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, logMessage = "") }
             val result = registerUseCase(
-                key = _uiState.value.registerKey,
-                name = _uiState.value.registerName
+                username = _uiState.value.username,
+                otp = _uiState.value.otp
             )
             if (result.isSuccess) {
                 val token = settingsRepository.getToken()

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="map_button">Карта</string>
-    <string name="profile_button">Профиль</string>
+    <string name="account_button">Аккаунт</string>
     <string name="settings_button">Настройки</string>
     <string name="location_tracking">Отслеживание местоположения</string>
     <string name="battery_tracking">Отслеживание заряда батареи</string>
@@ -12,7 +12,7 @@
     <string name="otp">Одноразовый пароль</string>
     <string name="otp_placeholder">например, a1b2c3d4</string>
     <string name="screen_lock_tracking">Отслеживание блокировки экрана</string>
-    <string name="server_url">Ссылка на сервер</string>
+    <string name="server_url">Адрес сервера</string>
     <string name="server_url_placeholder">например, api.rccstudios.cc/map/</string>
     <string name="username">Имя пользователя</string>
     <string name="username_placeholder">например, Иван Петров</string>

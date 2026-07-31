@@ -14,21 +14,13 @@ class SettingsRepositoryImpl(
 ) : SettingsRepository {
     companion object {
         private val TOKEN = stringPreferencesKey("token")
-        private val REGISTER_DATA = Pair(
-            stringPreferencesKey("register_key"),
-            stringPreferencesKey("register_name")
-        )
+        private val USERNAME = stringPreferencesKey("username")
+        private val OTP = stringPreferencesKey("otp")
         private val SERVER_URL = stringPreferencesKey("server_url")
         private val BATTERY_TRACKER_ENABLED = booleanPreferencesKey("battery_tracker_enabled")
         private val LOCATION_TRACKER_ENABLED = booleanPreferencesKey("location_tracker_enabled")
         private val NETWORK_TRACKER_ENABLED = booleanPreferencesKey("network_tracker_enabled")
         private val SCREEN_LOCK_TRACKER_ENABLED = booleanPreferencesKey("screen_lock_tracker_enabled")
-    }
-
-    override suspend fun getToken(): String? {
-        return dataStore.data
-            .map { preferences -> preferences[TOKEN] }
-            .first()
     }
 
     override suspend fun saveToken(token: String) {
@@ -37,19 +29,33 @@ class SettingsRepositoryImpl(
         }
     }
 
-    override suspend fun saveRegisterData(registerData: Pair<String, String>) {
+    override suspend fun getToken(): String? {
+        return dataStore.data
+            .map { preferences -> preferences[TOKEN] }
+            .first()
+    }
+
+    override suspend fun saveUsername(username: String) {
         dataStore.edit { preferences ->
-            preferences[REGISTER_DATA.first] = registerData.first
-            preferences[REGISTER_DATA.second] = registerData.second
+            preferences[USERNAME] = username
         }
     }
 
-    override suspend fun getRegisterData(): Pair<String?, String?> {
+    override suspend fun getUsername(): String? {
         return dataStore.data
-            .map { preferences -> Pair(
-                preferences[REGISTER_DATA.first],
-                preferences[REGISTER_DATA.second]
-            ) }
+            .map { preferences -> preferences[USERNAME] }
+            .first()
+    }
+
+    override suspend fun saveOtp(otp: String) {
+        dataStore.edit { preferences ->
+            preferences[OTP] = otp
+        }
+    }
+
+    override suspend fun getOtp(): String? {
+        return dataStore.data
+            .map { preferences -> preferences[OTP] }
             .first()
     }
 

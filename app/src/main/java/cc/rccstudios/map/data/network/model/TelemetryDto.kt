@@ -10,18 +10,18 @@ data class TelemetryDto(
     val latitude: Double?,
     @SerialName("longitude")
     val longitude: Double?,
-    @SerialName("batteryLevel")
-    val batteryLevel: Int?, // batteryPercentage
-    @SerialName("network")
-    val network: Int?, // networkStatus
-    @SerialName("screenLock")
-    val screenLock: Long?, // screenLockStatus
+    @SerialName("batteryStatus")
+    val batteryStatus: Int?,
+    @SerialName("networkStatus")
+    val networkStatus: Int?,
+    @SerialName("screenLockStatus")
+    val screenLockStatus: Long?
 )
 
 fun Telemetry.toDto() = TelemetryDto(
     latitude = this.latitude,
     longitude = this.longitude,
-    batteryLevel = this.batteryStatus,
-    network = this.networkStatus ?: 0,
-    screenLock = this.screenLockStatus
+    batteryStatus = this.batteryStatus,
+    networkStatus = this.networkStatus ?: 0,
+    screenLockStatus = this.screenLockStatus
 )
