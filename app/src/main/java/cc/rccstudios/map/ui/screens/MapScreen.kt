@@ -1,6 +1,7 @@
 package cc.rccstudios.map.ui.screens
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -15,20 +16,27 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.R
+import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun MapScreen(
+    viewModel: MainViewModel,
     mapUrl: String
 ) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     if (mapUrl.isBlank()) {
         Column(
             modifier = Modifier
@@ -49,7 +57,20 @@ fun MapScreen(
             )
         }
     } else {
-        val formattedMapUrl = mapUrl.toNormalizedUrl()
+        val finalUrl = remember(mapUrl, state.otp) {
+            if (mapUrl.isBlank()) return@remember ""
+
+            val baseUrl = mapUrl.toNormalizedUrl()
+            if (state.otp.isBlank()) {
+                baseUrl
+            } else {
+                baseUrl.toUri()
+                    .buildUpon()
+                    .appendQueryParameter("otp", state.otp)
+                    .build()
+                    .toString()
+            }
+        }
 
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -65,12 +86,12 @@ fun MapScreen(
 
                     webViewClient = WebViewClient()
 
-                    loadUrl(formattedMapUrl)
+                    loadUrl(finalUrl)
                 }
             },
             update = { webView ->
-                if (webView.url != formattedMapUrl) {
-                    webView.loadUrl(formattedMapUrl)
+                if (webView.url != finalUrl) {
+                    webView.loadUrl(finalUrl)
                 }
             }
         )
