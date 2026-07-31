@@ -437,6 +437,9 @@ fun ProfileScreen(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.size(16.dp))
+
         Text(
             text = state.username.ifBlank { "User" },
             style = MaterialTheme.typography.headlineMedium,
@@ -450,14 +453,14 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 32.dp,
-                    vertical = 16.dp
+                    horizontal = 16.dp,
+                    vertical = 8.dp
                 )
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(
-                    horizontal = 32.dp,
-                    vertical = 24.dp
+                    horizontal = 16.dp,
+                    vertical = 12.dp
                 )
         ) {
             Row(
@@ -532,6 +535,8 @@ fun ProfileScreen(
                 }
             )
         }
+
+        Spacer(modifier = Modifier.size(16.dp))
 
         AuthButton(
             text = stringResource(R.string.log_out_button),
