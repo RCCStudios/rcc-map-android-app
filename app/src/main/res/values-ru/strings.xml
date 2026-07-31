@@ -7,8 +7,9 @@
     <string name="battery_tracking">Отслеживание заряда батареи</string>
     <string name="network_tracking">Отслеживание сети</string>
     <string name="network_tracking_desc">Проверяет статус вашей сети, например, \"Wi-Fi\" или \"Мобильный\"</string>
-    <string name="register_title">Добро пожаловать в RCC Map</string>
+    <string name="register_title">Добро пожаловать в RCC Map!</string>
     <string name="register_button">Зарегистрироваться</string>
+    <string name="log_in_button">Войти</string>
     <string name="otp">Одноразовый пароль</string>
     <string name="otp_placeholder">например, a1b2c3d4</string>
     <string name="screen_lock_tracking">Отслеживание блокировки экрана</string>
@@ -22,5 +23,12 @@
     <string name="github_link_desc">Поставьте 🌟 нашим репо и подпишитесь на нас!</string>
     <string name="tos_link">Условия использования сервера</string>
     <string name="tos_link_desc">Ознакомьтесь с условиями использования, чтобы узнать, как сервер использует ваши данные</string>
+    <string name="dont_have_account">Нет аккаунта?</string>
+    <string name="avatar_desc">Ваше изображение аватара</string>
     <string name="map_placeholder">Карта должна быть здесь, но она не загрузилась</string>
+    <string name="log_in_title">С возвращением!</string>
+    <string name="token">Токен</string>
+    <string name="already_have_account">Уже есть аккаунт?</string>
+    <string name="copy_button">Скопировать</string>
+    <string name="refresh_button">Обновить</string>
 </resources>

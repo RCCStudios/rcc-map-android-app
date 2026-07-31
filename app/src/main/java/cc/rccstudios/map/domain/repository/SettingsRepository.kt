@@ -13,6 +13,12 @@ interface SettingsRepository {
     suspend fun saveServerUrl(url: String)
     suspend fun getServerUrl(): String?
 
+    suspend fun saveAuthMode(authMode: Int)
+    suspend fun getAuthMode(): Int?
+
+    suspend fun saveAvatarPath(avatarPath: String)
+    suspend fun getAvatarPath(): String?
+
     suspend fun saveBatteryTrackingEnabled(enabled: Boolean)
     suspend fun getBatteryTrackingEnabled(): Boolean?
 

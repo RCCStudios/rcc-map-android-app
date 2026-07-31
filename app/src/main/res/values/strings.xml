@@ -19,13 +19,23 @@
     <string name="github_link_desc">Star our repos and follow us!</string>
     <string name="tos_link">Server Terms of Service</string>
     <string name="tos_link_desc">See ToS to find out how server uses your data</string>
-    <!-- Register Screen -->
-    <string name="register_title">Welcome to RCC Map</string>
+    <!-- Account Screen -->
+    <string name="register_title">Welcome to RCC Map!</string>
     <string name="register_button">Register</string>
-    <string name="otp">OTP</string>
-    <string name="otp_placeholder">e.g. a1b2c3d4</string>
+    <string name="log_in_title">Welcome back!</string>
+    <string name="log_in_button">Log in</string>
+    <string name="log_out_button">Log out</string>
     <string name="username">Username</string>
     <string name="username_placeholder">e.g. John Smith</string>
+    <string name="otp">OTP</string>
+    <string name="otp_placeholder">e.g. a1b2c3d4</string>
+    <string name="token">Token</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="dont_have_account">Don’t have an account?</string>
+    <string name="avatar_desc">Your avatar image</string>
     <!-- Map Screen -->
     <string name="map_placeholder">The map was supposed to be here, but it didn’t load</string>
+    <!-- Other -->
+    <string name="copy_button">Copy</string>
+    <string name="refresh_button">Refresh</string>
 </resources>

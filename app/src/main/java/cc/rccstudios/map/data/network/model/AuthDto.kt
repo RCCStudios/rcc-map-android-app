@@ -16,3 +16,21 @@ fun Register.toDto() = RegisterDto(
     username = this.username,
     otp = this.otp
 )
+
+@Serializable
+data class RegisterResponseDto(
+    @SerialName("token")
+    val token: String
+)
+
+@Serializable
+data class GetOtpResponseDto(
+    @SerialName("otp")
+    val otp: String
+)
+
+@Serializable
+data class GetTokenResponseDto(
+    @SerialName("token")
+    val token: String
+)

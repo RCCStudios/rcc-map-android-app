@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
+import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -13,11 +14,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+enum class AuthMode(val code: Int) {
+    REGISTER(0),
+    LOGIN(1),
+    LOGGED_IN(2);
+
+    companion object {
+        fun fromCode(code: Int?): AuthMode {
+            return entries.find { it.code == code } ?: REGISTER
+        }
+    }
+}
+
 data class UiState(
     val token: String? = null,
     val serverUrl: String = "",
     val username: String = "",
     val otp: String = "",
+    val authMode: AuthMode = AuthMode.REGISTER,
+    val avatarPath: String = "",
     val isBatteryTrackingEnabled: Boolean = true,
     val isLocationTrackingEnabled: Boolean = true,
     val isNetworkTrackingEnabled: Boolean = true,
@@ -26,9 +41,10 @@ data class UiState(
     val logMessage: String = ""
 )
 
-class MainModelView(
+class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val registerUseCase: RegisterUseCase,
+    private val getOtpUseCase: GetOtpUseCase,
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
@@ -43,6 +59,13 @@ class MainModelView(
             val savedUrl = settingsRepository.getServerUrl() ?: ""
             val savedOtp = settingsRepository.getOtp() ?: ""
             val savedUsername = settingsRepository.getUsername() ?: ""
+            val savedAuthCode = settingsRepository.getAuthMode()
+            val currentAuthMode = if (!savedToken.isNullOrBlank()) {
+                AuthMode.LOGGED_IN
+            } else {
+                AuthMode.fromCode(savedAuthCode)
+            }
+            val savedAvatarPath = settingsRepository.getAvatarPath() ?: ""
             val savedBatteryTrackerEnabled = settingsRepository.getBatteryTrackingEnabled() ?: true
             val savedLocationTrackerEnabled = settingsRepository.getLocationTrackingEnabled() ?: true
             val savedNetworkTrackerEnabled = settingsRepository.getNetworkTrackingEnabled() ?: true
@@ -54,6 +77,8 @@ class MainModelView(
                     serverUrl = savedUrl,
                     otp = savedOtp,
                     username = savedUsername,
+                    authMode = currentAuthMode,
+                    avatarPath = savedAvatarPath,
                     isBatteryTrackingEnabled = savedBatteryTrackerEnabled,
                     isLocationTrackingEnabled = savedLocationTrackerEnabled,
                     isNetworkTrackingEnabled = savedNetworkTrackerEnabled,
@@ -75,18 +100,6 @@ class MainModelView(
         }
     }
 
-    fun onOtpChange(newOtp: String) {
-        _uiState.update { it.copy(otp = newOtp) }
-
-        saveOtpJob?.cancel()
-
-        saveOtpJob = viewModelScope.launch {
-            delay(1000L)
-            settingsRepository.saveOtp(newOtp)
-            _uiState.update { it.copy(logMessage = "OTP saved automatically") }
-        }
-    }
-
     fun onUsernameChange(newUsername: String) {
         _uiState.update { it.copy(username = newUsername) }
 
@@ -96,6 +109,18 @@ class MainModelView(
             delay(1000L)
             settingsRepository.saveUsername(newUsername)
             _uiState.update { it.copy(logMessage = "Username saved automatically") }
+        }
+    }
+
+    fun onOtpChange(newOtp: String) {
+        _uiState.update { it.copy(otp = newOtp) }
+
+        saveOtpJob?.cancel()
+
+        saveOtpJob = viewModelScope.launch {
+            delay(1000L)
+            settingsRepository.saveOtp(newOtp)
+            _uiState.update { it.copy(logMessage = "OTP saved automatically") }
         }
     }
 
@@ -155,6 +180,68 @@ class MainModelView(
                     )
                 }
             }
+        }
+    }
+
+    fun login() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, logMessage = "") }
+            val result = getOtpUseCase()
+            if (result.isSuccess) {
+                val token = settingsRepository.getToken()
+                _uiState.update {
+                    it.copy(
+                        token = token,
+                        isLoading = false,
+                        logMessage = "Logged in successfully"
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        logMessage = "Error: ${result.exceptionOrNull()?.message}"
+                    )
+                }
+            }
+        }
+    }
+
+    fun getOtp() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(logMessage = "") }
+            val result = getOtpUseCase()
+            if (result.isSuccess) {
+                val token = settingsRepository.getToken()
+                _uiState.update {
+                    it.copy(
+                        token = token,
+                        isLoading = false,
+                        logMessage = "Received OTP successfully"
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        logMessage = "Error: ${result.exceptionOrNull()?.message}"
+                    )
+                }
+            }
+        }
+    }
+
+    fun toggleAuthMode() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(logMessage = "") }
+            val authMode = AuthMode.fromCode(settingsRepository.getAuthMode())
+            val nextMode = if (authMode == AuthMode.REGISTER) {
+                AuthMode.LOGIN
+            } else {
+                AuthMode.REGISTER
+            }
+            settingsRepository.saveAuthMode(nextMode.code)
+            _uiState.update { it.copy(authMode = nextMode) }
         }
     }
 

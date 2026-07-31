@@ -19,10 +19,12 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import androidx.datastore.preferences.preferencesDataStore
-import cc.rccstudios.map.data.repository.RegisterRepositoryImpl
-import cc.rccstudios.map.domain.repository.RegisterRepository
+import cc.rccstudios.map.data.repository.AuthRepositoryImpl
+import cc.rccstudios.map.domain.repository.AuthRepository
+import cc.rccstudios.map.domain.usecase.GetOtpUseCase
+import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
-import cc.rccstudios.map.ui.MainModelView
+import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
 import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -39,7 +41,7 @@ val appModule = module {
 
     single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
 
-    single<RegisterRepository> { RegisterRepositoryImpl(get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
 
     single<BatteryTracker> { BatteryTrackerImpl(context = androidContext()) }
 
@@ -139,13 +141,18 @@ val appModule = module {
 
     factory { CollectAndSendTelemetryUseCase(repository = get()) }
 
-    factory { RegisterUseCase(repository = get()) }
+    factory { RegisterUseCase(authRepository = get()) }
+
+    factory { GetOtpUseCase(authRepository = get()) }
+
+    factory { GetTokenUseCase(authRepository = get()) }
 
     viewModel {
-        MainModelView(
+        MainViewModel(
             settingsRepository = get(),
             collectAndSendTelemetryUseCase = get(),
-            registerUseCase = get()
+            registerUseCase = get(),
+            getOtpUseCase = get()
         )
     }
 }

@@ -1,16 +1,16 @@
 package cc.rccstudios.map.domain.usecase
 
 import cc.rccstudios.map.domain.model.Register
-import cc.rccstudios.map.domain.repository.RegisterRepository
+import cc.rccstudios.map.domain.repository.AuthRepository
 
 class RegisterUseCase(
-    private val repository: RegisterRepository
+    private val authRepository: AuthRepository
 ) {
     suspend operator fun invoke(username: String, otp: String): Result<Unit> {
         if (username.isBlank() || otp.isBlank()) {
             return Result.failure(Exception("Cant be blank"))
         }
-        val registerData = Register( username, otp)
-        return repository.register(registerData)
+        val registerData = Register(username, otp)
+        return authRepository.register(registerData)
     }
 }

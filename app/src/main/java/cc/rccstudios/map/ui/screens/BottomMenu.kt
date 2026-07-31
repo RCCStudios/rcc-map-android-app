@@ -26,7 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cc.rccstudios.map.R
-import cc.rccstudios.map.ui.MainModelView
+import cc.rccstudios.map.ui.MainViewModel
 
 enum class Destination(
     val route: String,
@@ -56,7 +56,7 @@ enum class Destination(
 
 @Composable
 fun AppNavHost(
-    viewModel: MainModelView,
+    viewModel: MainViewModel,
     navController: NavHostController,
     startDestination: Destination,
     modifier: Modifier = Modifier
@@ -89,7 +89,7 @@ fun AppNavHost(
 
 @Composable
 fun BottomMenu(
-    viewModel: MainModelView,
+    viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()

@@ -37,14 +37,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cc.rccstudios.map.ui.MainModelView
+import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Github
 
 @Composable
 fun SettingsScreen(
-    viewModel: MainModelView,
+    viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()

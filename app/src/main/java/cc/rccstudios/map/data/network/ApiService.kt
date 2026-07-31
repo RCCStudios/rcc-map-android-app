@@ -7,13 +7,13 @@ import cc.rccstudios.map.data.network.model.RegisterResponseDto
 import cc.rccstudios.map.data.network.model.TelemetryDto
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
-import retrofit2.http.Url
 
 interface ApiService {
     @Headers("Auth: Bearer {token}")
-    @POST("api/sendTelemetry")
+    @POST("api/telemetry")
     suspend fun sendTelemetry(
         @Body body: TelemetryDto
     ): Response<Unit>
@@ -24,10 +24,10 @@ interface ApiService {
     ): Response<RegisterResponseDto>
 
     @Headers("Auth: Bearer {token}")
-    @POST("api/getOtp")
+    @GET("api/otp")
     suspend fun getOtp(): Response<GetOtpResponseDto>
 
     @Headers("Auth: Bearer {otp}")
-    @POST("api/getToken")
+    @GET("api/token")
     suspend fun getToken(): Response<GetTokenResponseDto>
 }
