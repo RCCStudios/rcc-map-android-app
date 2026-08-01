@@ -1,5 +1,6 @@
 build/
 app/debug/
+app/release/
 .cxx/
 .externalNativeBuild/
 captures/
