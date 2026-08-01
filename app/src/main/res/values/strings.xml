@@ -15,11 +15,11 @@
     <string name="send_telemetry_button">Send telemetry</string>
     <string name="logcat" translatable="false">Logcat</string>
     <string name="logcat_empty">Empty</string>
-    <string name="github_link">GitHub Repos</string>
+    <string name="github_link">GitHub repos</string>
     <string name="github_link_desc">Star our repos and follow us!</string>
     <string name="tos_link">Server Terms of Service</string>
     <string name="tos_link_desc">See ToS to find out how server uses your data</string>
-    <string name="update_button">Check for Updates</string>
+    <string name="update_button">Check for updates</string>
     <string name="update_button_desc">Check for updates and get the latest version of out app</string>
     <!-- Account Screen -->
     <string name="register_title">Welcome to RCC Map!</string>
@@ -37,6 +37,12 @@
     <string name="avatar_desc">Your avatar image</string>
     <!-- Map Screen -->
     <string name="map_placeholder">The map was supposed to be here, but it didn’t load</string>
+    <!-- Update Dialog -->
+    <string name="update_available_title">New update available</string>
+    <string name="update_changelog_header">Changelog</string>
+    <string name="update_default_changelog">No changelog found!</string>
+    <string name="update_download">Download</string>
+    <string name="update_later">Later</string>
     <!-- Other -->
     <string name="copy_button">Copy</string>
     <string name="refresh_button">Refresh</string>

@@ -170,7 +170,6 @@ fun AuthButton(
             Icon(
                 imageVector = icon,
                 contentDescription = description,
-//                modifier = Modifier.size(24.dp)
             )
         }
     }

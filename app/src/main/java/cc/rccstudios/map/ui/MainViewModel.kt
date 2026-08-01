@@ -43,7 +43,7 @@ data class UiState(
     val isScreenLockTrackingEnabled: Boolean = true,
     val isLoading: Boolean = false,
     val logMessage: String = "",
-    val updateInfo: UpdateStatus = UpdateStatus.UpToDate
+    val updateInfo: UpdateStatus? = UpdateStatus.UpToDate
 )
 
 class MainViewModel(
@@ -319,5 +319,9 @@ class MainViewModel(
                 }
             }
         }
+    }
+
+    fun dismissUpdateDialog() {
+        _uiState.update { it.copy(updateInfo = null) }
     }
 }

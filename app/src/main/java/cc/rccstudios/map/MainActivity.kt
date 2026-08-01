@@ -11,13 +11,28 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.data.service.TelemetryService
+import cc.rccstudios.map.domain.model.UpdateStatus
 import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.ui.screens.BottomMenu
+import cc.rccstudios.map.ui.screens.UpdateDialog
 import cc.rccstudios.map.ui.theme.RCCMapTheme
 import org.koin.compose.koinInject
 
@@ -29,6 +44,7 @@ class MainActivity : ComponentActivity() {
             RCCMapTheme {
                 val viewModel: MainViewModel = koinInject()
                 val state by viewModel.uiState.collectAsStateWithLifecycle()
+                val uriHandler = LocalUriHandler.current
 
                 LaunchedEffect(Unit) {
                     viewModel.checkUpdates()
@@ -79,6 +95,18 @@ class MainActivity : ComponentActivity() {
                     if (state.logMessage.isNotBlank()) {
                         Toast.makeText(applicationContext, state.logMessage, Toast.LENGTH_SHORT).show()
                     }
+                }
+
+                val updateInfo = state.updateInfo
+                if (updateInfo is UpdateStatus.NewVersionAvailable) {
+                    UpdateDialog(
+                        updateInfo = updateInfo,
+                        onDownloadClick = { url ->
+                            uriHandler.openUri(url)
+                            viewModel.dismissUpdateDialog()
+                        },
+                        onDismiss = { viewModel.dismissUpdateDialog() }
+                    )
                 }
 
                 BottomMenu(
