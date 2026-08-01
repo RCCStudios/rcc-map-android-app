@@ -2,6 +2,7 @@ package cc.rccstudios.map.data.network
 
 import cc.rccstudios.map.data.network.model.GetOtpResponseDto
 import cc.rccstudios.map.data.network.model.GetTokenResponseDto
+import cc.rccstudios.map.data.network.model.GithubReleaseDto
 import cc.rccstudios.map.data.network.model.RegisterDto
 import cc.rccstudios.map.data.network.model.RegisterResponseDto
 import cc.rccstudios.map.data.network.model.TelemetryDto
@@ -10,6 +11,8 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Url
 
 interface ApiService {
     @Headers("Auth: Bearer {token}")
@@ -30,4 +33,9 @@ interface ApiService {
     @Headers("Auth: Bearer {otp}")
     @GET("api/token")
     suspend fun getToken(): Response<GetTokenResponseDto>
+
+    @GET
+    suspend fun getLatestRelease(
+        @Url url: String = "https://api.github.com/repos/RCCStudios/rcc-map-android-app/releases/latest"
+    ): Response<GithubReleaseDto>
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Approval
+import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -153,20 +154,25 @@ fun SettingsScreen(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
-        SettingExternalLink(
+        SettingButton(
             text = stringResource(R.string.tos_link),
             description = stringResource(R.string.tos_link_desc),
-            link = "${formattedServerUrl}/terms-of-service",
+            onClick = { uriHandler.openUri("${formattedServerUrl}/terms-of-service") },
             icon = Icons.Default.Approval,
-            uriHandler = uriHandler
         )
 
-        SettingExternalLink(
+        SettingButton(
             text = stringResource(R.string.github_link),
             description = stringResource(R.string.github_link_desc),
-            link = "https://github.com/RCCStudios/",
+            onClick = { uriHandler.openUri("https://github.com/RCCStudios/") },
             icon = SimpleIcons.Github,
-            uriHandler = uriHandler
+        )
+
+        SettingButton(
+            text = stringResource(R.string.update_button),
+            description = stringResource(R.string.update_button_desc),
+            onClick = { viewModel.checkUpdates() },
+            icon = Icons.Default.Update
         )
 
         Spacer(modifier = Modifier.size(8.dp))
@@ -296,17 +302,70 @@ fun SettingButton(
     }
 }
 
+//@Composable
+//fun SettingExternalLink(
+//    text: String,
+//    link: String,
+//    icon: ImageVector,
+//    uriHandler: UriHandler,
+//    description: String?,
+//    modifier: Modifier = Modifier
+//) {
+//    Card(
+//        onClick = { uriHandler.openUri(link) },
+//        shape = RoundedCornerShape(12.dp),
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.surfaceVariant
+//        ),
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp, vertical = 8.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .padding(end = 16.dp)
+//            ) {
+//                Text(
+//                    text = text,
+//                    textAlign = TextAlign.Left,
+//                    style = MaterialTheme.typography.titleLarge
+//                )
+//                if (!description.isNullOrBlank()) {
+//                    Text(
+//                        text = description,
+//                        textAlign = TextAlign.Left,
+//                        style = MaterialTheme.typography.titleMedium
+//                    )
+//                }
+//            }
+//
+//            Icon(
+//                imageVector = icon,
+//                contentDescription = text,
+//                modifier = Modifier.size(40.dp)
+//            )
+//        }
+//    }
+//}
+
 @Composable
-fun SettingExternalLink(
+fun SettingButton(
     text: String,
-    link: String,
+    onClick: () -> Unit,
     icon: ImageVector,
-    uriHandler: UriHandler,
     description: String?,
     modifier: Modifier = Modifier
 ) {
     Card(
-        onClick = { uriHandler.openUri(link) },
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant

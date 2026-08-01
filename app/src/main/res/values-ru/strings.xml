@@ -7,6 +7,7 @@
     <string name="battery_tracking">Отслеживание заряда батареи</string>
     <string name="network_tracking">Отслеживание сети</string>
     <string name="network_tracking_desc">Проверяет статус вашей сети, например, \"Wi-Fi\" или \"Мобильный\"</string>
+    <string name="update_button_desc">Проверьте наличие обновлений и скачайте последнюю версию нашего приложения</string>
     <string name="register_title">Добро пожаловать в RCC Map!</string>
     <string name="register_button">Зарегистрироваться</string>
     <string name="log_in_button">Войти</string>
@@ -15,6 +16,7 @@
     <string name="screen_lock_tracking">Отслеживание блокировки экрана</string>
     <string name="server_url">Адрес сервера</string>
     <string name="server_url_placeholder">например, api.rccstudios.cc/map/</string>
+    <string name="log_out_button">Выйти</string>
     <string name="username">Имя пользователя</string>
     <string name="username_placeholder">например, Иван Петров</string>
     <string name="send_telemetry_button">Отправить телеметрию</string>
@@ -31,4 +33,5 @@
     <string name="already_have_account">Уже есть аккаунт?</string>
     <string name="copy_button">Скопировать</string>
     <string name="refresh_button">Обновить</string>
+    <string name="update_button">Проверить наличие обновлений</string>
 </resources>

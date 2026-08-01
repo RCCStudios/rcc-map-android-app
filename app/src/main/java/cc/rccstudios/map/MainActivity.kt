@@ -30,6 +30,10 @@ class MainActivity : ComponentActivity() {
                 val viewModel: MainViewModel = koinInject()
                 val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+                LaunchedEffect(Unit) {
+                    viewModel.checkUpdates()
+                }
+
                 val permissionsLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.RequestMultiplePermissions()
                 ) { permission ->

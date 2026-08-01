@@ -2,7 +2,10 @@ package cc.rccstudios.map.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cc.rccstudios.map.BuildConfig
+import cc.rccstudios.map.domain.model.UpdateStatus
 import cc.rccstudios.map.domain.repository.SettingsRepository
+import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
@@ -39,7 +42,8 @@ data class UiState(
     val isNetworkTrackingEnabled: Boolean = true,
     val isScreenLockTrackingEnabled: Boolean = true,
     val isLoading: Boolean = false,
-    val logMessage: String = ""
+    val logMessage: String = "",
+    val updateInfo: UpdateStatus = UpdateStatus.UpToDate
 )
 
 class MainViewModel(
@@ -47,7 +51,8 @@ class MainViewModel(
     private val registerUseCase: RegisterUseCase,
     private val getTokenUseCase: GetTokenUseCase,
     private val getOtpUseCase: GetOtpUseCase,
-    private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase
+    private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase,
+    private val checkUpdatesUseCase: CheckUpdatesUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -276,6 +281,42 @@ class MainViewModel(
                 _uiState.update { it.copy(isLoading = false, logMessage = "Telemetry has been sent successfully") }
             } else {
                 _uiState.update { it.copy(isLoading = false, logMessage = "Error: ${result.exceptionOrNull()?.message}") }
+            }
+        }
+    }
+
+    fun checkUpdates() {
+        _uiState.update { it.copy(isLoading = true, logMessage = "Checking updates") }
+        val currentVersion = BuildConfig.VERSION_NAME
+        viewModelScope.launch {
+            when (val result = checkUpdatesUseCase(currentVersion)) {
+                is UpdateStatus.NewVersionAvailable -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            updateInfo = result,
+                            logMessage = "Found new version: ${result.version}"
+                        )
+                    }
+                }
+
+                is UpdateStatus.UpToDate -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            logMessage = "You have the latest version"
+                        )
+                    }
+                }
+
+                is UpdateStatus.Error -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            logMessage = "Failed to check updates: ${result.throwable.message}"
+                        )
+                    }
+                }
             }
         }
     }

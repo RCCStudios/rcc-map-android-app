@@ -20,7 +20,10 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import androidx.datastore.preferences.preferencesDataStore
 import cc.rccstudios.map.data.repository.AuthRepositoryImpl
+import cc.rccstudios.map.data.repository.UpdateRepositoryImpl
 import cc.rccstudios.map.domain.repository.AuthRepository
+import cc.rccstudios.map.domain.repository.UpdateRepository
+import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
@@ -42,6 +45,20 @@ val appModule = module {
     single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
 
     single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+
+    single<TelemetryRepository> {
+        TelemetryRepositoryImpl(
+            apiService = get(),
+            settingsRepository = get(),
+            batteryTracker = get(),
+            locationTracker = get(),
+            networkTracker = get(),
+            screenLockTracker = get()
+        )
+    }
+
+    single<UpdateRepository> { UpdateRepositoryImpl(apiService = get()) }
+
 
     single<BatteryTracker> { BatteryTrackerImpl(context = androidContext()) }
 
@@ -73,13 +90,16 @@ val appModule = module {
         val authInterceptor = okhttp3.Interceptor { chain ->
             val originalRequest = chain.request()
             val requestBuilder = originalRequest.newBuilder()
+
+            val isExternalService = originalRequest.url.host.contains("github.com")
+
             val (token, otp, serverUrl) = runBlocking {
                 val t = settingsRepository.getToken() ?: ""
                 val o = settingsRepository.getOtp() ?: ""
                 val u = settingsRepository.getServerUrl() ?: ""
                 Triple(t, o, u)
             }
-            if (serverUrl.isNotBlank()) {
+            if (!isExternalService && serverUrl.isNotBlank()) {
                 val formattedServerUrl = serverUrl.toNormalizedUrl()
                 formattedServerUrl.toHttpUrlOrNull()?.let { parsedUrl ->
                     val newUrl = originalRequest.url.newBuilder()
@@ -128,17 +148,6 @@ val appModule = module {
 
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 
-    single<TelemetryRepository> {
-        TelemetryRepositoryImpl(
-            apiService = get(),
-            settingsRepository = get(),
-            batteryTracker = get(),
-            locationTracker = get(),
-            networkTracker = get(),
-            screenLockTracker = get()
-        )
-    }
-
     factory { CollectAndSendTelemetryUseCase(repository = get()) }
 
     factory { RegisterUseCase(authRepository = get()) }
@@ -147,13 +156,16 @@ val appModule = module {
 
     factory { GetTokenUseCase(authRepository = get()) }
 
+    factory { CheckUpdatesUseCase(updateRepository = get()) }
+
     viewModel {
         MainViewModel(
             settingsRepository = get(),
             collectAndSendTelemetryUseCase = get(),
             registerUseCase = get(),
             getTokenUseCase = get(),
-            getOtpUseCase = get()
+            getOtpUseCase = get(),
+            checkUpdatesUseCase = get()
         )
     }
 }
