@@ -171,6 +171,7 @@ class MainViewModel(
                     it.copy(
                         token = token,
                         isLoading = false,
+                        authMode = AuthMode.LOGGED_IN,
                         logMessage = "Registered successfully"
                     )
                 }
@@ -194,6 +195,7 @@ class MainViewModel(
                 _uiState.update {
                     it.copy(
                         token = token,
+                        authMode = AuthMode.LOGGED_IN,
                         isLoading = false,
                         logMessage = "Logged in successfully"
                     )
@@ -205,6 +207,25 @@ class MainViewModel(
                         logMessage = "Error: ${result.exceptionOrNull()?.message}"
                     )
                 }
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, logMessage = "") }
+            settingsRepository.saveToken("")
+            settingsRepository.saveUsername("")
+            settingsRepository.saveOtp("")
+            _uiState.update {
+                it.copy(
+                    token = "",
+                    username = "",
+                    otp = "",
+                    authMode = AuthMode.REGISTER,
+                    isLoading = false,
+                    logMessage = "Logged out successfully"
+                )
             }
         }
     }

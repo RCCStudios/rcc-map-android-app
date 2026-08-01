@@ -300,6 +300,8 @@ fun RegisterScreen(
             onClick = { viewModel.toggleAuthMode() }
         )
 
+        Spacer(modifier = Modifier.size(12.dp))
+
         val isButtonEnabled = state.username.isNotBlank() &&
                 !state.otp.isNullOrBlank() &&
                 state.serverUrl.isNotBlank() &&
@@ -374,6 +376,8 @@ fun LoginScreen(
             onClick = { viewModel.toggleAuthMode() }
         )
 
+        Spacer(modifier = Modifier.size(12.dp))
+
         val isButtonEnabled = !state.otp.isNullOrBlank() &&
                 state.serverUrl.isNotBlank() &&
                 !state.isLoading
@@ -402,7 +406,7 @@ fun ProfileScreen(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 32.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -453,14 +457,14 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
+                    horizontal = 32.dp,
+                    vertical = 16.dp
                 )
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(
-                    horizontal = 16.dp,
-                    vertical = 12.dp
+                    horizontal = 32.dp,
+                    vertical = 24.dp
                 )
         ) {
             Row(
@@ -540,8 +544,8 @@ fun ProfileScreen(
 
         AuthButton(
             text = stringResource(R.string.log_out_button),
-            onClick = { TODO("Not implemented yet") },
-            enabled = false,
+            onClick = { viewModel.logout() },
+            enabled = !state.isLoading,
             isLoading = state.isLoading,
             color = MaterialTheme.colorScheme.error
         )
