@@ -15,7 +15,7 @@ data class TelemetryDto(
     @SerialName("networkStatus")
     val networkStatus: Int?,
     @SerialName("screenLockStatus")
-    val screenLockStatus: Long?
+    val screenLockStatus: Boolean?
 )
 
 fun Telemetry.toDto() = TelemetryDto(
