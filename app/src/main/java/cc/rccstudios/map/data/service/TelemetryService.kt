@@ -58,6 +58,10 @@ class TelemetryService : Service(), KoinComponent {
         }
     }
 
+    private fun stopTracking() {
+        trackingJob?.cancel()
+    }
+
     private fun buildNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("RCC Map Active")
@@ -75,7 +79,7 @@ class TelemetryService : Service(), KoinComponent {
                 "RCC Map Telemetry",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Notification about RCC Map background service"
+                description = "RCC Map background service"
             }
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)

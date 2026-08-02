@@ -1,7 +1,6 @@
 package cc.rccstudios.map.ui.screens
 
 import android.annotation.SuppressLint
-import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient

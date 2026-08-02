@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import cc.rccstudios.map.domain.repository.SettingsRepository
-import cc.rccstudios.map.ui.AuthMode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 

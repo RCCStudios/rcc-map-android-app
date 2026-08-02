@@ -11,22 +11,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.data.service.TelemetryService
 import cc.rccstudios.map.domain.model.UpdateStatus
@@ -62,6 +50,14 @@ class MainActivity : ComponentActivity() {
                         Toast.makeText(
                             this,
                             "Location permission is strictly necessary for RCC Map correct work",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    if (!isNotificationGranted) {
+                        Toast.makeText(
+                            this,
+                            "Notification permission is necessary for RCC Map correct work",
                             Toast.LENGTH_LONG
                         ).show()
                     }
