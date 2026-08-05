@@ -5,3 +5,35 @@ fun String.toNormalizedUrl(): String {
     val url = if (startsWith("http://") || startsWith("https://")) this else "https://$this"
     return url.removeSuffix("/")
 }
+
+fun compareVersions(v1: String, v2: String): Int {
+    val clean1 = v1.removePrefix("v").trim()
+    val clean2 = v2.removePrefix("v").trim()
+
+    val parts1 = clean1.split("-", limit = 2)
+    val parts2 = clean2.split("-", limit = 2)
+
+    val numbers1 = parts1[0].split(".").mapNotNull { it.toIntOrNull() }
+    val numbers2 = parts2[0].split(".").mapNotNull { it.toIntOrNull() }
+
+    val maxLength = maxOf(numbers1.size, numbers2.size)
+
+    for (i in 0 until maxLength) {
+        val num1 = numbers1.getOrElse(i) { 0 }
+        val num2 = numbers2.getOrElse(i) { 0 }
+
+        if (num1 != num2) {
+            return num1.compareTo(num2)
+        }
+    }
+
+    val hasSuffix1 = parts1.size > 1
+    val hasSuffix2 = parts2.size > 1
+
+    return when {
+        !hasSuffix1 && hasSuffix2 -> 1
+        hasSuffix1 && !hasSuffix2 -> -1
+        hasSuffix1 && hasSuffix2 -> parts1[1].compareTo(parts2[1])
+        else -> 0
+    }
+}
