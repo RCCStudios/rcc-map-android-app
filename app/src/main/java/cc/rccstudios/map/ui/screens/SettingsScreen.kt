@@ -157,6 +157,7 @@ fun SettingsScreen(
             text = stringResource(R.string.tos_link),
             description = stringResource(R.string.tos_link_desc),
             onClick = { uriHandler.openUri("${formattedServerUrl}/terms-of-service") },
+            enabled = state.serverUrl.isNotEmpty(),
             icon = Icons.Default.Approval,
         )
 
@@ -360,7 +361,8 @@ fun SettingButton(
     text: String,
     onClick: () -> Unit,
     icon: ImageVector,
-    description: String?,
+    enabled: Boolean? = null,
+    description: String? = null,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -369,6 +371,7 @@ fun SettingButton(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
+        enabled = enabled ?: true,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
