@@ -77,26 +77,34 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(state.token) {
-                    val token = state.token
-                    if (!token.isNullOrBlank()) {
+                    if (!state.token.isNullOrBlank()) {
                         val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             ContextCompat.checkSelfPermission(
                                 this@MainActivity,
                                 Manifest.permission.POST_NOTIFICATIONS
                             ) == PackageManager.PERMISSION_GRANTED
-                        } else {
-                            true
-                        }
+                        } else true
 
                         if (hasNotificationPermission) {
                             val intent = Intent(this@MainActivity, TelemetryService::class.java).apply {
                                 action = TelemetryService.ACTION_START
+                                putExtra(TelemetryService.EXTRA_INTERVAL, state.telemetryInterval)
                             }
                             ContextCompat.startForegroundService(this@MainActivity, intent)
                         }
                     } else {
                         val intent = Intent(this@MainActivity, TelemetryService::class.java)
                         stopService(intent)
+                    }
+                }
+
+                LaunchedEffect(state.telemetryInterval) {
+                    if (!state.token.isNullOrBlank()) {
+                        val intent = Intent(this@MainActivity, TelemetryService::class.java).apply {
+                            action = TelemetryService.ACTION_UPDATE_INTERVAL
+                            putExtra(TelemetryService.EXTRA_INTERVAL, state.telemetryInterval)
+                        }
+                        startService(intent)
                     }
                 }
 

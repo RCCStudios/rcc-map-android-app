@@ -16,6 +16,7 @@ import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -26,8 +27,10 @@ import org.koin.core.component.inject
 class TelemetryService : Service(), KoinComponent {
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase by inject()
 
-    private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
+    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var telemetryJob: Job? = null
+
+    private var currentInterval: Long = 60000L
 
     private val notificationManager by lazy {
         getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -36,9 +39,10 @@ class TelemetryService : Service(), KoinComponent {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_UPDATE_INTERVAL = "ACTION_UPDATE_INTERVAL"
+        const val EXTRA_INTERVAL = "EXTRA_INTERVAL"
         const val CHANNEL_ID = "telemetry_channel"
         const val NOTIFICATION_ID = 101
-        const val TELEMETRY_INTERVAL_MS = 60000L
     }
 
     override fun onCreate() {
@@ -47,24 +51,27 @@ class TelemetryService : Service(), KoinComponent {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForeground(
+            NOTIFICATION_ID,
+            buildNotification(getString(R.string.telemetry_status_active))
+        )
+
         when (intent?.action) {
-            ACTION_START -> {
-                startForeground(
-                    NOTIFICATION_ID,
-                    buildNotification(
-                        getString(R.string.telemetry_status_active)
-                    )
-                )
-                startTelemetry()
+            ACTION_STOP -> {
+                stopTelemetry()
+                stopSelf()
+                return START_NOT_STICKY
             }
-            ACTION_STOP -> stopTelemetry()
+            ACTION_UPDATE_INTERVAL -> {
+                val newInterval = intent.getLongExtra(EXTRA_INTERVAL, 60000L)
+                if (newInterval != currentInterval) {
+                    currentInterval = newInterval
+                    restartTelemetryLoop()
+                }
+            }
             else -> {
-                startForeground(
-                    NOTIFICATION_ID,
-                    buildNotification(
-                        getString(R.string.telemetry_status_active)
-                    )
-                )
+                val initialInterval = intent?.getLongExtra(EXTRA_INTERVAL, 60000L) ?: 60000L
+                currentInterval = initialInterval
                 startTelemetry()
             }
         }
@@ -113,9 +120,14 @@ class TelemetryService : Service(), KoinComponent {
                     e.printStackTrace()
                     updateNotification(getString(R.string.telemetry_status_error))
                 }
-                delay(TELEMETRY_INTERVAL_MS)
+                delay(currentInterval)
             }
         }
+    }
+
+    private fun restartTelemetryLoop() {
+        telemetryJob?.cancel()
+        startTelemetry()
     }
 
     private fun stopTelemetry() {
@@ -187,9 +199,8 @@ class TelemetryService : Service(), KoinComponent {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         telemetryJob?.cancel()
-        serviceScope.cancel()
+        super.onDestroy()
     }
 
     override fun onBind(p0: Intent?): IBinder? = null

@@ -7,6 +7,7 @@ import cc.rccstudios.map.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -23,10 +24,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +46,7 @@ import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Github
+import kotlin.math.roundToLong
 
 @Composable
 fun SettingsScreen(
@@ -63,26 +69,32 @@ fun SettingsScreen(
         SettingSwitch(
             text = stringResource(R.string.battery_tracking),
             checked = state.isBatteryTrackingEnabled,
-            onCheckedChange = { viewModel.onBatteryTrackingChanged(it) }
+            onCheckedChange = { viewModel.onBatteryTrackingChange(it) }
         )
 
         SettingSwitch(
             text = stringResource(R.string.location_tracking),
             checked = state.isLocationTrackingEnabled,
-            onCheckedChange = { viewModel.onLocationTrackingChanged(it) }
+            onCheckedChange = { viewModel.onLocationTrackingChange(it) }
         )
 
         SettingSwitch(
             text = stringResource(R.string.network_tracking),
             checked = state.isNetworkTrackingEnabled,
-            onCheckedChange = { viewModel.onNetworkTrackingChanged(it) },
+            onCheckedChange = { viewModel.onNetworkTrackingChange(it) },
             description = stringResource(R.string.network_tracking_desc)
         )
 
         SettingSwitch(
             text = stringResource(R.string.screen_lock_tracking),
             checked = state.isScreenLockTrackingEnabled,
-            onCheckedChange = { viewModel.onScreenLockTrackingChanged(it) }
+            onCheckedChange = { viewModel.onScreenLockTrackingChange(it) }
+        )
+
+        SettingSlider(
+            text = stringResource(R.string.telemetry_interval),
+            valueMs = state.telemetryInterval,
+            onValueChange = { viewModel.onTelemetryIntervalChange(it) }
         )
 
         HorizontalDivider(
@@ -223,6 +235,72 @@ fun SettingSwitch(
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+fun SettingSlider(
+    text: String,
+    valueMs: Long,
+    onValueChange: (Long) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var sliderValue by remember(valueMs) {
+        mutableFloatStateOf((valueMs / 1000f).coerceIn(5f, 300f))
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(
+                horizontal = 16.dp,
+                vertical = 12.dp
+            )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleLarge
+            )
+
+            val seconds = sliderValue.toInt()
+            val timeText = if (seconds >= 60 && seconds % 60 == 0) {
+                "${seconds / 60} ${stringResource(R.string.minutes)}"
+            } else {
+                "$seconds ${stringResource(R.string.seconds)}"
+            }
+
+            Text(
+                text = timeText,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Slider(
+            value = sliderValue,
+            onValueChange = { newValue ->
+                sliderValue = newValue
+            },
+            onValueChangeFinished = {
+                val updatedIntervalMs = sliderValue.roundToLong() * 1000L
+                onValueChange(updatedIntervalMs)
+            },
+            valueRange = 5f..300f
         )
     }
 }

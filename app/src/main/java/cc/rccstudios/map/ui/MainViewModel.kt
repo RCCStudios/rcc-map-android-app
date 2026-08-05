@@ -10,12 +10,8 @@ import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 enum class AuthMode(val code: Int) {
@@ -41,11 +37,13 @@ data class UiState(
     val isLocationTrackingEnabled: Boolean = true,
     val isNetworkTrackingEnabled: Boolean = true,
     val isScreenLockTrackingEnabled: Boolean = true,
+    val telemetryInterval: Long = 60000L,
     val isLoading: Boolean = false,
     val logMessage: String = "",
     val updateInfo: UpdateStatus? = UpdateStatus.UpToDate
 )
 
+@OptIn(FlowPreview::class)
 class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val registerUseCase: RegisterUseCase,
@@ -54,113 +52,148 @@ class MainViewModel(
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase,
     private val checkUpdatesUseCase: CheckUpdatesUseCase
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    private var saveUrlJob: Job? = null
-    private var saveOtpJob: Job? = null
-    private var saveUsernameJob: Job? = null
+
+    private val urlInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    private val usernameInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    private val otpInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    private val intervalInputFlow = MutableSharedFlow<Long>(extraBufferCapacity = 1)
 
     init {
-        viewModelScope.launch {
-            val savedToken = settingsRepository.getToken()
-            val savedUrl = settingsRepository.getServerUrl() ?: ""
-            val savedOtp = settingsRepository.getOtp()
-            val savedUsername = settingsRepository.getUsername() ?: ""
-            val savedAuthCode = settingsRepository.getAuthMode()
-            val currentAuthMode = if (!savedToken.isNullOrBlank()) {
-                AuthMode.LOGGED_IN
-            } else {
-                AuthMode.fromCode(savedAuthCode)
-            }
-            val savedAvatarPath = settingsRepository.getAvatarPath() ?: ""
-            val savedBatteryTrackerEnabled = settingsRepository.getBatteryTrackingEnabled() ?: true
-            val savedLocationTrackerEnabled = settingsRepository.getLocationTrackingEnabled() ?: true
-            val savedNetworkTrackerEnabled = settingsRepository.getNetworkTrackingEnabled() ?: true
-            val savedScreenLockTrackerEnabled = settingsRepository.getScreenLockTrackingEnabled() ?: true
+        observeSettings()
+        setupDebounceAutoSave()
+    }
 
-            _uiState.update {
-                it.copy(
-                    token = savedToken,
-                    serverUrl = savedUrl,
-                    otp = savedOtp,
-                    username = savedUsername,
-                    authMode = currentAuthMode,
-                    avatarPath = savedAvatarPath,
-                    isBatteryTrackingEnabled = savedBatteryTrackerEnabled,
-                    isLocationTrackingEnabled = savedLocationTrackerEnabled,
-                    isNetworkTrackingEnabled = savedNetworkTrackerEnabled,
-                    isScreenLockTrackingEnabled = savedScreenLockTrackerEnabled
-                )
+    private fun observeSettings() {
+        viewModelScope.launch {
+            combine(settingsRepository.tokenFlow, settingsRepository.authModeFlow) { token, authCode ->
+                val authMode = if (!token.isNullOrBlank()) {
+                    AuthMode.LOGGED_IN
+                } else {
+                    AuthMode.fromCode(authCode)
+                }
+                token to authMode
+            }.collect { (token, authMode) ->
+                _uiState.update { it.copy(token = token, authMode = authMode) }
             }
+        }
+
+        viewModelScope.launch {
+            settingsRepository.serverUrlFlow.collect { url ->
+                if (url != null) _uiState.update { it.copy(serverUrl = url) }
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.usernameFlow.collect { username ->
+                if (username != null) _uiState.update { it.copy(username = username) }
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.otpFlow.collect { otp ->
+                _uiState.update { it.copy(otp = otp) }
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.avatarPathFlow.collect { path ->
+                if (path != null) _uiState.update { it.copy(avatarPath = path) }
+            }
+        }
+
+        viewModelScope.launch {
+            combine(
+                settingsRepository.batteryTrackingEnabledFlow,
+                settingsRepository.locationTrackingEnabledFlow,
+                settingsRepository.networkTrackingEnabledFlow,
+                settingsRepository.screenLockTrackingEnabledFlow,
+                settingsRepository.telemetryIntervalFlow
+            ) { battery, location, network, screenLock, interval ->
+                _uiState.update {
+                    it.copy(
+                        isBatteryTrackingEnabled = battery,
+                        isLocationTrackingEnabled = location,
+                        isNetworkTrackingEnabled = network,
+                        isScreenLockTrackingEnabled = screenLock,
+                        telemetryInterval = interval
+                    )
+                }
+            }.collect()
+        }
+    }
+
+    private fun setupDebounceAutoSave() {
+        viewModelScope.launch {
+            urlInputFlow
+                .debounce(1000L)
+                .collect { url ->
+                    settingsRepository.saveServerUrl(url)
+                    _uiState.update { it.copy(logMessage = "Server URL saved automatically") }
+                }
+        }
+
+        viewModelScope.launch {
+            usernameInputFlow
+                .debounce(1000L)
+                .collect { username ->
+                    settingsRepository.saveUsername(username)
+                    _uiState.update { it.copy(logMessage = "Username saved automatically") }
+                }
+        }
+
+        viewModelScope.launch {
+            otpInputFlow
+                .debounce(1000L)
+                .collect { otp ->
+                    settingsRepository.saveOtp(otp)
+                    _uiState.update { it.copy(logMessage = "OTP saved automatically") }
+                }
+        }
+
+        viewModelScope.launch {
+            intervalInputFlow
+                .debounce(1000L)
+                .collect { interval ->
+                    settingsRepository.saveTelemetryInterval(interval)
+                    _uiState.update { it.copy(logMessage = "Telemetry interval saved automatically") }
+                }
         }
     }
 
     fun onUrlChange(newUrl: String) {
         _uiState.update { it.copy(serverUrl = newUrl) }
-
-        saveUrlJob?.cancel()
-
-        saveUrlJob = viewModelScope.launch {
-            delay(1000L)
-            settingsRepository.saveServerUrl(newUrl)
-            _uiState.update { it.copy(logMessage = "Server URL saved automatically") }
-        }
+        urlInputFlow.tryEmit(newUrl)
     }
 
     fun onUsernameChange(newUsername: String) {
         _uiState.update { it.copy(username = newUsername) }
-
-        saveUsernameJob?.cancel()
-
-        saveUsernameJob = viewModelScope.launch {
-            delay(1000L)
-            settingsRepository.saveUsername(newUsername)
-            _uiState.update { it.copy(logMessage = "Username saved automatically") }
-        }
+        usernameInputFlow.tryEmit(newUsername)
     }
 
     fun onOtpChange(newOtp: String) {
         _uiState.update { it.copy(otp = newOtp) }
-
-        saveOtpJob?.cancel()
-
-        saveOtpJob = viewModelScope.launch {
-            delay(1000L)
-            settingsRepository.saveOtp(newOtp)
-            _uiState.update { it.copy(logMessage = "OTP saved automatically") }
-        }
+        otpInputFlow.tryEmit(newOtp)
     }
 
-    fun onBatteryTrackingChanged(enabled: Boolean) {
-        _uiState.update { it.copy(isBatteryTrackingEnabled = enabled) }
-
-        viewModelScope.launch {
-            settingsRepository.saveBatteryTrackingEnabled(enabled)
-        }
+    fun onTelemetryIntervalChange(interval: Long) {
+        _uiState.update { it.copy(telemetryInterval = interval) }
+        intervalInputFlow.tryEmit(interval)
     }
 
-    fun onLocationTrackingChanged(enabled: Boolean) {
-        _uiState.update { it.copy(isLocationTrackingEnabled = enabled) }
-
-        viewModelScope.launch {
-            settingsRepository.saveLocationTrackingEnabled(enabled)
-        }
+    fun onBatteryTrackingChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveBatteryTrackingEnabled(enabled) }
     }
 
-    fun onNetworkTrackingChanged(enabled: Boolean) {
-        _uiState.update { it.copy(isNetworkTrackingEnabled = enabled) }
-
-        viewModelScope.launch {
-            settingsRepository.saveNetworkTrackingEnabled(enabled)
-        }
+    fun onLocationTrackingChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveLocationTrackingEnabled(enabled) }
     }
 
-    fun onScreenLockTrackingChanged(enabled: Boolean) {
-        _uiState.update { it.copy(isScreenLockTrackingEnabled = enabled) }
+    fun onNetworkTrackingChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveNetworkTrackingEnabled(enabled) }
+    }
 
-        viewModelScope.launch {
-            settingsRepository.saveScreenLockTrackingEnabled(enabled)
-        }
+    fun onScreenLockTrackingChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveScreenLockTrackingEnabled(enabled) }
     }
 
     fun register() {
@@ -171,12 +204,9 @@ class MainViewModel(
                 otp = _uiState.value.otp ?: ""
             )
             if (result.isSuccess) {
-                val token = settingsRepository.getToken()
                 _uiState.update {
                     it.copy(
-                        token = token,
                         isLoading = false,
-                        authMode = AuthMode.LOGGED_IN,
                         logMessage = "Registered successfully"
                     )
                 }
@@ -196,11 +226,8 @@ class MainViewModel(
             _uiState.update { it.copy(isLoading = true, logMessage = "") }
             val result = getTokenUseCase()
             if (result.isSuccess) {
-                val token = settingsRepository.getToken()
                 _uiState.update {
                     it.copy(
-                        token = token,
-                        authMode = AuthMode.LOGGED_IN,
                         isLoading = false,
                         logMessage = "Logged in successfully"
                     )
@@ -224,10 +251,6 @@ class MainViewModel(
             settingsRepository.saveOtp("")
             _uiState.update {
                 it.copy(
-                    token = "",
-                    username = "",
-                    otp = "",
-                    authMode = AuthMode.REGISTER,
                     isLoading = false,
                     logMessage = "Logged out successfully"
                 )
@@ -240,10 +263,8 @@ class MainViewModel(
             _uiState.update { it.copy(logMessage = "") }
             val result = getOtpUseCase()
             if (result.isSuccess) {
-                val otp = settingsRepository.getOtp()
                 _uiState.update {
                     it.copy(
-                        otp = otp,
                         isLoading = false,
                         logMessage = "Received OTP successfully"
                     )
@@ -262,14 +283,13 @@ class MainViewModel(
     fun toggleAuthMode() {
         viewModelScope.launch {
             _uiState.update { it.copy(logMessage = "") }
-            val authMode = AuthMode.fromCode(settingsRepository.getAuthMode())
-            val nextMode = if (authMode == AuthMode.REGISTER) {
+            val currentAuthMode = _uiState.value.authMode
+            val nextMode = if (currentAuthMode == AuthMode.REGISTER) {
                 AuthMode.LOGIN
             } else {
                 AuthMode.REGISTER
             }
             settingsRepository.saveAuthMode(nextMode.code)
-            _uiState.update { it.copy(authMode = nextMode) }
         }
     }
 
@@ -299,7 +319,6 @@ class MainViewModel(
                         )
                     }
                 }
-
                 is UpdateStatus.UpToDate -> {
                     _uiState.update {
                         it.copy(
@@ -308,7 +327,6 @@ class MainViewModel(
                         )
                     }
                 }
-
                 is UpdateStatus.Error -> {
                     _uiState.update {
                         it.copy(
