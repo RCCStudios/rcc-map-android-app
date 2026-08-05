@@ -218,26 +218,26 @@ fun AuthTextButton(
     }
 }
 
-@Composable
-fun AuthLogcat(
-    text: String,
-    isVisible: Boolean
-) {
-    if (isVisible) {
-        Spacer(modifier = Modifier.size(16.dp))
-        Text(
-            text = text,
-            color = if (text.contains("Error", ignoreCase = true)) {
-                MaterialTheme.colorScheme.error
-            } else {
-                MaterialTheme.colorScheme.primary
-            },
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp)
-        )
-    }
-}
+//@Composable
+//fun AuthLogcat(
+//    text: String,
+//    isVisible: Boolean
+//) {
+//    if (isVisible) {
+//        Spacer(modifier = Modifier.size(16.dp))
+//        Text(
+//            text = text,
+//            color = if (text.contains("Error", ignoreCase = true)) {
+//                MaterialTheme.colorScheme.error
+//            } else {
+//                MaterialTheme.colorScheme.primary
+//            },
+//            style = MaterialTheme.typography.bodyMedium,
+//            textAlign = TextAlign.Center,
+//            modifier = Modifier.padding(horizontal = 32.dp)
+//        )
+//    }
+//}
 
 @Composable
 fun RegisterScreen(
@@ -317,10 +317,10 @@ fun RegisterScreen(
             isLoading = state.isLoading
         )
 
-        AuthLogcat(
-            text = state.logMessage,
-            isVisible = state.logMessage.isNotBlank()
-        )
+//        AuthLogcat(
+//            text = state.logMessage,
+//            isVisible = state.logMessage.isNotBlank()
+//        )
     }
 }
 
@@ -392,10 +392,10 @@ fun LoginScreen(
             isLoading = state.isLoading
         )
 
-        AuthLogcat(
-            text = state.logMessage,
-            isVisible = state.logMessage.isNotBlank()
-        )
+//        AuthLogcat(
+//            text = state.logMessage,
+//            isVisible = state.logMessage.isNotBlank()
+//        )
     }
 }
 
