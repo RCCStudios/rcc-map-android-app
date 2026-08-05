@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -60,6 +61,10 @@ fun AccountScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val authMode = state.authMode
+
+    LaunchedEffect(Unit) {
+        viewModel.getOtp()
+    }
 
     when (authMode) {
         AuthMode.REGISTER -> RegisterScreen(

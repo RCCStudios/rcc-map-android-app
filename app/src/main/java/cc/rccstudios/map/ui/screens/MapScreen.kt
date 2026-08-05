@@ -40,9 +40,9 @@ fun MapScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val isDarkTheme = isSystemInDarkTheme()
 
-    LaunchedEffect(Unit) {
-        viewModel.getOtp()
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.getOtp()
+//    }
 
     if (mapUrl.isBlank()) {
         Column(
@@ -64,7 +64,7 @@ fun MapScreen(
             )
         }
     } else {
-        val finalUrl = remember(mapUrl, state.otp, isDarkTheme) {
+        val finalUrl = remember(mapUrl, state.token, isDarkTheme) {
             if (mapUrl.isBlank()) return@remember ""
 
             val uriBuilder = mapUrl.toNormalizedUrl()
@@ -72,7 +72,7 @@ fun MapScreen(
                 .buildUpon()
                 .appendQueryParameter("isDarkTheme", if (isDarkTheme) "true" else "false")
             if (!state.token.isNullOrBlank()) {
-                uriBuilder.appendQueryParameter("otp", state.otp)
+                uriBuilder.appendQueryParameter("token", state.token)
             }
 
             uriBuilder.build().toString()
