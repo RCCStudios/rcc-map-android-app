@@ -3,17 +3,20 @@ package cc.rccstudios.map.data.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import cc.rccstudios.map.MainActivity
 import cc.rccstudios.map.R
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -24,13 +27,18 @@ class TelemetryService : Service(), KoinComponent {
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase by inject()
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
-    private var trackingJob: Job? = null
+    private var telemetryJob: Job? = null
+
+    private val notificationManager by lazy {
+        getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+    }
 
     companion object {
-        private const val CHANNEL_ID = "telemetry_channel"
-        private const val NOTIFICATION_ID = 101
-
-        private const val TRACKING_INTERVAL_MS = 60000L
+        const val ACTION_START = "ACTION_START"
+        const val ACTION_STOP = "ACTION_STOP"
+        const val CHANNEL_ID = "telemetry_channel"
+        const val NOTIFICATION_ID = 101
+        const val TELEMETRY_INTERVAL_MS = 60000L
     }
 
     override fun onCreate() {
@@ -39,37 +47,129 @@ class TelemetryService : Service(), KoinComponent {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, buildNotification())
-        startTracking()
+        when (intent?.action) {
+            ACTION_START -> {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(
+                        getString(R.string.telemetry_status_active)
+                    )
+                )
+                startTelemetry()
+            }
+            ACTION_STOP -> stopTelemetry()
+            else -> {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(
+                        getString(R.string.telemetry_status_active)
+                    )
+                )
+                startTelemetry()
+            }
+        }
         return START_STICKY
     }
 
-    private fun startTracking() {
-        trackingJob?.cancel()
-        trackingJob = serviceScope.launch {
+    private fun startTelemetry() {
+        telemetryJob?.cancel()
+        telemetryJob = serviceScope.launch {
             while (isActive) {
                 try {
-                    collectAndSendTelemetryUseCase()
+                    val result = collectAndSendTelemetryUseCase()
+                    result.onSuccess { telemetry ->
+                        val shortText = getString(R.string.telemetry_status_active)
+                        val batteryText = telemetry.batteryStatus?.let { "\uD83D\uDD0B ${getString(R.string.battery)}: $it%" } ?: "N/A"
+                        val locationText = if (telemetry.latitude != null && telemetry.longitude != null) {
+                            "\uD83C\uDF0D ${getString(R.string.location)}: %.4f, %.4f".format(telemetry.latitude, telemetry.longitude)
+                        } else {
+                            "\uD83C\uDF0D ${getString(R.string.location)}: ${getString(R.string.no_location_data)}"
+                        }
+                        val networkText = "\uD83C\uDF10 ${getString(R.string.network)}: ${when (telemetry.networkStatus) {
+                            0 -> getString(R.string.unknown)
+                            1 -> getString(R.string.wifi)
+                            2 -> getString(R.string.ethernet)
+                            3 -> getString(R.string.cellular)
+                            else -> getString(R.string.unknown)
+                        }}"
+                        val screenLockText = if (telemetry.screenLockStatus ?: true) {
+                            "\uD83D\uDD12 ${getString(R.string.screen_lock)}: ${getString(R.string.locked)}"
+                        } else {
+                            "\uD83D\uDD13 ${getString(R.string.screen_lock)}: ${getString(R.string.unlocked)}"
+                        }
+                        val detailedText = listOfNotNull(
+                            locationText,
+                            batteryText,
+                            networkText,
+                            screenLockText
+                        ).joinToString("\n")
+                        updateNotification(shortText, detailedText)
+                    }.onFailure { error ->
+                        updateNotification(
+                            "${getString(R.string.error)}: ${error.localizedMessage ?: getString(R.string.offline)}"
+                        )
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    updateNotification(getString(R.string.telemetry_status_error))
                 }
-                delay(TRACKING_INTERVAL_MS)
+                delay(TELEMETRY_INTERVAL_MS)
             }
         }
     }
 
-    private fun stopTracking() {
-        trackingJob?.cancel()
+    private fun stopTelemetry() {
+        telemetryJob?.cancel()
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
     }
 
-    private fun buildNotification(): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("RCC Map Active")
-            .setContentText("Telemetry collecting is active in real time")
+    private fun updateNotification(shortText: String, detailedText: String? = null) {
+        val updatedNotification = buildNotification(shortText, detailedText)
+        notificationManager.notify(NOTIFICATION_ID, updatedNotification)
+    }
+
+    private fun buildNotification(
+        shortText: String,
+        detailedText: String? = null
+    ): Notification {
+        val openAppIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val openAppPendingIntent = PendingIntent.getActivity(
+            this, 0, openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val stopIntent = Intent(this, TelemetryService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPendingIntent = PendingIntent.getService(
+            this, 1, stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(shortText)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentIntent(openAppPendingIntent)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-            .build()
+            .addAction(
+                R.drawable.ic_stop,
+                getString(R.string.stop_button),
+                stopPendingIntent
+            )
+
+        if (!detailedText.isNullOrBlank()) {
+            builder.setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(detailedText)
+            )
+        }
+
+        return builder.build()
     }
 
     private fun createNotificationChannel() {
@@ -88,7 +188,8 @@ class TelemetryService : Service(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
-        trackingJob?.cancel()
+        telemetryJob?.cancel()
+        serviceScope.cancel()
     }
 
     override fun onBind(p0: Intent?): IBinder? = null

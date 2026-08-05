@@ -43,7 +43,25 @@
     <string name="update_default_changelog">No changelog found!</string>
     <string name="update_download">Download</string>
     <string name="update_later">Later</string>
+    <!-- Notification -->
+    <string name="telemetry_status_active">Telemetry collection is carried out in real time. Expand for more data 🔽</string>
+    <string name="telemetry_status_error">Error while collecting telemetry</string>
     <!-- Other -->
     <string name="copy_button">Copy</string>
     <string name="refresh_button">Refresh</string>
+    <string name="stop_button">Stop</string>
+    <string name="location">Location</string>
+    <string name="battery">Battery</string>
+    <string name="network">Network</string>
+    <string name="screen_lock">Screen Lock</string>
+    <string name="no_location_data">No location data found</string>
+    <string name="unknown">Unknown</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="cellular">Cellular</string>
+    <string name="locked">Locked</string>
+    <string name="unlocked">Unlocked</string>
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="error">Error</string>
 </resources>

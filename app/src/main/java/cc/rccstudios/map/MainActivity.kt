@@ -2,6 +2,7 @@ package cc.rccstudios.map
 
 import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -15,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.data.service.TelemetryService
 import cc.rccstudios.map.domain.model.UpdateStatus
@@ -75,14 +77,25 @@ class MainActivity : ComponentActivity() {
                 }
 
                 LaunchedEffect(state.token) {
-                    val intent = Intent(applicationContext, TelemetryService::class.java)
-                    if (!state.token.isNullOrBlank()) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            startForegroundService(intent)
+                    val token = state.token
+                    if (!token.isNullOrBlank()) {
+                        val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            ContextCompat.checkSelfPermission(
+                                this@MainActivity,
+                                Manifest.permission.POST_NOTIFICATIONS
+                            ) == PackageManager.PERMISSION_GRANTED
                         } else {
-                            startService(intent)
+                            true
+                        }
+
+                        if (hasNotificationPermission) {
+                            val intent = Intent(this@MainActivity, TelemetryService::class.java).apply {
+                                action = TelemetryService.ACTION_START
+                            }
+                            ContextCompat.startForegroundService(this@MainActivity, intent)
                         }
                     } else {
+                        val intent = Intent(this@MainActivity, TelemetryService::class.java)
                         stopService(intent)
                     }
                 }
