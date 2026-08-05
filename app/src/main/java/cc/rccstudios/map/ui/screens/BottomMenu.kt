@@ -76,7 +76,8 @@ fun AppNavHost(
                     )
                     Destination.MAP -> MapScreen(
                         viewModel = viewModel,
-                        mapUrl = state.serverUrl
+                        mapUrl = state.serverUrl,
+                        modifier = modifier
                     )
                     Destination.SETTINGS -> SettingsScreen(
                         viewModel = viewModel,
