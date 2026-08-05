@@ -294,7 +294,8 @@ fun SettingSlider(
         Slider(
             value = sliderValue,
             onValueChange = { newValue ->
-                sliderValue = newValue
+                val step = 5f
+                sliderValue = (kotlin.math.round(newValue / step) * step).coerceIn(5f, 300f)
             },
             onValueChangeFinished = {
                 val updatedIntervalMs = sliderValue.roundToLong() * 1000L
@@ -380,68 +381,14 @@ fun SettingButton(
     }
 }
 
-//@Composable
-//fun SettingExternalLink(
-//    text: String,
-//    link: String,
-//    icon: ImageVector,
-//    uriHandler: UriHandler,
-//    description: String?,
-//    modifier: Modifier = Modifier
-//) {
-//    Card(
-//        onClick = { uriHandler.openUri(link) },
-//        shape = RoundedCornerShape(12.dp),
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.surfaceVariant
-//        ),
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .padding(horizontal = 16.dp, vertical = 8.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//        ) {
-//            Column(
-//                modifier = Modifier
-//                    .weight(1f)
-//                    .padding(end = 16.dp)
-//            ) {
-//                Text(
-//                    text = text,
-//                    textAlign = TextAlign.Left,
-//                    style = MaterialTheme.typography.titleLarge
-//                )
-//                if (!description.isNullOrBlank()) {
-//                    Text(
-//                        text = description,
-//                        textAlign = TextAlign.Left,
-//                        style = MaterialTheme.typography.titleMedium
-//                    )
-//                }
-//            }
-//
-//            Icon(
-//                imageVector = icon,
-//                contentDescription = text,
-//                modifier = Modifier.size(40.dp)
-//            )
-//        }
-//    }
-//}
-
 @Composable
 fun SettingButton(
     text: String,
     onClick: () -> Unit,
     icon: ImageVector,
     enabled: Boolean? = null,
-    description: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    description: String? = null
 ) {
     Card(
         onClick = onClick,
