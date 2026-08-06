@@ -41,10 +41,6 @@ fun MapScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val isDarkTheme = isSystemInDarkTheme()
 
-//    LaunchedEffect(Unit) {
-//        viewModel.getOtp()
-//    }
-
     if (mapUrl.isBlank()) {
         Column(
             modifier = Modifier

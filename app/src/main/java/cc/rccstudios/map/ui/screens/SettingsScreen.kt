@@ -386,8 +386,8 @@ fun SettingButton(
     text: String,
     onClick: () -> Unit,
     icon: ImageVector,
-    enabled: Boolean? = null,
     modifier: Modifier = Modifier,
+    enabled: Boolean? = null,
     description: String? = null
 ) {
     Card(
