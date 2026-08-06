@@ -17,8 +17,8 @@ class UserRepositoryImpl (
                 val body = response.body()
                 if (body != null) {
                     settingsRepository.saveUsername(body.username)
-                    settingsRepository.saveAvatarPath(body.avatarPath)
-                    settingsRepository.saveTelegram(body.telegram)
+                    if (!body.avatarPath.isNullOrBlank()) settingsRepository.saveAvatarPath(body.avatarPath)
+                    if (!body.telegram.isNullOrBlank()) settingsRepository.saveTelegram(body.telegram)
                     Result.success(Unit)
                 } else {
                     Result.failure(Exception("Received null from server"))

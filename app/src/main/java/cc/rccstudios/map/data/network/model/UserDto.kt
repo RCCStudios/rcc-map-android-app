@@ -9,9 +9,9 @@ data class GetUserResponseDto(
     @SerialName("username")
     val username: String,
     @SerialName("avatarPath")
-    val avatarPath: String,
+    val avatarPath: String?,
     @SerialName("telegram")
-    val telegram: String
+    val telegram: String?
 )
 
 @Serializable
