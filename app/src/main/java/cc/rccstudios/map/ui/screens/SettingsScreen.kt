@@ -1,5 +1,6 @@
 package cc.rccstudios.map.ui.screens
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Approval
+import androidx.compose.material.icons.filled.HighlightOff
+import androidx.compose.material.icons.filled.PowerOff
+import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +45,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,8 +70,43 @@ fun SettingsScreen(
         modifier = modifier
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.Start
     ) {
         Spacer(modifier = Modifier.size(8.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp
+                )
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp
+                ),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SettingButton(
+                isEnabled = state.isTelemetryEnabled,
+                onToggle = { viewModel.onTelemetryEnabledChange(it) },
+                enabledIcon = Icons.Default.PowerSettingsNew,
+                disabledIcon = Icons.Default.HighlightOff
+            )
+
+            Text(
+                text = if (state.isTelemetryEnabled) {
+                    stringResource(R.string.telemetry_active)
+                } else {
+                    stringResource(R.string.telemetry_disabled)
+                },
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center
+            )
+        }
 
         SettingSwitch(
             text = stringResource(R.string.battery_tracking),
@@ -436,5 +478,51 @@ fun SettingButton(
                 modifier = Modifier.size(40.dp)
             )
         }
+    }
+}
+
+@Composable
+fun SettingButton(
+    isEnabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+    enabledIcon: ImageVector,
+    disabledIcon: ImageVector,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isEnabled) {
+            MaterialTheme.colorScheme.primaryContainer
+        } else {
+            MaterialTheme.colorScheme.errorContainer
+        },
+        label = "TelemetryButtonBackground"
+    )
+
+    val contentColor by animateColorAsState(
+        targetValue = if (isEnabled) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+        } else {
+            MaterialTheme.colorScheme.onErrorContainer
+        },
+        label = "TelemetryButtonContent"
+    )
+
+    Surface(
+        onClick = { onToggle(!isEnabled) },
+        shape = CircleShape,
+        color = backgroundColor,
+        contentColor = contentColor,
+        shadowElevation = 6.dp,
+        modifier = modifier
+            .size(160.dp)
+            .padding(8.dp)
+    ) {
+        Icon(
+            imageVector = if (isEnabled) enabledIcon else disabledIcon,
+            contentDescription = null,
+            modifier = Modifier
+                .size(48.dp)
+                .padding(8.dp)
+        )
     }
 }
