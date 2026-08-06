@@ -112,9 +112,18 @@ class MainViewModel(
                 settingsRepository.networkTrackingEnabledFlow,
                 settingsRepository.screenLockTrackingEnabledFlow
             ) { telemetry, battery, location, network, screenLock ->
+                val allDisabled = !battery && !location && !network && !screenLock
+                val effectiveTelemetry = if (allDisabled) false else telemetry
+
+                if (allDisabled && telemetry) {
+                    viewModelScope.launch {
+                        settingsRepository.saveTelemetryEnabled(false)
+                    }
+                }
+
                 _uiState.update {
                     it.copy(
-                        isTelemetryEnabled = telemetry,
+                        isTelemetryEnabled = effectiveTelemetry,
                         isBatteryTrackingEnabled = battery,
                         isLocationTrackingEnabled = location,
                         isNetworkTrackingEnabled = network,
@@ -190,7 +199,23 @@ class MainViewModel(
     }
 
     fun onTelemetryEnabledChange(enabled: Boolean) {
-        viewModelScope.launch { settingsRepository.saveTelemetryEnabled(enabled) }
+        viewModelScope.launch {
+            if (enabled) {
+                val state = _uiState.value
+                val allDisabled = !state.isBatteryTrackingEnabled &&
+                        !state.isLocationTrackingEnabled &&
+                        !state.isNetworkTrackingEnabled &&
+                        !state.isScreenLockTrackingEnabled
+
+                if (allDisabled) {
+                    settingsRepository.saveBatteryTrackingEnabled(true)
+                    settingsRepository.saveLocationTrackingEnabled(true)
+                    settingsRepository.saveNetworkTrackingEnabled(true)
+                    settingsRepository.saveScreenLockTrackingEnabled(true)
+                }
+            }
+            settingsRepository.saveTelemetryEnabled(enabled)
+        }
     }
 
     fun onBatteryTrackingChange(enabled: Boolean) {
