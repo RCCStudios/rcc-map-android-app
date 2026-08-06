@@ -163,7 +163,7 @@ val appModule = module {
 
     factory { CheckUpdatesUseCase(updateRepository = get()) }
 
-    factory { LoginUseCase(authRepository = get(), userRepository = get()) }
+    factory { LoginUseCase(getTokenUseCase = get(), userRepository = get()) }
 
     viewModel {
         MainViewModel(
