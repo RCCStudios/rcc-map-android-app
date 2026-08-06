@@ -9,6 +9,7 @@ import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
+import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -48,6 +49,7 @@ class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val registerUseCase: RegisterUseCase,
     private val getTokenUseCase: GetTokenUseCase,
+    private val loginUseCase: LoginUseCase,
     private val getOtpUseCase: GetOtpUseCase,
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase,
     private val checkUpdatesUseCase: CheckUpdatesUseCase
@@ -224,7 +226,7 @@ class MainViewModel(
     fun login() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, logMessage = "") }
-            val result = getTokenUseCase()
+            val result = loginUseCase()
             if (result.isSuccess) {
                 _uiState.update {
                     it.copy(

@@ -4,10 +4,10 @@ import cc.rccstudios.map.domain.model.Telemetry
 import cc.rccstudios.map.domain.repository.TelemetryRepository
 
 class CollectAndSendTelemetryUseCase(
-    private val repository: TelemetryRepository
+    private val telemetryRepository: TelemetryRepository
 ) {
     suspend operator fun invoke(): Result<Telemetry> {
-        val telemetry = repository.collectTelemetry()
-        return repository.sendTelemetry(telemetry).map { telemetry }
+        val telemetry = telemetryRepository.collectTelemetry()
+        return telemetryRepository.sendTelemetry(telemetry).map { telemetry }
     }
 }

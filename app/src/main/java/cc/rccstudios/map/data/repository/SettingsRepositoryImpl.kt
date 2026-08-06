@@ -22,6 +22,7 @@ class SettingsRepositoryImpl(
         val SERVER_URL = stringPreferencesKey("server_url")
         val AUTH_MODE = intPreferencesKey("auth_mode")
         val AVATAR_PATH = stringPreferencesKey("avatar_path")
+        val TELEGRAM = stringPreferencesKey("telegram")
         val BATTERY_TRACKER_ENABLED = booleanPreferencesKey("battery_tracker_enabled")
         val LOCATION_TRACKER_ENABLED = booleanPreferencesKey("location_tracker_enabled")
         val NETWORK_TRACKER_ENABLED = booleanPreferencesKey("network_tracker_enabled")
@@ -35,6 +36,7 @@ class SettingsRepositoryImpl(
     override val serverUrlFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.SERVER_URL] }
     override val authModeFlow: Flow<Int?> = dataStore.data.map { it[PreferencesKeys.AUTH_MODE] }
     override val avatarPathFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.AVATAR_PATH] }
+    override val telegramFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.TELEGRAM] }
 
     override val batteryTrackingEnabledFlow: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.BATTERY_TRACKER_ENABLED] ?: true }
     override val locationTrackingEnabledFlow: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.LOCATION_TRACKER_ENABLED] ?: true }
@@ -67,6 +69,10 @@ class SettingsRepositoryImpl(
         dataStore.edit { preferences -> preferences[PreferencesKeys.AVATAR_PATH] = avatarPath }
     }
 
+    override suspend fun saveTelegram(telegram: String) {
+        dataStore.edit { preferences -> preferences[PreferencesKeys.TELEGRAM] = telegram }
+    }
+
     override suspend fun saveBatteryTrackingEnabled(enabled: Boolean) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.BATTERY_TRACKER_ENABLED] = enabled }
     }
@@ -93,6 +99,7 @@ class SettingsRepositoryImpl(
     override suspend fun getServerUrl(): String? = serverUrlFlow.first()
     override suspend fun getAuthMode(): Int? = authModeFlow.first()
     override suspend fun getAvatarPath(): String? = avatarPathFlow.first()
+    override suspend fun getTelegram(): String? = telegramFlow.first()
     override suspend fun getBatteryTrackingEnabled(): Boolean = batteryTrackingEnabledFlow.first()
     override suspend fun getLocationTrackingEnabled(): Boolean = locationTrackingEnabledFlow.first()
     override suspend fun getNetworkTrackingEnabled(): Boolean = networkTrackingEnabledFlow.first()

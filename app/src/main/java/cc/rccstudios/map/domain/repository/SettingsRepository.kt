@@ -9,6 +9,7 @@ interface SettingsRepository {
     val serverUrlFlow: Flow<String?>
     val authModeFlow: Flow<Int?>
     val avatarPathFlow: Flow<String?>
+    val telegramFlow: Flow<String?>
     val batteryTrackingEnabledFlow: Flow<Boolean>
     val locationTrackingEnabledFlow: Flow<Boolean>
     val networkTrackingEnabledFlow: Flow<Boolean>
@@ -21,6 +22,7 @@ interface SettingsRepository {
     suspend fun saveServerUrl(url: String)
     suspend fun saveAuthMode(authMode: Int)
     suspend fun saveAvatarPath(avatarPath: String)
+    suspend fun saveTelegram(telegram: String)
     suspend fun saveBatteryTrackingEnabled(enabled: Boolean)
     suspend fun saveLocationTrackingEnabled(enabled: Boolean)
     suspend fun saveNetworkTrackingEnabled(enabled: Boolean)
@@ -33,6 +35,7 @@ interface SettingsRepository {
     suspend fun getServerUrl(): String?
     suspend fun getAuthMode(): Int?
     suspend fun getAvatarPath(): String?
+    suspend fun getTelegram(): String?
     suspend fun getBatteryTrackingEnabled(): Boolean
     suspend fun getLocationTrackingEnabled(): Boolean
     suspend fun getNetworkTrackingEnabled(): Boolean

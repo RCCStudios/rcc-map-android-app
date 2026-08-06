@@ -21,11 +21,14 @@ import retrofit2.Retrofit
 import androidx.datastore.preferences.preferencesDataStore
 import cc.rccstudios.map.data.repository.AuthRepositoryImpl
 import cc.rccstudios.map.data.repository.UpdateRepositoryImpl
+import cc.rccstudios.map.data.repository.UserRepositoryImpl
 import cc.rccstudios.map.domain.repository.AuthRepository
 import cc.rccstudios.map.domain.repository.UpdateRepository
+import cc.rccstudios.map.domain.repository.UserRepository
 import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
+import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
@@ -44,7 +47,7 @@ val appModule = module {
 
     single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
 
-    single<AuthRepository> { AuthRepositoryImpl(get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(apiService = get(), get()) }
 
     single<TelemetryRepository> {
         TelemetryRepositoryImpl(
@@ -58,6 +61,8 @@ val appModule = module {
     }
 
     single<UpdateRepository> { UpdateRepositoryImpl(apiService = get()) }
+
+    single<UserRepository> { UserRepositoryImpl(apiService = get(), settingsRepository = get()) }
 
 
     single<BatteryTracker> { BatteryTrackerImpl(context = androidContext()) }
@@ -148,7 +153,7 @@ val appModule = module {
 
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 
-    factory { CollectAndSendTelemetryUseCase(repository = get()) }
+    factory { CollectAndSendTelemetryUseCase(telemetryRepository = get()) }
 
     factory { RegisterUseCase(authRepository = get()) }
 
@@ -158,12 +163,15 @@ val appModule = module {
 
     factory { CheckUpdatesUseCase(updateRepository = get()) }
 
+    factory { LoginUseCase(authRepository = get(), userRepository = get()) }
+
     viewModel {
         MainViewModel(
             settingsRepository = get(),
             collectAndSendTelemetryUseCase = get(),
             registerUseCase = get(),
             getTokenUseCase = get(),
+            loginUseCase = get(),
             getOtpUseCase = get(),
             checkUpdatesUseCase = get()
         )
