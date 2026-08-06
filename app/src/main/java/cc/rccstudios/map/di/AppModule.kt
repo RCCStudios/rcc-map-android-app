@@ -153,7 +153,7 @@ val appModule = module {
 
     single { get<Retrofit>().create(cc.rccstudios.map.data.network.ApiService::class.java) }
 
-    factory { CollectAndSendTelemetryUseCase(telemetryRepository = get()) }
+    factory { CollectAndSendTelemetryUseCase(settingsRepository = get(), telemetryRepository = get()) }
 
     factory { RegisterUseCase(authRepository = get()) }
 

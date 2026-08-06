@@ -20,6 +20,10 @@ class TelemetryRepositoryImpl(
     private val screenLockTracker: ScreenLockTracker
 ) : TelemetryRepository {
     override suspend fun sendTelemetry(telemetry: Telemetry): Result<Unit> {
+//        if (!(settingsRepository.getTelemetryEnabled() ?: true)) {
+//            return Result.success(Unit)
+//        }
+
         return try {
             val response = apiService.sendTelemetry(telemetry.toDto())
 

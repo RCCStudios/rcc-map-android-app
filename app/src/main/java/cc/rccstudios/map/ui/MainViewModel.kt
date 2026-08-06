@@ -34,6 +34,7 @@ data class UiState(
     val otp: String? = null,
     val authMode: AuthMode = AuthMode.REGISTER,
     val avatarPath: String = "",
+    val isTelemetryEnabled: Boolean = true,
     val isBatteryTrackingEnabled: Boolean = true,
     val isLocationTrackingEnabled: Boolean = true,
     val isNetworkTrackingEnabled: Boolean = true,
@@ -105,22 +106,28 @@ class MainViewModel(
 
         viewModelScope.launch {
             combine(
+                settingsRepository.telemetryEnabledFlow,
                 settingsRepository.batteryTrackingEnabledFlow,
                 settingsRepository.locationTrackingEnabledFlow,
                 settingsRepository.networkTrackingEnabledFlow,
-                settingsRepository.screenLockTrackingEnabledFlow,
-                settingsRepository.telemetryIntervalFlow
-            ) { battery, location, network, screenLock, interval ->
+                settingsRepository.screenLockTrackingEnabledFlow
+            ) { telemetry, battery, location, network, screenLock ->
                 _uiState.update {
                     it.copy(
+                        isTelemetryEnabled = telemetry,
                         isBatteryTrackingEnabled = battery,
                         isLocationTrackingEnabled = location,
                         isNetworkTrackingEnabled = network,
-                        isScreenLockTrackingEnabled = screenLock,
-                        telemetryInterval = interval
+                        isScreenLockTrackingEnabled = screenLock
                     )
                 }
             }.collect()
+        }
+
+        viewModelScope.launch {
+            settingsRepository.telemetryIntervalFlow.collect { interval ->
+                _uiState.update { it.copy(telemetryInterval = interval) }
+            }
         }
     }
 
@@ -180,6 +187,10 @@ class MainViewModel(
     fun onTelemetryIntervalChange(interval: Long) {
         _uiState.update { it.copy(telemetryInterval = interval) }
         intervalInputFlow.tryEmit(interval)
+    }
+
+    fun onTelemetryEnabledChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveTelemetryEnabled(enabled) }
     }
 
     fun onBatteryTrackingChange(enabled: Boolean) {
@@ -296,6 +307,11 @@ class MainViewModel(
     }
 
     fun sendTelemetry() {
+        if (!_uiState.value.isTelemetryEnabled) {
+            _uiState.update { it.copy(logMessage = "Telemetry is disabled") }
+            return
+        }
+
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, logMessage = "Sending telemetry") }
             val result = collectAndSendTelemetryUseCase()

@@ -45,8 +45,10 @@
     <string name="update_download">Download</string>
     <string name="update_later">Later</string>
     <!-- Notification -->
-    <string name="telemetry_status_active">Telemetry collection is carried out in real time. Expand for more data 🔽</string>
-    <string name="telemetry_status_error">Error while collecting telemetry</string>
+    <string name="telemetry_active_notification">Telemetry collection is carried out in real time. Expand for more data 🔽</string>
+    <string name="telemetry_active">Telemetry collection is active</string>
+    <string name="telemetry_error">Error while collecting telemetry</string>
+    <string name="telemetry_disabled">Telemetry collection is disabled</string>
     <!-- Other -->
     <string name="copy_button">Copy</string>
     <string name="refresh_button">Refresh</string>

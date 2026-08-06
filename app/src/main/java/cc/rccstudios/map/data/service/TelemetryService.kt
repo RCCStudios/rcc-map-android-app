@@ -52,7 +52,7 @@ class TelemetryService : Service(), KoinComponent {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForeground(
             NOTIFICATION_ID,
-            buildNotification(getString(R.string.telemetry_status_active))
+            buildNotification(getString(R.string.telemetry_active_notification))
         )
 
         when (intent?.action) {
@@ -84,7 +84,7 @@ class TelemetryService : Service(), KoinComponent {
                 try {
                     val result = collectAndSendTelemetryUseCase()
                     result.onSuccess { telemetry ->
-                        val shortText = getString(R.string.telemetry_status_active)
+                        val shortText = getString(R.string.telemetry_active_notification)
                         val batteryText = telemetry.batteryStatus?.let { "\uD83D\uDD0B ${getString(R.string.battery)}: $it%" } ?: "N/A"
                         val locationText = if (telemetry.latitude != null && telemetry.longitude != null) {
                             "\uD83C\uDF0D ${getString(R.string.location)}: %.4f, %.4f".format(telemetry.latitude, telemetry.longitude)
@@ -117,7 +117,7 @@ class TelemetryService : Service(), KoinComponent {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    updateNotification(getString(R.string.telemetry_status_error))
+                    updateNotification(getString(R.string.telemetry_error))
                 }
                 delay(currentInterval)
             }

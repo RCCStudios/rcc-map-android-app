@@ -33,7 +33,9 @@
     <string name="token">Токен</string>
     <string name="already_have_account">Уже есть аккаунт?</string>
     <string name="update_later">Позже</string>
-    <string name="telemetry_status_error">Ошибка во время сбора телеметрии</string>
+    <string name="telemetry_active">Сбор телеметрии активен</string>
+    <string name="telemetry_error">Ошибка во время сбора телеметрии</string>
+    <string name="telemetry_disabled">Сбор телеметрии неактивен</string>
     <string name="copy_button">Скопировать</string>
     <string name="refresh_button">Обновить</string>
     <string name="update_button">Проверить наличие обновлений</string>
@@ -42,7 +44,7 @@
     <string name="update_default_changelog">Не найдено информации о нововведениях!</string>
     <string name="update_download">Скачать</string>
     <string name="stop_button">Остановить</string>
-    <string name="telemetry_status_active">Телеметрия собирается в реальном времени. Разверните для большей информации 🔽</string>
+    <string name="telemetry_active_notification">Телеметрия собирается в реальном времени. Разверните для большей информации 🔽</string>
     <string name="cellular">Мобильный</string>
     <string name="network">Сеть</string>
     <string name="screen_lock">Блокировка экрана</string>
