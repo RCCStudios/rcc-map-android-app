@@ -16,7 +16,7 @@
     <string name="screen_lock_tracking">Отслеживание блокировки экрана</string>
     <string name="telemetry_interval">Интервал отправки телеметрии</string>
     <string name="server_url">Адрес сервера</string>
-    <string name="server_url_placeholder">например, api.rccstudios.cc/map/</string>
+    <string name="server_url_placeholder">например, map.rccstudios.cc</string>
     <string name="log_out_button">Выйти</string>
     <string name="username">Имя пользователя</string>
     <string name="username_placeholder">например, Иван Петров</string>

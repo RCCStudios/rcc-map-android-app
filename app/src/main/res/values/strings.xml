@@ -12,7 +12,7 @@
     <string name="screen_lock_tracking">Screen lock tracking</string>
     <string name="telemetry_interval">Telemetry interval</string>
     <string name="server_url">Server URL</string>
-    <string name="server_url_placeholder">e.g. api.rccstudios.cc/map/</string>
+    <string name="server_url_placeholder">e.g. map.rccstudios.cc</string>
     <string name="send_telemetry_button">Send telemetry</string>
     <string name="logcat" translatable="false">Logcat</string>
     <string name="logcat_empty">Empty</string>
