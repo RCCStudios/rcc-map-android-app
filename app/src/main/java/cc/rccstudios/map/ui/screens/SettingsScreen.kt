@@ -272,7 +272,8 @@ fun SettingSlider(
             Text(
                 text = text,
                 textAlign = TextAlign.Left,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
             )
 
             val seconds = sliderValue.toInt()
@@ -285,7 +286,9 @@ fun SettingSlider(
             Text(
                 text = timeText,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 8.dp),
+                textAlign = TextAlign.End
             )
         }
 
