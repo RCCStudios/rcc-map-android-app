@@ -111,32 +111,37 @@ fun SettingsScreen(
         SettingSwitch(
             text = stringResource(R.string.battery_tracking),
             checked = state.isBatteryTrackingEnabled,
-            onCheckedChange = { viewModel.onBatteryTrackingChange(it) }
+            onCheckedChange = { viewModel.onBatteryTrackingChange(it) },
+            enabled = state.isTelemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.location_tracking),
             checked = state.isLocationTrackingEnabled,
-            onCheckedChange = { viewModel.onLocationTrackingChange(it) }
+            onCheckedChange = { viewModel.onLocationTrackingChange(it) },
+            enabled = state.isTelemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.network_tracking),
             checked = state.isNetworkTrackingEnabled,
             onCheckedChange = { viewModel.onNetworkTrackingChange(it) },
-            description = stringResource(R.string.network_tracking_desc)
+            description = stringResource(R.string.network_tracking_desc),
+            enabled = state.isTelemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.screen_lock_tracking),
             checked = state.isScreenLockTrackingEnabled,
-            onCheckedChange = { viewModel.onScreenLockTrackingChange(it) }
+            onCheckedChange = { viewModel.onScreenLockTrackingChange(it) },
+            enabled = state.isTelemetryEnabled
         )
 
         SettingSlider(
             text = stringResource(R.string.telemetry_interval),
             valueMs = state.telemetryInterval,
-            onValueChange = { viewModel.onTelemetryIntervalChange(it) }
+            onValueChange = { viewModel.onTelemetryIntervalChange(it) },
+            enabled = state.isTelemetryEnabled
         )
 
         HorizontalDivider(
@@ -238,6 +243,7 @@ fun SettingSwitch(
     text: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier,
     description: String? = null
 ) {
@@ -276,7 +282,8 @@ fun SettingSwitch(
 
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            enabled = enabled
         )
     }
 }
@@ -286,6 +293,7 @@ fun SettingSlider(
     text: String,
     valueMs: Long,
     onValueChange: (Long) -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     var sliderValue by remember(valueMs) {
@@ -346,7 +354,8 @@ fun SettingSlider(
                 val updatedIntervalMs = sliderValue.roundToLong() * 1000L
                 onValueChange(updatedIntervalMs)
             },
-            valueRange = 5f..300f
+            valueRange = 5f..300f,
+            enabled = enabled
         )
     }
 }
