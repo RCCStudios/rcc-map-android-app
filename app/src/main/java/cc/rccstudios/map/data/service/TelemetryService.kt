@@ -40,6 +40,7 @@ class TelemetryService : Service(), KoinComponent {
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_STOP_NOTIFICATION = "ACTION_STOP_NOTIFICATION"
         const val ACTION_UPDATE_INTERVAL = "ACTION_UPDATE_INTERVAL"
         const val EXTRA_INTERVAL = "EXTRA_INTERVAL"
         const val CHANNEL_ID = "telemetry_channel"
@@ -59,6 +60,11 @@ class TelemetryService : Service(), KoinComponent {
 
         when (intent?.action) {
             ACTION_STOP -> {
+                stopTelemetry()
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_STOP_NOTIFICATION -> {
                 stopTelemetry()
                 serviceScope.launch {
                     settingsRepository.saveTelemetryEnabled(false)
@@ -163,7 +169,7 @@ class TelemetryService : Service(), KoinComponent {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val stopIntent = Intent(this, TelemetryService::class.java).apply {
-            action = ACTION_STOP
+            action = ACTION_STOP_NOTIFICATION
         }
         val stopPendingIntent = PendingIntent.getService(
             this, 1, stopIntent,
