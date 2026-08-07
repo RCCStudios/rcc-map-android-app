@@ -49,6 +49,7 @@ import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.R
 import cc.rccstudios.map.ui.AuthMode
 import cc.rccstudios.map.ui.UiState
+import cc.rccstudios.map.utils.toNormalizedUrl
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -388,27 +389,37 @@ fun ProfileScreen(
 
         if (state.avatarPath.isNotBlank()) {
             AsyncImage(
-                model = state.avatarPath,
+                model = "${state.serverUrl.toNormalizedUrl()}${state.avatarPath}",
                 contentDescription = stringResource(R.string.avatar_desc),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(192.dp)
                     .clip(CircleShape)
-                    .border(BorderStroke(1.dp, Color.Black))
-                    .background(Color.White)
+                    .background(Color.White, CircleShape)
+                    .border(
+                        BorderStroke(
+                            4.dp,
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        ), CircleShape
+                    )
             )
         } else {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(192.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .border(1.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    .background(Color.White, CircleShape)
+                    .border(
+                        BorderStroke(
+                            4.dp,
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        ), CircleShape
+                    )
             ) {
                 Text(
                     text = state.username.firstOrNull()?.uppercase() ?: "?",
-                    style = MaterialTheme.typography.displayMedium,
+                    style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -420,12 +431,12 @@ fun ProfileScreen(
 
         Text(
             text = state.username.ifBlank { "User" },
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.displaySmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(16.dp))
+        Spacer(modifier = Modifier.size(12.dp))
 
         Column(
             modifier = Modifier
