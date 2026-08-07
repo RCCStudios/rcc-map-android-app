@@ -1,0 +1,33 @@
+changelog:
+  categories:
+    - title: "Features"
+      labels:
+        - "enhancement"
+        - "feature"
+      title_template: "feat*"
+
+    - title: "Bug fixes (🐛)"
+      labels:
+        - "bug"
+        - "fix"
+      title_template: "fix*"
+
+    - title: "Chore & maintenance"
+      labels:
+        - "chore"
+        - "dependencies"
+      title_template: "chore*"
+
+    - title: "Performance"
+      title_template: "perf*"
+
+    - title: "Docs"
+      title_template: "docs*"
+
+  exclude:
+    labels:
+      - "skip-changelog"
+    authors:
+      - "dependabot[bot]"
+
+  format: "- $title (@$author) in $fullname"
