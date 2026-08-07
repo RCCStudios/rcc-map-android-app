@@ -12,6 +12,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.MainActivity
 import cc.rccstudios.map.R
+import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ import org.koin.core.component.inject
 
 class TelemetryService : Service(), KoinComponent {
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase by inject()
+    private val settingsRepository: SettingsRepository by inject()
 
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var telemetryJob: Job? = null
@@ -58,6 +60,9 @@ class TelemetryService : Service(), KoinComponent {
         when (intent?.action) {
             ACTION_STOP -> {
                 stopTelemetry()
+                serviceScope.launch {
+                    settingsRepository.saveTelemetryEnabled(false)
+                }
                 stopSelf()
                 return START_NOT_STICKY
             }
