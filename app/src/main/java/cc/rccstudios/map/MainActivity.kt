@@ -76,8 +76,14 @@ class MainActivity : ComponentActivity() {
                     permissionsLauncher.launch(permissions.toTypedArray())
                 }
 
-                LaunchedEffect(state.token) {
-                    if (!state.token.isNullOrBlank()) {
+                LaunchedEffect(
+                    state.token,
+                    state.isTelemetryEnabled,
+                    state.telemetryInterval
+                ) {
+                    val shouldRunService = !state.token.isNullOrBlank() && state.isTelemetryEnabled
+
+                    if (shouldRunService) {
                         val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             ContextCompat.checkSelfPermission(
                                 this@MainActivity,
@@ -93,16 +99,8 @@ class MainActivity : ComponentActivity() {
                             ContextCompat.startForegroundService(this@MainActivity, intent)
                         }
                     } else {
-                        val intent = Intent(this@MainActivity, TelemetryService::class.java)
-                        stopService(intent)
-                    }
-                }
-
-                LaunchedEffect(state.telemetryInterval) {
-                    if (!state.token.isNullOrBlank()) {
                         val intent = Intent(this@MainActivity, TelemetryService::class.java).apply {
-                            action = TelemetryService.ACTION_UPDATE_INTERVAL
-                            putExtra(TelemetryService.EXTRA_INTERVAL, state.telemetryInterval)
+                            action = TelemetryService.ACTION_STOP
                         }
                         startService(intent)
                     }

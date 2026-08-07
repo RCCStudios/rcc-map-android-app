@@ -131,7 +131,13 @@ class TelemetryService : Service(), KoinComponent {
 
     private fun stopTelemetry() {
         telemetryJob?.cancel()
-        stopForeground(STOP_FOREGROUND_REMOVE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        } else {
+            @Suppress("DEPRECATION")
+            stopForeground(true)
+        }
+        notificationManager.cancel(NOTIFICATION_ID)
         stopSelf()
     }
 
@@ -199,6 +205,7 @@ class TelemetryService : Service(), KoinComponent {
 
     override fun onDestroy() {
         telemetryJob?.cancel()
+        notificationManager.cancel(NOTIFICATION_ID)
         super.onDestroy()
     }
 
