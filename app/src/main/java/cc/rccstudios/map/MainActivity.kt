@@ -106,12 +106,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-//                LaunchedEffect(state.logMessage) {
-//                    if (state.logMessage.isNotBlank()) {
-//                        Toast.makeText(applicationContext, state.logMessage, Toast.LENGTH_SHORT).show()
-//                    }
-//                }
-
                 val updateInfo = state.updateInfo
                 if (updateInfo is UpdateStatus.NewVersionAvailable) {
                     UpdateDialog(
