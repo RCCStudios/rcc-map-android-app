@@ -196,6 +196,7 @@ fun SettingsScreen(
 
         val isSendTelemetryButtonEnabled = !state.token.isNullOrBlank() &&
                 state.serverUrl.isNotBlank() &&
+                state.isTelemetryEnabled &&
                 !state.isLoading
 
         SettingButton(
