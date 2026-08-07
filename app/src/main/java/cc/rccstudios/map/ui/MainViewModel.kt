@@ -34,6 +34,7 @@ data class UiState(
     val otp: String? = null,
     val authMode: AuthMode = AuthMode.REGISTER,
     val avatarPath: String = "",
+    val telegram: String = "",
     val isTelemetryEnabled: Boolean = true,
     val isBatteryTrackingEnabled: Boolean = true,
     val isLocationTrackingEnabled: Boolean = true,
@@ -101,6 +102,11 @@ class MainViewModel(
         viewModelScope.launch {
             settingsRepository.avatarPathFlow.collect { path ->
                 if (path != null) _uiState.update { it.copy(avatarPath = path) }
+            }
+        }
+        viewModelScope.launch {
+            settingsRepository.telegramFlow.collect { telegram ->
+                if (telegram != null) _uiState.update { it.copy(telegram = telegram) }
             }
         }
 

@@ -39,6 +39,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +64,7 @@ fun AccountScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val authMode = state.authMode
+    val uriHandler = LocalUriHandler.current
 
     LaunchedEffect(Unit) {
         viewModel.getOtp()
@@ -82,6 +85,7 @@ fun AccountScreen(
             viewModel = viewModel,
             scope = scope,
             state = state,
+            uriHandler = uriHandler,
             modifier = modifier
         )
     }
@@ -376,6 +380,7 @@ fun ProfileScreen(
     viewModel: MainViewModel,
     scope: CoroutineScope,
     state: UiState,
+    uriHandler: UriHandler,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -436,7 +441,10 @@ fun ProfileScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.size(12.dp))
+        AuthTextButton(
+            text = "@${state.telegram}",
+            onClick = { uriHandler.openUri("tg://resolve?domain=${state.telegram}") }
+        )
 
         Column(
             modifier = Modifier
@@ -448,8 +456,8 @@ fun ProfileScreen(
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(
-                    horizontal = 32.dp,
-                    vertical = 24.dp
+                    horizontal = 24.dp,
+                    vertical = 18.dp
                 )
         ) {
             Row(
