@@ -39,11 +39,10 @@ fun MapScreen(
     modifier: Modifier = Modifier
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val isDarkTheme = isSystemInDarkTheme()
 
     if (mapUrl.isBlank()) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .padding(16.dp),
@@ -62,6 +61,7 @@ fun MapScreen(
             )
         }
     } else {
+        val isDarkTheme = isSystemInDarkTheme()
         val finalUrl = remember(mapUrl, state.token, isDarkTheme) {
             if (mapUrl.isBlank()) return@remember ""
 
@@ -77,9 +77,7 @@ fun MapScreen(
         }
 
         AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding(),
+            modifier = modifier.fillMaxSize(),
             factory = { context ->
                 WebView(context).apply {
                     layoutParams = ViewGroup.LayoutParams(
