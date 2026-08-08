@@ -11,7 +11,7 @@
     <string name="register_title">Добро пожаловать в RCC Map!</string>
     <string name="register_button">Зарегистрироваться</string>
     <string name="log_in_button">Войти</string>
-    <string name="otp">Одноразовый пароль</string>
+    <string name="otp">Одноразовый пароль (OTP)</string>
     <string name="otp_placeholder">например, a1b2c3d4</string>
     <string name="screen_lock_tracking">Отслеживание блокировки экрана</string>
     <string name="telemetry_interval">Интервал отправки телеметрии</string>
