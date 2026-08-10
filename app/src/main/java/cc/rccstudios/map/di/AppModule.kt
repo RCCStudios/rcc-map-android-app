@@ -28,6 +28,7 @@ import cc.rccstudios.map.domain.repository.UserRepository
 import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
+import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
@@ -162,9 +163,11 @@ val appModule = module {
 
     factory { GetTokenUseCase(authRepository = get()) }
 
+    factory { GetUserUseCase(userRepository = get()) }
+
     factory { CheckUpdatesUseCase(updateRepository = get()) }
 
-    factory { LoginUseCase(getTokenUseCase = get(), userRepository = get()) }
+    factory { LoginUseCase(getTokenUseCase = get(), getUserUseCase = get()) }
 
     factory { UpdateUserUseCase(userRepository = get()) }
 
@@ -176,7 +179,8 @@ val appModule = module {
             loginUseCase = get(),
             getOtpUseCase = get(),
             checkUpdatesUseCase = get(),
-            updateUserUseCase = get()
+            updateUserUseCase = get(),
+            getUserUseCase = get()
         )
     }
 }

@@ -11,6 +11,7 @@ import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
+import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
 import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
@@ -58,6 +59,7 @@ class MainViewModel(
     private val loginUseCase: LoginUseCase,
     private val getOtpUseCase: GetOtpUseCase,
     private val updateUserUseCase: UpdateUserUseCase,
+    private val getUserUseCase: GetUserUseCase,
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase,
     private val checkUpdatesUseCase: CheckUpdatesUseCase
 ) : ViewModel() {
@@ -277,11 +279,21 @@ class MainViewModel(
                 telegram = _uiState.value.telegram
             )
             if (result.isSuccess) {
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        logMessage = "Updated user successfully"
-                    )
+                val getUserResult = getUserUseCase()
+                if (getUserResult.isSuccess) {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            logMessage = "Updated user successfully"
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            logMessage = "Updated user successfully, error while getting user: ${result.exceptionOrNull()?.message}"
+                        )
+                    }
                 }
             } else {
                 _uiState.update {
