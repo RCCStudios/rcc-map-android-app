@@ -3,6 +3,7 @@ package cc.rccstudios.map.ui.screens
 import android.content.ClipData
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -400,31 +402,58 @@ fun ProfileScreen(
     uriHandler: UriHandler,
     modifier: Modifier = Modifier
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.updateUser(context, it) }
+    }
+    val clipboardManager = LocalClipboard.current
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
-        verticalArrangement = Arrangement.Center,
+            .fillMaxSize()
+            .padding(bottom = 16.dp),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var isEditingUsername by remember { mutableStateOf(false) }
-        var isEditingTelegram by remember { mutableStateOf(false) }
-        val photoPickerLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia()
-        ) { uri: Uri? ->
-            uri?.let { viewModel.updateUser(context, it) }
-        }
-        val clipboardManager = LocalClipboard.current
-
-        if (state.avatarPath.isNotBlank()) {
-            Box(
-                contentAlignment = Alignment.BottomEnd,
-                modifier = Modifier.clickable {
-                    photoPickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Surface(
+                shape = CircleShape,
+                color = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                shadowElevation = 4.dp,
+                enabled = !state.isLoading,
+                onClick = {
+                    if (isEditing) {
+                        viewModel.updateUser()
+                    }
+                    isEditing = !isEditing
+                },
+                modifier = Modifier
+                    .padding(end = 24.dp)
+                    .size(48.dp)
             ) {
+                Icon(
+                    imageVector = if (isEditing) {
+                        Icons.Default.Save
+                    } else {
+                        Icons.Default.Edit
+                    },
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxSize()
+                )
+            }
+        }
+
+        Box(
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            if (state.avatarPath.isNotBlank()) {
                 AsyncImage(
                     model = "${state.serverUrl.toNormalizedUrl()}${state.avatarPath}",
                     contentDescription = stringResource(R.string.avatar_desc),
@@ -440,31 +469,7 @@ fun ProfileScreen(
                             ), CircleShape
                         )
                 )
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shadowElevation = 4.dp,
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxSize()
-                    )
-                }
-            }
-        } else {
-            Box(
-                contentAlignment = Alignment.BottomEnd,
-                modifier = Modifier.clickable {
-                    photoPickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                }
-            ) {
+            } else {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -486,15 +491,25 @@ fun ProfileScreen(
                         textAlign = TextAlign.Center
                     )
                 }
+            }
+            if (isEditing) {
                 Surface(
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shadowElevation = 4.dp,
-                    modifier = Modifier.size(36.dp)
+                    enabled = !state.isLoading,
+                    onClick = {
+                        photoPickerLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    },
+                    modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Edit,
+                        imageVector = Icons.Default.Upload,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(8.dp)
@@ -506,144 +521,111 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        if (!isEditingUsername) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = state.username.ifBlank { "User" },
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                IconButton(onClick = {
-                    isEditingUsername = true
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(R.string.edit_button)
-                    )
-                }
-            }
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                AuthTextField(
-                    text = stringResource(R.string.username),
-                    placeholder = stringResource(R.string.username_placeholder),
-                    value = state.username,
-                    onValueChange = {
-                        viewModel.onUsernameChange(it)
-                    }
-                )
-                IconButton(
-                    enabled = !state.isLoading,
+        if (!isEditing) {
+            Text(
+                text = state.username.ifBlank { "User" },
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            if (state.telegram.isNotBlank()) {
+                AuthTextButton(
+                    text = "TG: @${state.telegram}",
                     onClick = {
-                        viewModel.updateUser()
-                        isEditingUsername = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = stringResource(R.string.save_button)
-                    )
-                }
-            }
-        }
-
-        if (!isEditingTelegram) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if (state.telegram.isNotBlank()) {
-                    AuthTextButton(
-                        text = "TG: @${state.telegram}",
-                        onClick = { uriHandler.openUri("tg://resolve?domain=${state.telegram}") }
-                    )
-                } else {
-                    AuthTextButton(
-                        text = "TG: ${stringResource(R.string.not_set)}",
-                        onClick = { isEditingTelegram = true }
-                    )
-                }
-
-                IconButton(onClick = {
-                    isEditingTelegram = true
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = stringResource(R.string.edit_button)
-                    )
-                }
-            }
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                AuthTextField(
-                    text = stringResource(R.string.telegram),
-                    placeholder = stringResource(R.string.telegram_placeholder),
-                    value = state.telegram,
-                    onValueChange = {
-                        viewModel.onTelegramChange(it)
+                        uriHandler.openUri(
+                            "tg://resolve?domain=${state.telegram.removePrefix("@")}"
+                        )
                     }
                 )
-                IconButton(
-                    enabled = !state.isLoading,
+            } else {
+                AuthTextButton(
+                    text = "TG: ${stringResource(R.string.not_set)}",
                     onClick = {
-                        viewModel.updateUser()
-                        isEditingTelegram = false
+                        Toast.makeText(
+                            context,
+                            R.string.not_set,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 8.dp
+                    )
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(
+                        horizontal = 24.dp,
+                        vertical = 16.dp
+                    )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Save,
-                        contentDescription = stringResource(R.string.save_button)
+                    OutlinedTextField(
+                        value = state.otp ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.otp)) },
+                        modifier = Modifier.weight(1f),
+                        singleLine = true,
+                        trailingIcon = {
+                            IconButton(
+                                enabled = !state.token.isNullOrBlank(),
+                                onClick = {
+                                    scope.launch {
+                                        clipboardManager.setClipEntry(
+                                            ClipEntry(
+                                                ClipData.newPlainText("OTP", state.otp)
+                                            )
+                                        )
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ContentCopy,
+                                    contentDescription = stringResource(R.string.copy_button)
+                                )
+                            }
+                        }
+                    )
+
+                    AuthButton(
+                        icon = Icons.Default.Refresh,
+                        description = stringResource(R.string.refresh_button),
+                        onClick = { viewModel.getOtp() },
+                        isLoading = state.isLoading,
+                        enabled = !state.token.isNullOrBlank(),
                     )
                 }
-            }
-        }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = 32.dp,
-                    vertical = 16.dp
-                )
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(
-                    horizontal = 24.dp,
-                    vertical = 18.dp
-                )
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
                 OutlinedTextField(
-                    value = state.otp ?: "",
+                    value = state.token ?: "Empty",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text(stringResource(R.string.otp)) },
-                    modifier = Modifier.weight(1f),
+                    label = { Text(stringResource(R.string.token)) },
+                    modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     trailingIcon = {
                         IconButton(
                             enabled = !state.token.isNullOrBlank(),
                             onClick = {
                                 scope.launch {
-                                    clipboardManager.setClipEntry(
-                                        ClipEntry(
-                                            ClipData.newPlainText("OTP", state.otp)
+                                    if (!state.token.isNullOrBlank()) {
+                                        clipboardManager.setClipEntry(
+                                            ClipEntry(
+                                                ClipData.newPlainText("Token", state.token)
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         ) {
@@ -654,52 +636,50 @@ fun ProfileScreen(
                         }
                     }
                 )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 32.dp,
+                        vertical = 8.dp
+                    )
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(
+                        horizontal = 24.dp,
+                        vertical = 16.dp
+                    )
+            ) {
+                AuthTextField(
+                    text = stringResource(R.string.username),
+                    placeholder = stringResource(R.string.username_placeholder),
+                    value = state.username,
+                    onValueChange = {
+                        viewModel.onUsernameChange(it)
+                    }
+                )
 
-                AuthButton(
-                    icon = Icons.Default.Refresh,
-                    description = stringResource(R.string.refresh_button),
-                    onClick = { viewModel.getOtp() },
-                    isLoading = state.isLoading,
-                    enabled = !state.token.isNullOrBlank(),
+                AuthTextField(
+                    text = stringResource(R.string.telegram),
+                    placeholder = stringResource(R.string.telegram_placeholder),
+                    value = state.telegram,
+                    onValueChange = {
+                        viewModel.onTelegramChange(it)
+                    }
                 )
             }
-
-            OutlinedTextField(
-                value = state.token ?: "Empty",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(stringResource(R.string.token)) },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                trailingIcon = {
-                    IconButton(
-                        enabled = !state.token.isNullOrBlank(),
-                        onClick = {
-                            scope.launch {
-                                if (!state.token.isNullOrBlank()) {
-                                    clipboardManager.setClipEntry(
-                                        ClipEntry(
-                                            ClipData.newPlainText("Token", state.token)
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ContentCopy,
-                            contentDescription = stringResource(R.string.copy_button)
-                        )
-                    }
-                }
-            )
         }
 
         Spacer(modifier = Modifier.size(16.dp))
 
         AuthButton(
             text = stringResource(R.string.log_out_button),
-            onClick = { viewModel.logout() },
+            onClick = {
+                isEditing = false
+                viewModel.logout()
+            },
             enabled = !state.isLoading,
             isLoading = state.isLoading,
             color = MaterialTheme.colorScheme.error
