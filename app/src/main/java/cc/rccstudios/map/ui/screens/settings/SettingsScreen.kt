@@ -1,4 +1,4 @@
-package cc.rccstudios.map.ui.screens
+package cc.rccstudios.map.ui.screens.settings
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -52,6 +52,7 @@ import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Github
+import kotlin.math.round
 import kotlin.math.roundToLong
 
 @Composable
@@ -348,7 +349,7 @@ fun SettingSlider(
             value = sliderValue,
             onValueChange = { newValue ->
                 val step = 5f
-                sliderValue = (kotlin.math.round(newValue / step) * step).coerceIn(5f, 300f)
+                sliderValue = (round(newValue / step) * step).coerceIn(5f, 300f)
             },
             onValueChangeFinished = {
                 val updatedIntervalMs = sliderValue.roundToLong() * 1000L

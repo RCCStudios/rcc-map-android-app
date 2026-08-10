@@ -1,4 +1,4 @@
-package cc.rccstudios.map.ui.screens
+package cc.rccstudios.map.ui.screens.map
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup

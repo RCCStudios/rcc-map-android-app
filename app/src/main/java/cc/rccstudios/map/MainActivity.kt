@@ -21,8 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.data.service.TelemetryService
 import cc.rccstudios.map.domain.model.UpdateStatus
 import cc.rccstudios.map.ui.MainViewModel
-import cc.rccstudios.map.ui.screens.BottomMenu
-import cc.rccstudios.map.ui.screens.UpdateDialog
+import cc.rccstudios.map.ui.screens.menu.BottomMenu
+import cc.rccstudios.map.ui.dialogs.update.UpdateDialog
 import cc.rccstudios.map.ui.theme.RCCMapTheme
 import org.koin.compose.koinInject
 

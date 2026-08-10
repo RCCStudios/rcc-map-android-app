@@ -1,4 +1,4 @@
-package cc.rccstudios.map.ui.screens
+package cc.rccstudios.map.ui.dialogs.update
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

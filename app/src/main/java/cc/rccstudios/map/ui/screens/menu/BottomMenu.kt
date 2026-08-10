@@ -1,4 +1,4 @@
-package cc.rccstudios.map.ui.screens
+package cc.rccstudios.map.ui.screens.menu
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
@@ -27,6 +27,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import cc.rccstudios.map.R
 import cc.rccstudios.map.ui.MainViewModel
+import cc.rccstudios.map.ui.screens.map.MapScreen
+import cc.rccstudios.map.ui.screens.settings.SettingsScreen
+import cc.rccstudios.map.ui.screens.account.AccountScreen
 
 enum class Destination(
     val route: String,
