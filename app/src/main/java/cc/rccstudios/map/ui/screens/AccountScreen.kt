@@ -1,15 +1,22 @@
 package cc.rccstudios.map.ui.screens
 
 import android.content.ClipData
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,7 +24,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,12 +34,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +52,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.res.stringResource
@@ -63,6 +77,7 @@ fun AccountScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val authMode = state.authMode
     val uriHandler = LocalUriHandler.current
 
@@ -85,6 +100,7 @@ fun AccountScreen(
             viewModel = viewModel,
             scope = scope,
             state = state,
+            context = context,
             uriHandler = uriHandler,
             modifier = modifier
         )
@@ -380,6 +396,7 @@ fun ProfileScreen(
     viewModel: MainViewModel,
     scope: CoroutineScope,
     state: UiState,
+    context: Context,
     uriHandler: UriHandler,
     modifier: Modifier = Modifier
 ) {
@@ -390,61 +407,206 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        var isEditingUsername by remember { mutableStateOf(false) }
+        var isEditingTelegram by remember { mutableStateOf(false) }
+        val photoPickerLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia()
+        ) { uri: Uri? ->
+            uri?.let { viewModel.updateUser(context, it) }
+        }
         val clipboardManager = LocalClipboard.current
 
         if (state.avatarPath.isNotBlank()) {
-            AsyncImage(
-                model = "${state.serverUrl.toNormalizedUrl()}${state.avatarPath}",
-                contentDescription = stringResource(R.string.avatar_desc),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .size(192.dp)
-                    .clip(CircleShape)
-                    .background(Color.White, CircleShape)
-                    .border(
-                        BorderStroke(
-                            4.dp,
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        ), CircleShape
+            Box(
+                contentAlignment = Alignment.BottomEnd,
+                modifier = Modifier.clickable {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
-            )
+                }
+            ) {
+                AsyncImage(
+                    model = "${state.serverUrl.toNormalizedUrl()}${state.avatarPath}",
+                    contentDescription = stringResource(R.string.avatar_desc),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(192.dp)
+                        .clip(CircleShape)
+                        .background(Color.White, CircleShape)
+                        .border(
+                            BorderStroke(
+                                4.dp,
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            ), CircleShape
+                        )
+                )
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shadowElevation = 4.dp,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxSize()
+                    )
+                }
+            }
         } else {
             Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(192.dp)
-                    .clip(CircleShape)
-                    .background(Color.White, CircleShape)
-                    .border(
-                        BorderStroke(
-                            4.dp,
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        ), CircleShape
+                contentAlignment = Alignment.BottomEnd,
+                modifier = Modifier.clickable {
+                    photoPickerLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
+                }
             ) {
-                Text(
-                    text = state.username.firstOrNull()?.uppercase() ?: "?",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(192.dp)
+                        .clip(CircleShape)
+                        .background(Color.White, CircleShape)
+                        .border(
+                            BorderStroke(
+                                4.dp,
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            ), CircleShape
+                        )
+                ) {
+                    Text(
+                        text = state.username.firstOrNull()?.uppercase() ?: "?",
+                        style = MaterialTheme.typography.displayLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                Surface(
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shadowElevation = 4.dp,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .fillMaxSize()
+                    )
+                }
             }
         }
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        Text(
-            text = state.username.ifBlank { "User" },
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+        if (!isEditingUsername) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = state.username.ifBlank { "User" },
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                IconButton(onClick = {
+                    isEditingUsername = true
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.edit_button)
+                    )
+                }
+            }
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                AuthTextField(
+                    text = stringResource(R.string.username),
+                    placeholder = stringResource(R.string.username_placeholder),
+                    value = state.username,
+                    onValueChange = {
+                        viewModel.onUsernameChange(it)
+                    }
+                )
+                IconButton(
+                    enabled = !state.isLoading,
+                    onClick = {
+                        viewModel.updateUser()
+                        isEditingUsername = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = stringResource(R.string.save_button)
+                    )
+                }
+            }
+        }
 
-        AuthTextButton(
-            text = "@${state.telegram}",
-            onClick = { uriHandler.openUri("tg://resolve?domain=${state.telegram}") }
-        )
+        if (!isEditingTelegram) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (state.telegram.isNotBlank()) {
+                    AuthTextButton(
+                        text = "TG: @${state.telegram}",
+                        onClick = { uriHandler.openUri("tg://resolve?domain=${state.telegram}") }
+                    )
+                } else {
+                    AuthTextButton(
+                        text = "TG: ${stringResource(R.string.not_set)}",
+                        onClick = { isEditingTelegram = true }
+                    )
+                }
+
+                IconButton(onClick = {
+                    isEditingTelegram = true
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.edit_button)
+                    )
+                }
+            }
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                AuthTextField(
+                    text = stringResource(R.string.telegram),
+                    placeholder = stringResource(R.string.telegram_placeholder),
+                    value = state.telegram,
+                    onValueChange = {
+                        viewModel.onTelegramChange(it)
+                    }
+                )
+                IconButton(
+                    enabled = !state.isLoading,
+                    onClick = {
+                        viewModel.updateUser()
+                        isEditingTelegram = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Save,
+                        contentDescription = stringResource(R.string.save_button)
+                    )
+                }
+            }
+        }
 
         Column(
             modifier = Modifier

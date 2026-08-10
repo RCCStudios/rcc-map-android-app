@@ -30,6 +30,7 @@
     <string name="otp_placeholder">z. B. a1b2c3d4</string>
     <string name="token">Token</string>
     <string name="already_have_account">Haben Sie bereits ein Konto?</string>
+    <string name="telegram_placeholder">z. B. durov</string>
     <string name="dont_have_account">Noch kein Konto?</string>
     <string name="avatar_desc">Ihr Profilbild</string>
     <string name="map_placeholder">Die Karte sollte hier geladen werden, konnte aber nicht geladen werden</string>
@@ -44,6 +45,7 @@
     <string name="telemetry_disabled">Telemetrie-Erfassung ist deaktiviert</string>
     <string name="copy_button">Kopieren</string>
     <string name="refresh_button">Aktualisieren</string>
+    <string name="edit_button">Bearbeiten</string>
     <string name="stop_button">Stoppen</string>
     <string name="location">Standort</string>
     <string name="battery">Akkustand</string>
@@ -61,4 +63,6 @@
     <string name="error">Fehler</string>
     <string name="minutes">Min.</string>
     <string name="seconds">Sek.</string>
+    <string name="save_button">Speichern</string>
+    <string name="not_set">Nicht festgelegt</string>
 </resources>

@@ -30,6 +30,7 @@ import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
+import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
 import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
 import kotlinx.coroutines.runBlocking
@@ -165,15 +166,17 @@ val appModule = module {
 
     factory { LoginUseCase(getTokenUseCase = get(), userRepository = get()) }
 
+    factory { UpdateUserUseCase(userRepository = get()) }
+
     viewModel {
         MainViewModel(
             settingsRepository = get(),
             collectAndSendTelemetryUseCase = get(),
             registerUseCase = get(),
-            getTokenUseCase = get(),
             loginUseCase = get(),
             getOtpUseCase = get(),
-            checkUpdatesUseCase = get()
+            checkUpdatesUseCase = get(),
+            updateUserUseCase = get()
         )
     }
 }

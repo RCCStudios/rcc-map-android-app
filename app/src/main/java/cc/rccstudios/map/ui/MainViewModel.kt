@@ -1,5 +1,7 @@
 package cc.rccstudios.map.ui
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cc.rccstudios.map.BuildConfig
@@ -11,9 +13,12 @@ import cc.rccstudios.map.domain.usecase.GetOtpUseCase
 import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
+import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 enum class AuthMode(val code: Int) {
     REGISTER(0),
@@ -50,9 +55,9 @@ data class UiState(
 class MainViewModel(
     private val settingsRepository: SettingsRepository,
     private val registerUseCase: RegisterUseCase,
-    private val getTokenUseCase: GetTokenUseCase,
     private val loginUseCase: LoginUseCase,
     private val getOtpUseCase: GetOtpUseCase,
+    private val updateUserUseCase: UpdateUserUseCase,
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase,
     private val checkUpdatesUseCase: CheckUpdatesUseCase
 ) : ViewModel() {
@@ -64,6 +69,7 @@ class MainViewModel(
     private val usernameInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
     private val otpInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
     private val intervalInputFlow = MutableSharedFlow<Long>(extraBufferCapacity = 1)
+    private val telegramInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
 
     init {
         observeSettings()
@@ -182,6 +188,15 @@ class MainViewModel(
                     _uiState.update { it.copy(logMessage = "Telemetry interval saved automatically") }
                 }
         }
+
+        viewModelScope.launch {
+            telegramInputFlow
+                .debounce(1000L)
+                .collect { telegram ->
+                    settingsRepository.saveTelegram(telegram)
+                    _uiState.update { it.copy(logMessage = "Telegram saved automatically") }
+                }
+        }
     }
 
     fun onUrlChange(newUrl: String) {
@@ -224,6 +239,11 @@ class MainViewModel(
         }
     }
 
+    fun onTelegramChange(newTelegram: String) {
+        _uiState.update { it.copy(telegram = newTelegram) }
+        telegramInputFlow.tryEmit(newTelegram)
+    }
+
     fun onBatteryTrackingChange(enabled: Boolean) {
         viewModelScope.launch { settingsRepository.saveBatteryTrackingEnabled(enabled) }
     }
@@ -238,6 +258,41 @@ class MainViewModel(
 
     fun onScreenLockTrackingChange(enabled: Boolean) {
         viewModelScope.launch { settingsRepository.saveScreenLockTrackingEnabled(enabled) }
+    }
+
+    fun updateUser(
+        context: Context? = null,
+        imageUri: Uri? = null
+    ) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            val bytes = if (context != null && imageUri != null) {
+                withContext(Dispatchers.IO) {
+                    context.contentResolver.openInputStream(imageUri)?.use { it.readBytes() }
+                }
+            } else null
+            val result = updateUserUseCase(
+                username = _uiState.value.username,
+                avatar = bytes,
+                telegram = _uiState.value.telegram
+            )
+            if (result.isSuccess) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        logMessage = "Updated user successfully"
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        logMessage = "Error: ${result.exceptionOrNull()?.message}"
+                    )
+                }
+            }
+
+        }
     }
 
     fun register() {

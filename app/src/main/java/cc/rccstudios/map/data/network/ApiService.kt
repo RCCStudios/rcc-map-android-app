@@ -41,7 +41,7 @@ interface ApiService {
     suspend fun getUser(): Response<GetUserResponseDto>
 
     @Headers("Auth: Bearer {token}")
-    @PATCH("api/user")
+    @POST("api/user")
     suspend fun updateUser(
         @Body body: UpdateUserDto
     ): Response<Unit>
