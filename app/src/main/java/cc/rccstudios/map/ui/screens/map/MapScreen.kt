@@ -2,7 +2,6 @@ package cc.rccstudios.map.ui.screens.map
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +28,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.R
 import cc.rccstudios.map.ui.MainViewModel
+import cc.rccstudios.map.ui.screens.map.components.MapWebView
 import cc.rccstudios.map.utils.toNormalizedUrl
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -79,7 +79,7 @@ fun MapScreen(
         AndroidView(
             modifier = modifier.fillMaxSize(),
             factory = { context ->
-                WebView(context).apply {
+                MapWebView(context).apply {
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
