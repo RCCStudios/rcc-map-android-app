@@ -2,7 +2,6 @@ package cc.rccstudios.map.ui.screens.map
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import android.webkit.WebViewClient
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -87,8 +86,6 @@ fun MapScreen(
 
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
-
-                    webViewClient = WebViewClient()
 
                     loadUrl(finalUrl)
                 }
