@@ -339,15 +339,23 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.size(16.dp))
 
-        AuthButton(
-            text = stringResource(R.string.log_out_button),
-            onClick = {
-                isEditing = false
-                viewModel.logout()
-            },
-            enabled = !state.isLoading,
-            isLoading = state.isLoading,
-            color = MaterialTheme.colorScheme.error
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 16.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AuthButton(
+                text = stringResource(R.string.log_out_button),
+                onClick = {
+                    isEditing = false
+                    viewModel.logout()
+                },
+                enabled = !state.isLoading,
+                isLoading = state.isLoading,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
     }
 }
