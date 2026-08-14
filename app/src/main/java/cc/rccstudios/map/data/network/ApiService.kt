@@ -1,5 +1,6 @@
 package cc.rccstudios.map.data.network
 
+import cc.rccstudios.map.data.network.model.FcmTokenDto
 import cc.rccstudios.map.data.network.model.GetOtpResponseDto
 import cc.rccstudios.map.data.network.model.GetTokenResponseDto
 import cc.rccstudios.map.data.network.model.GetUserResponseDto
@@ -44,6 +45,12 @@ interface ApiService {
     @POST("api/user")
     suspend fun updateUser(
         @Body body: UpdateUserDto
+    ): Response<Unit>
+
+    @Headers("Auth: Bearer {token}")
+    @POST("api/user/fcm-token")
+    suspend fun updateFcmToken(
+        @Body body: FcmTokenDto
     ): Response<Unit>
 
     @GET
