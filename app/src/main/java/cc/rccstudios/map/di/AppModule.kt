@@ -31,6 +31,7 @@ import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
+import cc.rccstudios.map.domain.usecase.UpdateFcmTokenUseCase
 import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
 import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
@@ -65,7 +66,6 @@ val appModule = module {
     single<UpdateRepository> { UpdateRepositoryImpl(apiService = get()) }
 
     single<UserRepository> { UserRepositoryImpl(apiService = get(), settingsRepository = get()) }
-
 
     single<BatteryTracker> { BatteryTrackerImpl(context = androidContext()) }
 
@@ -170,6 +170,8 @@ val appModule = module {
     factory { LoginUseCase(getTokenUseCase = get(), getUserUseCase = get()) }
 
     factory { UpdateUserUseCase(userRepository = get()) }
+
+    factory { UpdateFcmTokenUseCase(settingsRepository = get(), authRepository = get()) }
 
     viewModel {
         MainViewModel(
