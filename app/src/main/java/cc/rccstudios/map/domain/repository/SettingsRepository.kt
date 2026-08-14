@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
     val tokenFlow: Flow<String?>
+    val fcmTokenFlow: Flow<String?>
     val usernameFlow: Flow<String?>
     val otpFlow: Flow<String?>
     val serverUrlFlow: Flow<String?>
@@ -18,6 +19,7 @@ interface SettingsRepository {
     val telemetryIntervalFlow: Flow<Long>
 
     suspend fun saveToken(token: String)
+    suspend fun saveFcmToken(fcmToken: String)
     suspend fun saveUsername(username: String)
     suspend fun saveOtp(otp: String)
     suspend fun saveServerUrl(url: String)
@@ -32,6 +34,7 @@ interface SettingsRepository {
     suspend fun saveTelemetryInterval(interval: Long)
 
     suspend fun getToken(): String?
+    suspend fun getFcmToken(): String?
     suspend fun getUsername(): String?
     suspend fun getOtp(): String?
     suspend fun getServerUrl(): String?

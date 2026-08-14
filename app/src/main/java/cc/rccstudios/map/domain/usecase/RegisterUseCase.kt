@@ -8,7 +8,7 @@ class RegisterUseCase(
 ) {
     suspend operator fun invoke(username: String, otp: String): Result<Unit> {
         if (username.isBlank() || otp.isBlank()) {
-            return Result.failure(Exception("Cant be blank"))
+            return Result.failure(Exception("registerData can't be blank"))
         }
         val registerData = Register(username, otp)
         return authRepository.register(registerData)

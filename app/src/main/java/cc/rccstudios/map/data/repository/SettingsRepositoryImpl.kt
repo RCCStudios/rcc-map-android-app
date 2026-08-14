@@ -17,6 +17,7 @@ class SettingsRepositoryImpl(
 ) : SettingsRepository {
     private object PreferencesKeys {
         val TOKEN = stringPreferencesKey("token")
+        val FCM_TOKEN = stringPreferencesKey("fcm_token")
         val USERNAME = stringPreferencesKey("username")
         val OTP = stringPreferencesKey("otp")
         val SERVER_URL = stringPreferencesKey("server_url")
@@ -32,6 +33,7 @@ class SettingsRepositoryImpl(
     }
 
     override val tokenFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.TOKEN] }
+    override val fcmTokenFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.FCM_TOKEN] }
     override val usernameFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.USERNAME] }
     override val otpFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.OTP] }
     override val serverUrlFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.SERVER_URL] }
@@ -49,6 +51,10 @@ class SettingsRepositoryImpl(
 
     override suspend fun saveToken(token: String) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.TOKEN] = token }
+    }
+
+    override suspend fun saveFcmToken(fcmToken: String) {
+        dataStore.edit { preferences -> preferences[PreferencesKeys.FCM_TOKEN] = fcmToken }
     }
 
     override suspend fun saveUsername(username: String) {
@@ -100,6 +106,7 @@ class SettingsRepositoryImpl(
     }
 
     override suspend fun getToken(): String? = tokenFlow.first()
+    override suspend fun getFcmToken(): String? = fcmTokenFlow.first()
     override suspend fun getUsername(): String? = usernameFlow.first()
     override suspend fun getOtp(): String? = otpFlow.first()
     override suspend fun getServerUrl(): String? = serverUrlFlow.first()
