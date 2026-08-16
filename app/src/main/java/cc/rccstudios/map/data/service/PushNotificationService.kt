@@ -42,8 +42,6 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
         const val PUSH_CHANNEL_ID = "push_channel"
         const val BOMBER_CHANNEL_ID = "bomber_channel"
 
-        const val BOMBER_NOTIFICATION_ID = 9002
-
         private data class ChannelSpec(
             val id: String,
             val nameRes: Int,
@@ -114,37 +112,15 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
     }
 
     private fun handleBomberNotification(data: Map<String, String>) {
-        val fullScreenIntent = Intent(this, BomberActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        val intent = Intent(this, BomberService::class.java).apply {
+            action = BomberService.ACTION_START
+            putExtra(BomberService.EXTRA_TITLE, data["title"])
+            putExtra(BomberService.EXTRA_BODY, data["body"])
         }
-        val fullScreenPendingIntent = PendingIntent.getActivity(
-            this, 0, fullScreenIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            notificationManager.canUseFullScreenIntent()
-        } else true
-
-        val notificationBuilder = NotificationCompat.Builder(this, BOMBER_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(getString(R.string.bomber_notification))
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
-            .setAutoCancel(true)
-
-        if (canUseFullScreen) {
-            notificationBuilder.setFullScreenIntent(fullScreenPendingIntent, true)
-        } else {
-            notificationBuilder.setContentIntent(fullScreenPendingIntent)
-        }
-
-        notificationManager.notify(BOMBER_NOTIFICATION_ID, notificationBuilder.build())
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(Intent(this, BomberService::class.java).apply {
-                action = BomberService.ACTION_START
-            })
+            startForegroundService(intent)
+        } else {
+            startService(intent)
         }
     }
 

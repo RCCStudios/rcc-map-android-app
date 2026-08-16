@@ -16,10 +16,6 @@ class BomberActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         showOverLockscreenAndTurnScreenOn()
 
-        startService(Intent(this, BomberService::class.java).apply {
-            action = BomberService.ACTION_START
-        })
-
         setContent {
             BomberScreen(onStopClick = { stopBomber() })
         }
