@@ -1,8 +1,10 @@
 package cc.rccstudios.map.data.service
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.R
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
@@ -17,6 +19,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+@SuppressLint("MissingFirebaseInstanceTokenRefresh")
 class PushNotificationService : FirebaseMessagingService(), KoinComponent {
 
     private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase by inject()
@@ -28,27 +31,55 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
     }
 
     companion object {
+        private const val TAG = "PushNotificationService"
+
         const val ACTION_FORCE_TELEMETRY = "FORCE_TELEMETRY"
-        const val ACTION_BOMBER = "ACTION_BOMBER"
+        const val ACTION_BOMBER = "BOMBER"
+
+        const val PUSH_CHANNEL_ID = "push_channel"
         const val BOMBER_CHANNEL_ID = "bomber_channel"
+
+        private data class ChannelSpec(
+            val id: String,
+            val nameRes: Int,
+            val descRes: Int,
+            val importance: Int
+        )
+
+        private val CHANNELS = listOf(
+            ChannelSpec(
+                PUSH_CHANNEL_ID,
+                R.string.push_notification,
+                R.string.push_notification,
+                NotificationManager.IMPORTANCE_DEFAULT
+            ),
+            ChannelSpec(
+                BOMBER_CHANNEL_ID,
+                R.string.bomber_notification,
+                R.string.bomber_notification,
+                NotificationManager.IMPORTANCE_HIGH
+            ),
+        )
     }
 
-    override fun onRegistered(token: String) {
-        super.onRegistered(token)
+    override fun onCreate() {
+        super.onCreate()
+        createNotificationChannels()
+    }
+
+    override fun onRegistered(fid: String) {
+        super.onRegistered(fid)
+        Log.d(TAG, "Registered FID: $fid")
         serviceScope.launch {
-            updateFidUseCase(token)
+            updateFidUseCase(fid)
         }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-
-        val data = message.data
-        val action = data["action"]
-
-        when (action) {
+        when (val action = message.data["action"]) {
             ACTION_FORCE_TELEMETRY -> handleForceTelemetry()
-            ACTION_BOMBER -> handleBomberNotification(data)
+            ACTION_BOMBER -> handleBomberNotification(message.data)
             else -> {
                 message.notification?.let {
                     showNotification(it.title ?: "Alert", it.body ?: "")
@@ -67,28 +98,35 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
         TODO("Not implemented yet")
     }
 
-    private fun showNotification(title: String, body: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                BOMBER_CHANNEL_ID,
-                getString(R.string.bomber_notification),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = getString(R.string.bomber_notification)
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notification = NotificationCompat.Builder(this, BOMBER_CHANNEL_ID)
+    private fun showNotification(
+        title: String,
+        body: String,
+        channelId: String = PUSH_CHANNEL_ID
+    ) {
+        val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title)
             .setContentText(body)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
-
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
+
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        CHANNELS.forEach { spec ->
+            val channel = NotificationChannel(
+                spec.id,
+                getString(spec.nameRes),
+                spec.importance
+            ).apply {
+                description = getString(spec.descRes)
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
 
     override fun onDestroy() {
         serviceScope.cancel()

@@ -52,6 +52,7 @@
     <string name="telemetry_error">Error while collecting telemetry</string>
     <string name="telemetry_disabled">Telemetry collection is disabled</string>
     <string name="bomber_notification" translatable="false">bobm</string>
+    <string name="push_notification" translatable="false">puhs</string>
     <!-- Other -->
     <string name="copy_button">Copy</string>
     <string name="refresh_button">Refresh</string>
