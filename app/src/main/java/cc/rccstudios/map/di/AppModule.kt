@@ -31,7 +31,7 @@ import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
-import cc.rccstudios.map.domain.usecase.UpdateFcmTokenUseCase
+import cc.rccstudios.map.domain.usecase.UpdateFidUseCase
 import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
 import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
@@ -171,7 +171,7 @@ val appModule = module {
 
     factory { UpdateUserUseCase(userRepository = get()) }
 
-    factory { UpdateFcmTokenUseCase(settingsRepository = get(), authRepository = get()) }
+    factory { UpdateFidUseCase(settingsRepository = get(), authRepository = get()) }
 
     viewModel {
         MainViewModel(

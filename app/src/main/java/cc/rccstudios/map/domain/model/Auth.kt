@@ -5,6 +5,6 @@ data class Register(
     val otp: String
 )
 
-data class FcmToken(
-    val fcmToken: String
+data class Fid(
+    val fid: String
 )

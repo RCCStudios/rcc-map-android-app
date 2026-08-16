@@ -1,6 +1,6 @@
 package cc.rccstudios.map.data.network.model
 
-import cc.rccstudios.map.domain.model.FcmToken
+import cc.rccstudios.map.domain.model.Fid
 import cc.rccstudios.map.domain.model.Register
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -37,11 +37,11 @@ data class GetTokenResponseDto(
 )
 
 @Serializable
-data class FcmTokenDto(
-    @SerialName("fcmToken")
-    val fcmToken: String
+data class FidDto(
+    @SerialName("fid")
+    val fid: String
 )
 
-fun FcmToken.toDto() = FcmTokenDto(
-    fcmToken = this.fcmToken
+fun Fid.toDto() = FidDto(
+    fid = this.fid
 )

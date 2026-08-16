@@ -1,6 +1,6 @@
 package cc.rccstudios.map.data.network
 
-import cc.rccstudios.map.data.network.model.FcmTokenDto
+import cc.rccstudios.map.data.network.model.FidDto
 import cc.rccstudios.map.data.network.model.GetOtpResponseDto
 import cc.rccstudios.map.data.network.model.GetTokenResponseDto
 import cc.rccstudios.map.data.network.model.GetUserResponseDto
@@ -13,7 +13,6 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
-import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Url
 
@@ -48,9 +47,9 @@ interface ApiService {
     ): Response<Unit>
 
     @Headers("Auth: Bearer {token}")
-    @POST("api/user/fcm-token")
-    suspend fun updateFcmToken(
-        @Body body: FcmTokenDto
+    @POST("api/user/fid")
+    suspend fun updateFid(
+        @Body body: FidDto
     ): Response<Unit>
 
     @GET
