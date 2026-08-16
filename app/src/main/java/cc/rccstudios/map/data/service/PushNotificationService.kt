@@ -3,9 +3,12 @@ package cc.rccstudios.map.data.service
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import cc.rccstudios.map.BomberActivity
 import cc.rccstudios.map.R
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.UpdateFidUseCase
@@ -39,6 +42,8 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
         const val PUSH_CHANNEL_ID = "push_channel"
         const val BOMBER_CHANNEL_ID = "bomber_channel"
 
+        const val BOMBER_NOTIFICATION_ID = 9002
+
         private data class ChannelSpec(
             val id: String,
             val nameRes: Int,
@@ -65,6 +70,20 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()
+    }
+
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        CHANNELS.forEach { spec ->
+            val channel = NotificationChannel(
+                spec.id,
+                getString(spec.nameRes),
+                spec.importance
+            ).apply {
+                description = getString(spec.descRes)
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     override fun onRegistered(fid: String) {
@@ -95,7 +114,38 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
     }
 
     private fun handleBomberNotification(data: Map<String, String>) {
-        TODO("Not implemented yet")
+        val fullScreenIntent = Intent(this, BomberActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val fullScreenPendingIntent = PendingIntent.getActivity(
+            this, 0, fullScreenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            notificationManager.canUseFullScreenIntent()
+        } else true
+
+        val notificationBuilder = NotificationCompat.Builder(this, BOMBER_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(getString(R.string.bomber_notification))
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setAutoCancel(true)
+
+        if (canUseFullScreen) {
+            notificationBuilder.setFullScreenIntent(fullScreenPendingIntent, true)
+        } else {
+            notificationBuilder.setContentIntent(fullScreenPendingIntent)
+        }
+
+        notificationManager.notify(BOMBER_NOTIFICATION_ID, notificationBuilder.build())
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(Intent(this, BomberService::class.java).apply {
+                action = BomberService.ACTION_START
+            })
+        }
     }
 
     private fun showNotification(
@@ -111,20 +161,6 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
             .setAutoCancel(true)
             .build()
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
-    }
-
-    private fun createNotificationChannels() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
-        CHANNELS.forEach { spec ->
-            val channel = NotificationChannel(
-                spec.id,
-                getString(spec.nameRes),
-                spec.importance
-            ).apply {
-                description = getString(spec.descRes)
-            }
-            notificationManager.createNotificationChannel(channel)
-        }
     }
 
 
