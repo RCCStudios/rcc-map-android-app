@@ -55,6 +55,8 @@ import cc.rccstudios.map.R
 import cc.rccstudios.map.ui.UiState
 import cc.rccstudios.map.utils.toNormalizedUrl
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -120,7 +122,11 @@ fun ProfileScreen(
         ) {
             if (state.avatarPath.isNotBlank()) {
                 AsyncImage(
-                    model = "${state.serverUrl.toNormalizedUrl()}${state.avatarPath}",
+                    model = ImageRequest.Builder(context)
+                        .data("${state.serverUrl.toNormalizedUrl()}${state.avatarPath}")
+                        .diskCachePolicy(CachePolicy.DISABLED)
+                        .memoryCachePolicy(CachePolicy.DISABLED)
+                        .build(),
                     contentDescription = stringResource(R.string.avatar_desc),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
