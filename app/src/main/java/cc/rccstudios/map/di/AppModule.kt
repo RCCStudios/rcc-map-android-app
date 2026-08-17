@@ -22,6 +22,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import cc.rccstudios.map.data.repository.AuthRepositoryImpl
 import cc.rccstudios.map.data.repository.UpdateRepositoryImpl
 import cc.rccstudios.map.data.repository.UserRepositoryImpl
+import cc.rccstudios.map.data.service.PushPayloadHandler
 import cc.rccstudios.map.domain.repository.AuthRepository
 import cc.rccstudios.map.domain.repository.UpdateRepository
 import cc.rccstudios.map.domain.repository.UserRepository
@@ -82,6 +83,8 @@ val appModule = module {
     }
 
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
+
+    single { PushPayloadHandler(androidContext(), get()) }
 
     single {
         com.google.android.gms.location.CurrentLocationRequest.Builder()
