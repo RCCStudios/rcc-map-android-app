@@ -9,9 +9,9 @@ class CollectAndSendTelemetryUseCase(
     private val settingsRepository: SettingsRepository,
     private val telemetryRepository: TelemetryRepository
 ) {
-    suspend operator fun invoke(): Result<Telemetry> {
+    suspend operator fun invoke(skipCheck: Boolean = false): Result<Telemetry> {
         val isEnabled = settingsRepository.telemetryEnabledFlow.first()
-        if (!isEnabled) {
+        if (!isEnabled && !skipCheck) {
             Result.success(Unit)
         }
         val telemetry = telemetryRepository.collectTelemetry()

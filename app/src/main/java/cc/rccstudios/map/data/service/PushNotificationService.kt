@@ -107,7 +107,7 @@ class PushNotificationService : FirebaseMessagingService(), KoinComponent {
 
     private fun handleForceTelemetry() {
         serviceScope.launch {
-            collectAndSendTelemetryUseCase()
+            collectAndSendTelemetryUseCase(skipCheck = true)
         }
     }
 
