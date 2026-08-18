@@ -168,7 +168,10 @@ class BomberService : Service() {
             notificationManager.canUseFullScreenIntent()
         } else true
 
-        val builder = NotificationCompat.Builder(this, PushNotificationService.BOMBER_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(
+            this,
+            PushPayloadHandler.BOMBER_CHANNEL_ID
+        )
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title ?: getString(R.string.bomber_notification))
             .setPriority(NotificationCompat.PRIORITY_MAX)
