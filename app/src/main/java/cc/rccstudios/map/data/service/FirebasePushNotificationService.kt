@@ -15,14 +15,14 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
-class PushNotificationService : FirebaseMessagingService(), KoinComponent {
+class FirebasePushNotificationService : FirebaseMessagingService(), KoinComponent {
 
     private val pushPayloadHandler: PushPayloadHandler by inject()
     private val updateFidUseCase: UpdateFidUseCase by inject()
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     companion object {
-        private const val TAG = "PushNotificationService"
+        private const val TAG = "FirebasePushNotificationService"
     }
 
     override fun onCreate() {

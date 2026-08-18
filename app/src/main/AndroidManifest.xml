@@ -32,7 +32,7 @@
                 android:value="Telemetry collection for mapping and device state monitoring" />
         </service>
         <service
-            android:name=".data.service.PushNotificationService"
+            android:name=".data.service.FirebasePushNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
