@@ -19,7 +19,7 @@ interface SettingsRepository {
     val telemetryIntervalFlow: Flow<Long>
 
     suspend fun saveToken(token: String)
-    suspend fun fidToken(fid: String)
+    suspend fun saveFid(fid: String)
     suspend fun saveUsername(username: String)
     suspend fun saveOtp(otp: String)
     suspend fun saveServerUrl(url: String)

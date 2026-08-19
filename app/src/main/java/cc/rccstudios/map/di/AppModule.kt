@@ -20,10 +20,12 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import androidx.datastore.preferences.preferencesDataStore
 import cc.rccstudios.map.data.repository.AuthRepositoryImpl
+import cc.rccstudios.map.data.repository.DeviceRepositoryImpl
 import cc.rccstudios.map.data.repository.UpdateRepositoryImpl
 import cc.rccstudios.map.data.repository.UserRepositoryImpl
 import cc.rccstudios.map.data.service.PushPayloadHandler
 import cc.rccstudios.map.domain.repository.AuthRepository
+import cc.rccstudios.map.domain.repository.DeviceRepository
 import cc.rccstudios.map.domain.repository.UpdateRepository
 import cc.rccstudios.map.domain.repository.UserRepository
 import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
@@ -32,7 +34,7 @@ import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
-import cc.rccstudios.map.domain.usecase.UpdateFidUseCase
+import cc.rccstudios.map.domain.usecase.UpdateDeviceUseCase
 import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
 import cc.rccstudios.map.ui.MainViewModel
 import cc.rccstudios.map.utils.toNormalizedUrl
@@ -51,7 +53,9 @@ val appModule = module {
 
     single<SettingsRepository> { SettingsRepositoryImpl(dataStore = get()) }
 
-    single<AuthRepository> { AuthRepositoryImpl(apiService = get(), get()) }
+    single<AuthRepository> { AuthRepositoryImpl(apiService = get(), settingsRepository = get()) }
+
+    single<DeviceRepository> { DeviceRepositoryImpl(apiService = get()) }
 
     single<TelemetryRepository> {
         TelemetryRepositoryImpl(
@@ -174,7 +178,7 @@ val appModule = module {
 
     factory { UpdateUserUseCase(userRepository = get()) }
 
-    factory { UpdateFidUseCase(settingsRepository = get(), authRepository = get()) }
+    factory { UpdateDeviceUseCase(settingsRepository = get(), deviceRepository = get()) }
 
     viewModel {
         MainViewModel(

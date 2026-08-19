@@ -4,11 +4,12 @@ import cc.rccstudios.map.data.network.ApiService
 import cc.rccstudios.map.data.network.model.toDto
 import cc.rccstudios.map.domain.model.User
 import cc.rccstudios.map.domain.repository.SettingsRepository
+import cc.rccstudios.map.domain.repository.UserRepository
 
 class UserRepositoryImpl (
     private val apiService: ApiService,
     private val settingsRepository: SettingsRepository
-) : cc.rccstudios.map.domain.repository.UserRepository {
+) : UserRepository {
     override suspend fun getUser(): Result<Unit> {
         return try {
             val response = apiService.getUser()

@@ -3,7 +3,7 @@ package cc.rccstudios.map.data.service
 import android.annotation.SuppressLint
 import android.util.Log
 import cc.rccstudios.map.domain.model.PushPayload
-import cc.rccstudios.map.domain.usecase.UpdateFidUseCase
+import cc.rccstudios.map.domain.usecase.UpdateDeviceUseCase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import org.koin.core.component.inject
 class FirebasePushNotificationService : FirebaseMessagingService(), KoinComponent {
 
     private val pushPayloadHandler: PushPayloadHandler by inject()
-    private val updateFidUseCase: UpdateFidUseCase by inject()
+    private val updateDeviceUseCase: UpdateDeviceUseCase by inject()
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     companion object {
@@ -34,7 +34,7 @@ class FirebasePushNotificationService : FirebaseMessagingService(), KoinComponen
         super.onRegistered(fid)
         Log.d(TAG, "Registered FID: $fid")
         serviceScope.launch {
-            updateFidUseCase(fid)
+            updateDeviceUseCase(fid)
         }
     }
 

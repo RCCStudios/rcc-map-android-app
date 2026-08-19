@@ -53,7 +53,7 @@ class SettingsRepositoryImpl(
         dataStore.edit { preferences -> preferences[PreferencesKeys.TOKEN] = token }
     }
 
-    override suspend fun fidToken(fid: String) {
+    override suspend fun saveFid(fid: String) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.FID] = fid }
     }
 

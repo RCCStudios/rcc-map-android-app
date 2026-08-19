@@ -2,11 +2,12 @@ package cc.rccstudios.map.data.repository
 
 import cc.rccstudios.map.data.network.ApiService
 import cc.rccstudios.map.domain.model.UpdateStatus
+import cc.rccstudios.map.domain.repository.UpdateRepository
 import cc.rccstudios.map.utils.compareVersions
 
 class UpdateRepositoryImpl(
     private val apiService: ApiService
-) : cc.rccstudios.map.domain.repository.UpdateRepository {
+) : UpdateRepository {
 
     override suspend fun checkUpdates(currentVersion: String): UpdateStatus {
         return try {

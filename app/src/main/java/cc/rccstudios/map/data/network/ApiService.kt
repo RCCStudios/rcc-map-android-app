@@ -1,6 +1,6 @@
 package cc.rccstudios.map.data.network
 
-import cc.rccstudios.map.data.network.model.FidDto
+import cc.rccstudios.map.data.network.model.DeviceDto
 import cc.rccstudios.map.data.network.model.GetOtpResponseDto
 import cc.rccstudios.map.data.network.model.GetTokenResponseDto
 import cc.rccstudios.map.data.network.model.GetUserResponseDto
@@ -23,17 +23,17 @@ interface ApiService {
         @Body body: TelemetryDto
     ): Response<Unit>
 
-    @POST("api/register")
+    @POST("api/auth/register")
     suspend fun register(
         @Body body: RegisterDto
     ): Response<RegisterResponseDto>
 
     @Headers("Auth: Bearer {token}")
-    @GET("api/otp")
+    @GET("api/auth/otp")
     suspend fun getOtp(): Response<GetOtpResponseDto>
 
     @Headers("Auth: Bearer {otp}")
-    @GET("api/token")
+    @GET("api/auth/token")
     suspend fun getToken(): Response<GetTokenResponseDto>
 
     @Headers("Auth: Bearer {token}")
@@ -47,9 +47,9 @@ interface ApiService {
     ): Response<Unit>
 
     @Headers("Auth: Bearer {token}")
-    @POST("api/user/fid")
-    suspend fun updateFid(
-        @Body body: FidDto
+    @POST("api/user/device")
+    suspend fun updateDevice(
+        @Body body: DeviceDto
     ): Response<Unit>
 
     @GET
