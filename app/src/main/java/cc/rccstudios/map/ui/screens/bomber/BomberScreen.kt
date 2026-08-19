@@ -1,5 +1,6 @@
 package cc.rccstudios.map.ui.screens.bomber
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -90,7 +91,7 @@ fun BomberScreen(
             )
 
             Text(
-                text = "${stringResource(R.string.sender)}: ${sender ?: "Unknown"}",
+                text = "${stringResource(R.string.sender)}: ${sender ?: stringResource(R.string.unknown)}",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 24.sp,
                 textAlign = TextAlign.Center,
@@ -128,6 +129,10 @@ fun BomberScreen(
                 .align(Alignment.BottomCenter)
                 .windowInsetsPadding(WindowInsets.navigationBars)
         )
+    }
+
+    BackHandler(enabled = true) {
+        onStopClick()
     }
 }
 
