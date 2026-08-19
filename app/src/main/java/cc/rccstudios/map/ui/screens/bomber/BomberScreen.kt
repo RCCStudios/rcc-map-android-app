@@ -135,9 +135,3 @@ fun BomberScreen(
         onStopClick()
     }
 }
-
-@Preview
-@Composable
-fun BomberScreenPreview() {
-    BomberScreen({}, "allah")
-}
