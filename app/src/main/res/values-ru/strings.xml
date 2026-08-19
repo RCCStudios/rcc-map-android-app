@@ -25,10 +25,10 @@
     <string name="github_link">Репозитории GitHub</string>
     <string name="github_link_desc">Поставьте 🌟 нашим репо и подпишитесь на нас!</string>
     <string name="tos_link">Условия использования сервера</string>
-    <string name="tos_link_desc">Ознакомьтесь с условиями использования, чтобы узнать, как сервер использует ваши данные</string>
+    <string name="tos_link_desc">Ознакомьтесь с условиями использования, чтобы узнать, как сервер использует Ваши данные</string>
     <string name="telegram_placeholder">например, durov</string>
     <string name="dont_have_account">Нет аккаунта?</string>
-    <string name="avatar_desc">Ваше изображение аватара</string>
+    <string name="avatar_desc">Ваш аватар</string>
     <string name="map_placeholder">Карта должна быть здесь, но она не загрузилась</string>
     <string name="log_in_title">С возвращением!</string>
     <string name="token">Токен</string>
@@ -46,7 +46,7 @@
     <string name="update_download">Скачать</string>
     <string name="edit_button">Редактировать</string>
     <string name="stop_button">Остановить</string>
-    <string name="telemetry_active_notification">Телеметрия собирается в реальном времени. Разверните для большей информации 🔽</string>
+    <string name="telemetry_active_notification">Телеметрия собирается в реальном времени. Для большей информации 🔽</string>
     <string name="cellular">Мобильный</string>
     <string name="network">Сеть</string>
     <string name="screen_lock">Блокировка экрана</string>
