@@ -24,6 +24,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -44,7 +46,7 @@ fun SettingsScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
     val scrollState = rememberScrollState()
-
+    val haptic = LocalHapticFeedback.current
     val formattedServerUrl = state.serverUrl.toNormalizedUrl()
 
     Column(
@@ -73,7 +75,14 @@ fun SettingsScreen(
         ) {
             SettingButton(
                 isEnabled = state.isTelemetryEnabled,
-                onToggle = { viewModel.onTelemetryEnabledChange(it) },
+                onToggle = {
+                    if (it) {
+                        haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                    } else {
+                        haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                    }
+                    viewModel.onTelemetryEnabledChange(it)
+                },
                 enabledIcon = Icons.Default.PowerSettingsNew,
                 disabledIcon = Icons.Default.HighlightOff
             )
@@ -92,21 +101,42 @@ fun SettingsScreen(
         SettingSwitch(
             text = stringResource(R.string.battery_tracking),
             checked = state.isBatteryTrackingEnabled,
-            onCheckedChange = { viewModel.onBatteryTrackingChange(it) },
+            onCheckedChange = {
+                if (it) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
+                viewModel.onBatteryTrackingChange(it)
+            },
             enabled = state.isTelemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.location_tracking),
             checked = state.isLocationTrackingEnabled,
-            onCheckedChange = { viewModel.onLocationTrackingChange(it) },
+            onCheckedChange = {
+                if (it) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
+                viewModel.onLocationTrackingChange(it)
+            },
             enabled = state.isTelemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.network_tracking),
             checked = state.isNetworkTrackingEnabled,
-            onCheckedChange = { viewModel.onNetworkTrackingChange(it) },
+            onCheckedChange = {
+                if (it) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
+                viewModel.onNetworkTrackingChange(it)
+            },
             description = stringResource(R.string.network_tracking_desc),
             enabled = state.isTelemetryEnabled
         )
@@ -114,14 +144,27 @@ fun SettingsScreen(
         SettingSwitch(
             text = stringResource(R.string.screen_lock_tracking),
             checked = state.isScreenLockTrackingEnabled,
-            onCheckedChange = { viewModel.onScreenLockTrackingChange(it) },
+            onCheckedChange = {
+                if (it) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
+                viewModel.onScreenLockTrackingChange(it)
+            },
             enabled = state.isTelemetryEnabled
         )
 
         SettingSlider(
             text = stringResource(R.string.telemetry_interval),
             valueMs = state.telemetryInterval,
-            onValueChange = { viewModel.onTelemetryIntervalChange(it) },
+            onValueChange = {
+                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+            },
+            onValueChangeFinished = {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                viewModel.onTelemetryIntervalChange(it)
+            },
             enabled = state.isTelemetryEnabled
         )
 
@@ -184,6 +227,7 @@ fun SettingsScreen(
         SettingButton(
             text = stringResource(R.string.send_telemetry_button),
             onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                 viewModel.sendTelemetry()
             },
             enabled = isSendTelemetryButtonEnabled,
@@ -197,7 +241,10 @@ fun SettingsScreen(
         SettingButton(
             text = stringResource(R.string.tos_link),
             description = stringResource(R.string.tos_link_desc),
-            onClick = { uriHandler.openUri("${formattedServerUrl}/terms-of-service") },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                uriHandler.openUri("${formattedServerUrl}/terms-of-service")
+            },
             enabled = state.serverUrl.isNotEmpty(),
             icon = Icons.Default.Approval,
         )
@@ -205,14 +252,20 @@ fun SettingsScreen(
         SettingButton(
             text = stringResource(R.string.github_link),
             description = stringResource(R.string.github_link_desc),
-            onClick = { uriHandler.openUri("https://github.com/RCCStudios/") },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                uriHandler.openUri("https://github.com/RCCStudios/")
+            },
             icon = SimpleIcons.Github,
         )
 
         SettingButton(
             text = stringResource(R.string.update_button),
             description = stringResource(R.string.update_button_desc),
-            onClick = { viewModel.checkUpdates() },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                viewModel.checkUpdates()
+            },
             icon = Icons.Default.Update
         )
 

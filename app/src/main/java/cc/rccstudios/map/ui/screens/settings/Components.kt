@@ -93,7 +93,8 @@ fun SettingSwitch(
 fun SettingSlider(
     text: String,
     valueMs: Long,
-    onValueChange: (Long) -> Unit,
+    onValueChange: () -> Unit,
+    onValueChangeFinished: (Long) -> Unit,
     enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -150,10 +151,11 @@ fun SettingSlider(
             onValueChange = { newValue ->
                 val step = 5f
                 sliderValue = (round(newValue / step) * step).coerceIn(5f, 300f)
+                onValueChange()
             },
             onValueChangeFinished = {
                 val updatedIntervalMs = sliderValue.roundToLong() * 1000L
-                onValueChange(updatedIntervalMs)
+                onValueChangeFinished(updatedIntervalMs)
             },
             valueRange = 5f..300f,
             enabled = enabled

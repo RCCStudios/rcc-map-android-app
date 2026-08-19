@@ -42,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
@@ -67,6 +69,7 @@ fun ProfileScreen(
     state: UiState,
     context: Context,
     uriHandler: UriHandler,
+    haptic: HapticFeedback,
     modifier: Modifier = Modifier
 ) {
     var isEditing by remember { mutableStateOf(false) }
@@ -76,6 +79,7 @@ fun ProfileScreen(
         uri?.let { viewModel.updateUser(context, it) }
     }
     val clipboardManager = LocalClipboard.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -96,6 +100,9 @@ fun ProfileScreen(
                 onClick = {
                     if (isEditing) {
                         viewModel.updateUser()
+                        haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                    } else {
+                        haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
                     }
                     isEditing = !isEditing
                 },
@@ -169,6 +176,7 @@ fun ProfileScreen(
                     shadowElevation = 4.dp,
                     enabled = !state.isLoading,
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         photoPickerLauncher.launch(
                             PickVisualMediaRequest(
                                 ActivityResultContracts.PickVisualMedia.ImageOnly
@@ -202,6 +210,7 @@ fun ProfileScreen(
                 AuthTextButton(
                     text = "TG: @${state.telegram}",
                     onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                         uriHandler.openUri(
                             "tg://resolve?domain=${state.telegram.removePrefix("@")}"
                         )
@@ -250,6 +259,7 @@ fun ProfileScreen(
                             IconButton(
                                 enabled = !state.token.isNullOrBlank(),
                                 onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                     scope.launch {
                                         clipboardManager.setClipEntry(
                                             ClipEntry(
@@ -287,6 +297,7 @@ fun ProfileScreen(
                         IconButton(
                             enabled = !state.token.isNullOrBlank(),
                             onClick = {
+                                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                                 scope.launch {
                                     if (!state.token.isNullOrBlank()) {
                                         clipboardManager.setClipEntry(
@@ -353,6 +364,7 @@ fun ProfileScreen(
             AuthButton(
                 text = stringResource(R.string.log_out_button),
                 onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.Reject)
                     isEditing = false
                     viewModel.logout()
                 },

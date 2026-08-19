@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -101,6 +103,7 @@ fun BottomMenu(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val startDestination = Destination.MAP
     val currentDestination = navBackStackEntry?.destination
+    val haptic = LocalHapticFeedback.current
 
     Scaffold(
         modifier = modifier,
@@ -112,6 +115,7 @@ fun BottomMenu(
                     NavigationBarItem(
                         selected = isSelected,
                         onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                             navController.navigate(destination.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true

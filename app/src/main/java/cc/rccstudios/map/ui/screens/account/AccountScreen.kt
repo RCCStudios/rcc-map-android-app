@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cc.rccstudios.map.ui.MainViewModel
@@ -21,6 +22,7 @@ fun AccountScreen(
     val context = LocalContext.current
     val authMode = state.authMode
     val uriHandler = LocalUriHandler.current
+    val haptic = LocalHapticFeedback.current
 
     LaunchedEffect(Unit) {
         viewModel.getOtp()
@@ -30,11 +32,13 @@ fun AccountScreen(
         AuthMode.REGISTER -> RegisterScreen(
             viewModel = viewModel,
             state = state,
+            haptic = haptic,
             modifier = modifier
         )
         AuthMode.LOGIN -> LoginScreen(
             viewModel = viewModel,
             state = state,
+            haptic = haptic,
             modifier = modifier
         )
         AuthMode.LOGGED_IN -> ProfileScreen(
@@ -43,6 +47,7 @@ fun AccountScreen(
             state = state,
             context = context,
             uriHandler = uriHandler,
+            haptic = haptic,
             modifier = modifier
         )
     }

@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -26,6 +28,7 @@ import cc.rccstudios.map.R
 fun RegisterScreen(
     viewModel: MainViewModel,
     state: UiState,
+    haptic: HapticFeedback,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -83,7 +86,10 @@ fun RegisterScreen(
         AuthTextButton(
             prefixText = stringResource(R.string.already_have_account),
             text = stringResource(R.string.log_in_button),
-            onClick = { viewModel.toggleAuthMode() }
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                viewModel.toggleAuthMode()
+            }
         )
 
         Spacer(modifier = Modifier.size(12.dp))
@@ -95,7 +101,10 @@ fun RegisterScreen(
 
         AuthButton(
             text = stringResource(R.string.register_button),
-            onClick = { viewModel.register() },
+            onClick = {
+                haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+                viewModel.register()
+            },
             enabled = isButtonEnabled,
             isLoading = state.isLoading
         )
