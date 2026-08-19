@@ -1,7 +1,6 @@
 package cc.rccstudios.map.data.service
 
 import android.app.Notification
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -20,14 +19,15 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.BomberActivity
 import cc.rccstudios.map.R
+import cc.rccstudios.map.data.service.TelemetryService.Companion.ACTION_STOP_NOTIFICATION
 
 class BomberService : Service() {
     companion object {
         private const val TAG = "BomberService"
         const val NOTIFICATION_ID = 9001
 
-        const val ACTION_START = "cc.rccstudios.map.action.BOMBER_START"
-        const val ACTION_STOP = "cc.rccstudios.map.action.BOMBER_STOP"
+        const val ACTION_START = "BOMBER_START"
+        const val ACTION_STOP = "BOMBER_STOP"
 
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_BODY = "extra_body"
@@ -49,7 +49,7 @@ class BomberService : Service() {
     }
 
     private val cameraManager: CameraManager by lazy {
-        getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        getSystemService(CAMERA_SERVICE) as CameraManager
     }
 
     private val notificationManager: NotificationManager by lazy {
@@ -159,8 +159,17 @@ class BomberService : Service() {
         val fullScreenIntent = Intent(this, BomberActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
+
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this, 0, fullScreenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val stopIntent = Intent(this, BomberService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPendingIntent = PendingIntent.getService(
+            this, 1, stopIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
@@ -173,10 +182,16 @@ class BomberService : Service() {
             PushPayloadHandler.BOMBER_CHANNEL_ID
         )
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle(title ?: getString(R.string.bomber_notification))
+            .setContentTitle(title ?: getString(R.string.bomber))
+            .setContentText(body ?: getString(R.string.bomber_desc))
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setOngoing(true)
+            .addAction(
+                R.drawable.ic_stop,
+                getString(R.string.stop_button),
+                stopPendingIntent
+            )
 
         body?.let { builder.setContentText(it) }
 

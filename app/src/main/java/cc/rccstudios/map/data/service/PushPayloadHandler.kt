@@ -45,8 +45,8 @@ class PushPayloadHandler(
             ),
             ChannelSpec(
                 BOMBER_CHANNEL_ID,
-                R.string.bomber_notification,
-                R.string.bomber_notification,
+                R.string.bomber,
+                R.string.bomber,
                 NotificationManager.IMPORTANCE_HIGH
             ),
         )

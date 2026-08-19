@@ -40,6 +40,10 @@
     <string name="avatar_desc">Your avatar image</string>
     <!-- Map Screen -->
     <string name="map_placeholder">The map was supposed to be here, but it didn’t load</string>
+    <!-- Bomber Screen -->
+    <string name="bomber" translatable="false">You\'ve got a bomber!</string>
+    <string name="bomber_desc">fdf</string>
+    <string name="sender">Sender</string>
     <!-- Update Dialog -->
     <string name="update_available_title">New update available</string>
     <string name="update_changelog_header">Changelog</string>
@@ -51,8 +55,8 @@
     <string name="telemetry_active">Telemetry collection is active</string>
     <string name="telemetry_error">Error while collecting telemetry</string>
     <string name="telemetry_disabled">Telemetry collection is disabled</string>
-    <string name="bomber_notification" translatable="false">bobm</string>
-    <string name="push_notification" translatable="false">puhs</string>
+    <string name="bomber_notification">Bomber Notifications</string>
+    <string name="push_notification">Other Push Notifications</string>
     <!-- Other -->
     <string name="copy_button">Copy</string>
     <string name="refresh_button">Refresh</string>
