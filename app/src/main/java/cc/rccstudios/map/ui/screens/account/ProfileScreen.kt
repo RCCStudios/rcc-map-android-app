@@ -124,8 +124,6 @@ fun ProfileScreen(
                 AsyncImage(
                     model = ImageRequest.Builder(context)
                         .data("${state.serverUrl.toNormalizedUrl()}${state.avatarPath}")
-                        .diskCachePolicy(CachePolicy.DISABLED)
-                        .memoryCachePolicy(CachePolicy.DISABLED)
                         .build(),
                     contentDescription = stringResource(R.string.avatar_desc),
                     contentScale = ContentScale.Crop,
