@@ -7,14 +7,18 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import cc.rccstudios.map.domain.model.TimePeriod
 import cc.rccstudios.map.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 class SettingsRepositoryImpl(
     private val dataStore: DataStore<Preferences>
 ) : SettingsRepository {
+    private val json = Json { ignoreUnknownKeys = true }
+
     private object PreferencesKeys {
         val TOKEN = stringPreferencesKey("token")
         val FID = stringPreferencesKey("fid")
@@ -30,6 +34,8 @@ class SettingsRepositoryImpl(
         val NETWORK_TRACKER_ENABLED = booleanPreferencesKey("network_tracker_enabled")
         val SCREEN_LOCK_TRACKER_ENABLED = booleanPreferencesKey("screen_lock_tracker_enabled")
         val TELEMETRY_INTERVAL = longPreferencesKey("telemetry_interval")
+        val BOMBER_ENABLED = booleanPreferencesKey("bomber_enabled")
+        val BOMBER_SILENCE_PERIODS = stringPreferencesKey("bomber_silence_periods")
     }
 
     override val tokenFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.TOKEN] }
@@ -48,6 +54,13 @@ class SettingsRepositoryImpl(
     override val screenLockTrackingEnabledFlow: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.SCREEN_LOCK_TRACKER_ENABLED] ?: true }
 
     override val telemetryIntervalFlow: Flow<Long> = dataStore.data.map { it[PreferencesKeys.TELEMETRY_INTERVAL] ?: 60000L }
+
+    override val bomberEnabledFlow: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.BOMBER_ENABLED] ?: true }
+    override val bomberSilencePeriodsFlow: Flow<List<TimePeriod>> = dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS]?.let { raw ->
+            runCatching { json.decodeFromString<List<TimePeriod>>(raw) }.getOrDefault(emptyList())
+        } ?: emptyList()
+    }
 
     override suspend fun saveToken(token: String) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.TOKEN] = token }
@@ -105,6 +118,33 @@ class SettingsRepositoryImpl(
         dataStore.edit { preferences -> preferences[PreferencesKeys.TELEMETRY_INTERVAL] = interval }
     }
 
+    override suspend fun saveBomberEnabled(enabled: Boolean) {
+        dataStore.edit { preferences -> preferences[PreferencesKeys.BOMBER_ENABLED] = enabled }
+    }
+
+    override suspend fun addBomberSilencePeriod(period: TimePeriod) {
+        dataStore.edit { preferences ->
+            val current = decodePeriods(preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS])
+            preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS] = json.encodeToString(current + period)
+        }
+    }
+
+    override suspend fun removeBomberSilencePeriod(id: String) {
+        dataStore.edit { preferences ->
+            val current = decodePeriods(preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS])
+            preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS] = json.encodeToString(current.filterNot { it.id == id })
+        }
+    }
+
+    override suspend fun updateBomberSilencePeriod(period: TimePeriod) {
+        dataStore.edit { preferences ->
+            val current = decodePeriods(preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS])
+            preferences[PreferencesKeys.BOMBER_SILENCE_PERIODS] = json.encodeToString(
+                current.map { if (it.id == period.id) period else it }
+            )
+        }
+    }
+
     override suspend fun getToken(): String? = tokenFlow.first()
     override suspend fun getFid(): String? = fidFlow.first()
     override suspend fun getUsername(): String? = usernameFlow.first()
@@ -119,4 +159,10 @@ class SettingsRepositoryImpl(
     override suspend fun getNetworkTrackingEnabled(): Boolean = networkTrackingEnabledFlow.first()
     override suspend fun getScreenLockTrackingEnabled(): Boolean = screenLockTrackingEnabledFlow.first()
     override suspend fun getTelemetryInterval(): Long = telemetryIntervalFlow.first()
+    override suspend fun getBomberEnabled(): Boolean = bomberEnabledFlow.first()
+    override suspend fun getBomberSilencePeriods(): List<TimePeriod> = bomberSilencePeriodsFlow.first()
+
+    private fun decodePeriods(raw: String?): List<TimePeriod> =
+        raw?.let { runCatching { json.decodeFromString<List<TimePeriod>>(it) }.getOrDefault(emptyList()) }
+            ?: emptyList()
 }

@@ -1,5 +1,8 @@
 package cc.rccstudios.map.utils
 
+import cc.rccstudios.map.domain.model.TimePeriod
+import java.time.LocalTime
+
 fun String.toNormalizedUrl(): String {
     if (isBlank()) return ""
     val url = if (startsWith("http://") || startsWith("https://")) this else "https://$this"
@@ -35,5 +38,17 @@ fun compareVersions(v1: String, v2: String): Int {
         hasSuffix1 && !hasSuffix2 -> -1
         hasSuffix1 && hasSuffix2 -> parts1[1].compareTo(parts2[1])
         else -> 0
+    }
+}
+
+fun List<TimePeriod>.isSilenceNow(now: LocalTime = LocalTime.now()): Boolean {
+    val nowMinutes = now.hour * 60 + now.minute
+    return any { period ->
+        if (!period.enabled) return@any false
+        if (period.startMinuteOfDay <= period.endMinuteOfDay) {
+            nowMinutes in period.startMinuteOfDay..period.endMinuteOfDay
+        } else {
+            nowMinutes >= period.startMinuteOfDay || nowMinutes <= period.endMinuteOfDay
+        }
     }
 }

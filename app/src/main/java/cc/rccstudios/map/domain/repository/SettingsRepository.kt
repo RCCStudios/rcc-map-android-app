@@ -1,5 +1,6 @@
 package cc.rccstudios.map.domain.repository
 
+import cc.rccstudios.map.domain.model.TimePeriod
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
@@ -17,6 +18,8 @@ interface SettingsRepository {
     val networkTrackingEnabledFlow: Flow<Boolean>
     val screenLockTrackingEnabledFlow: Flow<Boolean>
     val telemetryIntervalFlow: Flow<Long>
+    val bomberEnabledFlow: Flow<Boolean>
+    val bomberSilencePeriodsFlow: Flow<List<TimePeriod>>
 
     suspend fun saveToken(token: String)
     suspend fun saveFid(fid: String)
@@ -32,6 +35,11 @@ interface SettingsRepository {
     suspend fun saveNetworkTrackingEnabled(enabled: Boolean)
     suspend fun saveScreenLockTrackingEnabled(enabled: Boolean)
     suspend fun saveTelemetryInterval(interval: Long)
+    suspend fun saveBomberEnabled(enabled: Boolean)
+
+    suspend fun addBomberSilencePeriod(period: TimePeriod)
+    suspend fun removeBomberSilencePeriod(id: String)
+    suspend fun updateBomberSilencePeriod(period: TimePeriod)
 
     suspend fun getToken(): String?
     suspend fun getFid(): String?
@@ -41,10 +49,12 @@ interface SettingsRepository {
     suspend fun getAuthMode(): Int?
     suspend fun getAvatarPath(): String?
     suspend fun getTelegram(): String?
-    suspend fun getTelemetryEnabled(): Boolean?
+    suspend fun getTelemetryEnabled(): Boolean
     suspend fun getBatteryTrackingEnabled(): Boolean
     suspend fun getLocationTrackingEnabled(): Boolean
     suspend fun getNetworkTrackingEnabled(): Boolean
     suspend fun getScreenLockTrackingEnabled(): Boolean
     suspend fun getTelemetryInterval(): Long
+    suspend fun getBomberEnabled(): Boolean
+    suspend fun getBomberSilencePeriods(): List<TimePeriod>
 }

@@ -5,10 +5,12 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.R
 import cc.rccstudios.map.domain.model.PushPayload
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
+import cc.rccstudios.map.domain.usecase.ShouldSuppressBomberUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class PushPayloadHandler(
     private val context: Context,
-    private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase
+    private val collectAndSendTelemetryUseCase: CollectAndSendTelemetryUseCase,
+    private val shouldSuppressBomberUseCase: ShouldSuppressBomberUseCase
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val notificationManager by lazy {
@@ -24,6 +27,7 @@ class PushPayloadHandler(
     }
 
     companion object {
+        const val PUSH_PAYLOAD_HANDLER_TAG = "PushPayloadHandler"
         const val ACTION_FORCE_TELEMETRY = "FORCE_TELEMETRY"
         const val ACTION_BOMBER = "BOMBER"
         const val PUSH_CHANNEL_ID = "push_channel"
@@ -45,8 +49,8 @@ class PushPayloadHandler(
             ),
             ChannelSpec(
                 BOMBER_CHANNEL_ID,
-                R.string.bomber,
-                R.string.bomber,
+                R.string.bomber_notification,
+                R.string.bomber_notification,
                 NotificationManager.IMPORTANCE_HIGH
             ),
         )
@@ -79,15 +83,21 @@ class PushPayloadHandler(
     }
 
     private fun handleBomberNotification(data: Map<String, String>) {
-        val intent = Intent(context, BomberService::class.java).apply {
-            action = BomberService.ACTION_START
-            putExtra(BomberService.EXTRA_TITLE, data["title"])
-            putExtra(BomberService.EXTRA_BODY, data["body"])
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
+        scope.launch {
+            if (shouldSuppressBomberUseCase()) {
+                Log.d(PUSH_PAYLOAD_HANDLER_TAG, "Bomber suppressed: within silence period")
+                return@launch
+            }
+            val intent = Intent(context, BomberService::class.java).apply {
+                action = BomberService.ACTION_START
+                putExtra(BomberService.EXTRA_TITLE, data["title"])
+                putExtra(BomberService.EXTRA_BODY, data["body"])
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
         }
     }
 
