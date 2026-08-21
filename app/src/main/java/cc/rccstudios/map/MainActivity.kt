@@ -78,10 +78,10 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(
                     state.token,
-                    state.isTelemetryEnabled,
+                    state.telemetryEnabled,
                     state.telemetryInterval
                 ) {
-                    val shouldRunService = !state.token.isNullOrBlank() && state.isTelemetryEnabled
+                    val shouldRunService = !state.token.isNullOrBlank() && state.telemetryEnabled
 
                     if (shouldRunService) {
                         val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

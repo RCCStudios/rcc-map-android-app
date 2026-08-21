@@ -74,7 +74,7 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SettingButton(
-                isEnabled = state.isTelemetryEnabled,
+                isEnabled = state.telemetryEnabled,
                 onToggle = {
                     if (it) {
                         haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
@@ -88,7 +88,7 @@ fun SettingsScreen(
             )
 
             Text(
-                text = if (state.isTelemetryEnabled) {
+                text = if (state.telemetryEnabled) {
                     stringResource(R.string.telemetry_active)
                 } else {
                     stringResource(R.string.telemetry_disabled)
@@ -100,7 +100,7 @@ fun SettingsScreen(
 
         SettingSwitch(
             text = stringResource(R.string.battery_tracking),
-            checked = state.isBatteryTrackingEnabled,
+            checked = state.batteryTrackingEnabled,
             onCheckedChange = {
                 if (it) {
                     haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
@@ -109,12 +109,12 @@ fun SettingsScreen(
                 }
                 viewModel.onBatteryTrackingChange(it)
             },
-            enabled = state.isTelemetryEnabled
+            enabled = state.telemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.location_tracking),
-            checked = state.isLocationTrackingEnabled,
+            checked = state.locationTrackingEnabled,
             onCheckedChange = {
                 if (it) {
                     haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
@@ -123,12 +123,12 @@ fun SettingsScreen(
                 }
                 viewModel.onLocationTrackingChange(it)
             },
-            enabled = state.isTelemetryEnabled
+            enabled = state.telemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.network_tracking),
-            checked = state.isNetworkTrackingEnabled,
+            checked = state.networkTrackingEnabled,
             onCheckedChange = {
                 if (it) {
                     haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
@@ -138,12 +138,12 @@ fun SettingsScreen(
                 viewModel.onNetworkTrackingChange(it)
             },
             description = stringResource(R.string.network_tracking_desc),
-            enabled = state.isTelemetryEnabled
+            enabled = state.telemetryEnabled
         )
 
         SettingSwitch(
             text = stringResource(R.string.screen_lock_tracking),
-            checked = state.isScreenLockTrackingEnabled,
+            checked = state.screenLockTrackingEnabled,
             onCheckedChange = {
                 if (it) {
                     haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
@@ -152,7 +152,7 @@ fun SettingsScreen(
                 }
                 viewModel.onScreenLockTrackingChange(it)
             },
-            enabled = state.isTelemetryEnabled
+            enabled = state.telemetryEnabled
         )
 
         SettingSlider(
@@ -165,7 +165,7 @@ fun SettingsScreen(
                 haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                 viewModel.onTelemetryIntervalChange(it)
             },
-            enabled = state.isTelemetryEnabled
+            enabled = state.telemetryEnabled
         )
 
         HorizontalDivider(
@@ -221,7 +221,7 @@ fun SettingsScreen(
 
         val isSendTelemetryButtonEnabled = !state.token.isNullOrBlank() &&
                 state.serverUrl.isNotBlank() &&
-                state.isTelemetryEnabled &&
+                state.telemetryEnabled &&
                 !state.isLoading
 
         SettingButton(

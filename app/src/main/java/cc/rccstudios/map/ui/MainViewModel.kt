@@ -5,12 +5,12 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cc.rccstudios.map.BuildConfig
+import cc.rccstudios.map.domain.model.TimePeriod
 import cc.rccstudios.map.domain.model.UpdateStatus
 import cc.rccstudios.map.domain.repository.SettingsRepository
 import cc.rccstudios.map.domain.usecase.CheckUpdatesUseCase
 import cc.rccstudios.map.domain.usecase.CollectAndSendTelemetryUseCase
 import cc.rccstudios.map.domain.usecase.GetOtpUseCase
-import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
@@ -20,6 +20,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 enum class AuthMode(val code: Int) {
     REGISTER(0),
@@ -41,12 +42,14 @@ data class UiState(
     val authMode: AuthMode = AuthMode.REGISTER,
     val avatarPath: String = "",
     val telegram: String = "",
-    val isTelemetryEnabled: Boolean = true,
-    val isBatteryTrackingEnabled: Boolean = true,
-    val isLocationTrackingEnabled: Boolean = true,
-    val isNetworkTrackingEnabled: Boolean = true,
-    val isScreenLockTrackingEnabled: Boolean = true,
+    val telemetryEnabled: Boolean = true,
+    val batteryTrackingEnabled: Boolean = true,
+    val locationTrackingEnabled: Boolean = true,
+    val networkTrackingEnabled: Boolean = true,
+    val screenLockTrackingEnabled: Boolean = true,
     val telemetryInterval: Long = 60000L,
+    val bomberEnabled: Boolean = true,
+    val bomberSilencePeriods: List<TimePeriod> = emptyList(),
     val isLoading: Boolean = false,
     val logMessage: String = "",
     val updateInfo: UpdateStatus? = UpdateStatus.UpToDate
@@ -137,11 +140,11 @@ class MainViewModel(
 
                 _uiState.update {
                     it.copy(
-                        isTelemetryEnabled = effectiveTelemetry,
-                        isBatteryTrackingEnabled = battery,
-                        isLocationTrackingEnabled = location,
-                        isNetworkTrackingEnabled = network,
-                        isScreenLockTrackingEnabled = screenLock
+                        telemetryEnabled = effectiveTelemetry,
+                        batteryTrackingEnabled = battery,
+                        locationTrackingEnabled = location,
+                        networkTrackingEnabled = network,
+                        screenLockTrackingEnabled = screenLock
                     )
                 }
             }.collect()
@@ -157,7 +160,7 @@ class MainViewModel(
     private fun setupDebounceAutoSave() {
         viewModelScope.launch {
             urlInputFlow
-                .debounce(1000L)
+                .debounce(1000L.milliseconds)
                 .collect { url ->
                     settingsRepository.saveServerUrl(url)
                     _uiState.update { it.copy(logMessage = "Server URL saved automatically") }
@@ -166,7 +169,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             usernameInputFlow
-                .debounce(1000L)
+                .debounce(1000L.milliseconds)
                 .collect { username ->
                     settingsRepository.saveUsername(username)
                     _uiState.update { it.copy(logMessage = "Username saved automatically") }
@@ -175,7 +178,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             otpInputFlow
-                .debounce(1000L)
+                .debounce(1000L.milliseconds)
                 .collect { otp ->
                     settingsRepository.saveOtp(otp)
                     _uiState.update { it.copy(logMessage = "OTP saved automatically") }
@@ -184,7 +187,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             intervalInputFlow
-                .debounce(1000L)
+                .debounce(1000L.milliseconds)
                 .collect { interval ->
                     settingsRepository.saveTelemetryInterval(interval)
                     _uiState.update { it.copy(logMessage = "Telemetry interval saved automatically") }
@@ -193,7 +196,7 @@ class MainViewModel(
 
         viewModelScope.launch {
             telegramInputFlow
-                .debounce(1000L)
+                .debounce(1000L.milliseconds)
                 .collect { telegram ->
                     settingsRepository.saveTelegram(telegram)
                     _uiState.update { it.copy(logMessage = "Telegram saved automatically") }
@@ -225,10 +228,10 @@ class MainViewModel(
         viewModelScope.launch {
             if (enabled) {
                 val state = _uiState.value
-                val allDisabled = !state.isBatteryTrackingEnabled &&
-                        !state.isLocationTrackingEnabled &&
-                        !state.isNetworkTrackingEnabled &&
-                        !state.isScreenLockTrackingEnabled
+                val allDisabled = !state.batteryTrackingEnabled &&
+                        !state.locationTrackingEnabled &&
+                        !state.networkTrackingEnabled &&
+                        !state.screenLockTrackingEnabled
 
                 if (allDisabled) {
                     settingsRepository.saveBatteryTrackingEnabled(true)
@@ -405,7 +408,7 @@ class MainViewModel(
     }
 
     fun sendTelemetry() {
-        if (!_uiState.value.isTelemetryEnabled) {
+        if (!_uiState.value.telemetryEnabled) {
             _uiState.update { it.copy(logMessage = "Telemetry is disabled") }
             return
         }
