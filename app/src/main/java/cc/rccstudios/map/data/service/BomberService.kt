@@ -132,7 +132,7 @@ class BomberService : Service() {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .build()
                 )
-                val afd = resources.openRawResourceFd(R.raw.bomber_alarm_1)
+                val afd = resources.openRawResourceFd(R.raw.bomber_alarm_3)
                 setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
                 afd.close()
                 isLooping = true
