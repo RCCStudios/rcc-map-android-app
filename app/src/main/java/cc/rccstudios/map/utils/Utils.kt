@@ -52,3 +52,10 @@ fun List<TimePeriod>.isSilenceNow(now: LocalTime = LocalTime.now()): Boolean {
         }
     }
 }
+
+fun Int.toNormalizedTime(): String {
+    val h = this / 60
+    val m = this % 60
+    return "%02d:%02d".format(h, m)
+
+}
