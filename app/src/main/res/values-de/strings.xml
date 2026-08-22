@@ -12,7 +12,7 @@
     <string name="server_url">Server-URL</string>
     <string name="server_url_placeholder">z. B. map.rccstudios.cc</string>
     <string name="send_telemetry_button">Telemetrie senden</string>
-    <string name="logcat_empty">Leer</string>
+    <string name="empty">Leer</string>
     <string name="github_link">GitHub-Repositories</string>
     <string name="github_link_desc">Geben Sie unseren Repositories einen Stern und folgen Sie uns!</string>
     <string name="tos_link">Server-Nutzungsbedingungen</string>

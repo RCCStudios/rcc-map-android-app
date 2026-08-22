@@ -2,8 +2,12 @@ package cc.rccstudios.map.ui.screens.settings
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import cc.rccstudios.map.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,6 +43,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cc.rccstudios.map.domain.model.TimePeriod
+import cc.rccstudios.map.utils.toNormalizedTime
 import kotlin.math.round
 import kotlin.math.roundToLong
 
@@ -44,8 +53,8 @@ fun SettingSwitch(
     text: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     description: String? = null
 ) {
     Row(
@@ -95,8 +104,8 @@ fun SettingSlider(
     valueMs: Long,
     onValueChange: () -> Unit,
     onValueChangeFinished: (Long) -> Unit,
-    enabled: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     var sliderValue by remember(valueMs) {
         mutableFloatStateOf((valueMs / 1000f).coerceIn(5f, 300f))
@@ -336,5 +345,125 @@ fun SettingButton(
                 .size(48.dp)
                 .padding(8.dp)
         )
+    }
+}
+
+@Composable
+fun SettingTimeSelector(
+    text: String,
+    addPeriod: () -> Unit,
+    updatePeriod: (TimePeriod) -> Unit,
+    removePeriod: (String) -> Unit,
+    periods: List<TimePeriod>,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(
+                horizontal = 16.dp,
+                vertical = 12.dp
+            )
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.weight(1f)
+            )
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape
+                    )
+                    .clickable(
+                        enabled = enabled,
+                        onClick = addPeriod
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(R.string.add_button),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(4.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            periods.forEach { period ->
+                Button(onClick = { updatePeriod(period) }) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "${period.startMinuteOfDay.toNormalizedTime()} - ${period.endMinuteOfDay.toNormalizedTime()}",
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .border(
+                                    width = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    shape = CircleShape
+                                )
+                                .clickable(
+                                    enabled = enabled,
+                                    onClick = { removePeriod(period.id) }
+                                )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Remove,
+                                contentDescription = stringResource(R.string.remove_button),
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .padding(2.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        periods.ifEmpty {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }

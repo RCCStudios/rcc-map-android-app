@@ -21,6 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import cc.rccstudios.map.domain.model.TimePeriod
 import cc.rccstudios.map.ui.MainViewModel
+import cc.rccstudios.map.ui.dialogs.timeperiod.TimePeriodDialog
 import cc.rccstudios.map.utils.toNormalizedUrl
 import compose.icons.SimpleIcons
 import compose.icons.simpleicons.Github
@@ -48,6 +53,9 @@ fun SettingsScreen(
     val scrollState = rememberScrollState()
     val haptic = LocalHapticFeedback.current
     val formattedServerUrl = state.serverUrl.toNormalizedUrl()
+
+    var showAddDialog by remember { mutableStateOf(false) }
+    var editingPeriod by remember { mutableStateOf<TimePeriod?>(null) }
 
     Column(
         modifier = modifier
@@ -172,6 +180,68 @@ fun SettingsScreen(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
+        SettingSwitch(
+            text = stringResource(R.string.bomber_switch),
+            description = stringResource(R.string.bomber_switch_desc),
+            checked = state.bomberEnabled,
+            onCheckedChange = {
+                if (it) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
+                viewModel.onBomberEnabledChange(it)
+            }
+        )
+
+        SettingTimeSelector(
+            text = stringResource(R.string.bomber_periods_title),
+            addPeriod = { showAddDialog = true },
+            updatePeriod = { period -> editingPeriod = period },
+            removePeriod = { id -> viewModel.removeBomberSilencePeriod(id) },
+            periods = state.bomberSilencePeriods
+        )
+
+        if (showAddDialog) {
+            TimePeriodDialog(
+                title = stringResource(R.string.bomber_periods_title),
+                startText = stringResource(R.string.bomber_periods_add_start),
+                endText = stringResource(R.string.bomber_periods_add_end),
+                onDismissRequest = { showAddDialog = false },
+                onConfirm = { start, end ->
+                    viewModel.addBomberSilencePeriod(
+                        TimePeriod(
+                            startMinuteOfDay = start,
+                            endMinuteOfDay = end
+                        )
+                    )
+                }
+            )
+        }
+
+        editingPeriod?.let { period ->
+            TimePeriodDialog(
+                title = stringResource(R.string.bomber_periods_title),
+                startText = stringResource(R.string.bomber_periods_add_start),
+                endText = stringResource(R.string.bomber_periods_add_end),
+                onDismissRequest = { editingPeriod = null },
+                initialStartMinute = period.startMinuteOfDay,
+                initialEndMinute = period.endMinuteOfDay,
+                onConfirm = { start, end ->
+                    viewModel.updateBomberSilencePeriod(
+                        period.copy(
+                            startMinuteOfDay = start,
+                            endMinuteOfDay = end
+                        )
+                    )
+                }
+            )
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
+
         SettingTextField(
             text = stringResource(R.string.server_url),
             placeholder = stringResource(R.string.server_url_placeholder),
@@ -197,7 +267,7 @@ fun SettingsScreen(
         )
 
         Text(
-            text = state.logMessage.ifBlank { stringResource(R.string.logcat_empty) },
+            text = state.logMessage.ifBlank { stringResource(R.string.empty) },
             color = if (state.logMessage.isBlank()) {
                 MaterialTheme.colorScheme.secondary
             } else if (state.logMessage.contains("Error", ignoreCase = true)) {

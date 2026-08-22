@@ -155,6 +155,20 @@ class MainViewModel(
                 _uiState.update { it.copy(telemetryInterval = interval) }
             }
         }
+
+        viewModelScope.launch {
+            combine(
+                settingsRepository.bomberEnabledFlow,
+                settingsRepository.bomberSilencePeriodsFlow
+            ) { bomberEnabled, bomberSilencePeriods ->
+                _uiState.update {
+                    it.copy(
+                        bomberEnabled = bomberEnabled,
+                        bomberSilencePeriods = bomberSilencePeriods
+                    )
+                }
+            }.collect()
+        }
     }
 
     private fun setupDebounceAutoSave() {
@@ -263,6 +277,22 @@ class MainViewModel(
 
     fun onScreenLockTrackingChange(enabled: Boolean) {
         viewModelScope.launch { settingsRepository.saveScreenLockTrackingEnabled(enabled) }
+    }
+
+    fun onBomberEnabledChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveBomberEnabled(enabled) }
+    }
+
+    fun addBomberSilencePeriod(period: TimePeriod) {
+        viewModelScope.launch { settingsRepository.addBomberSilencePeriod(period) }
+    }
+
+    fun removeBomberSilencePeriod(id: String) {
+        viewModelScope.launch { settingsRepository.removeBomberSilencePeriod(id) }
+    }
+
+    fun updateBomberSilencePeriod(period: TimePeriod) {
+        viewModelScope.launch { settingsRepository.updateBomberSilencePeriod(period) }
     }
 
     fun updateUser(

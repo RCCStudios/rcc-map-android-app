@@ -7,7 +7,8 @@ class ShouldSuppressBomberUseCase(
     private val settingsRepository: SettingsRepository
 ) {
     suspend operator fun invoke(): Boolean {
+        val bomberEnabled = settingsRepository.getBomberEnabled()
         val periods = settingsRepository.getBomberSilencePeriods()
-        return periods.isSilenceNow()
+        return periods.isSilenceNow() || !bomberEnabled
     }
 }

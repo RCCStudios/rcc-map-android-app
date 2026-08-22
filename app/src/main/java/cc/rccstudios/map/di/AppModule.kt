@@ -34,6 +34,7 @@ import cc.rccstudios.map.domain.usecase.GetTokenUseCase
 import cc.rccstudios.map.domain.usecase.GetUserUseCase
 import cc.rccstudios.map.domain.usecase.LoginUseCase
 import cc.rccstudios.map.domain.usecase.RegisterUseCase
+import cc.rccstudios.map.domain.usecase.ShouldSuppressBomberUseCase
 import cc.rccstudios.map.domain.usecase.UpdateDeviceUseCase
 import cc.rccstudios.map.domain.usecase.UpdateUserUseCase
 import cc.rccstudios.map.ui.MainViewModel
@@ -88,7 +89,11 @@ val appModule = module {
 
     single { LocationServices.getFusedLocationProviderClient(androidContext()) }
 
-    single { PushPayloadHandler(androidContext(), get()) }
+    single { PushPayloadHandler(
+        context = androidContext(),
+        collectAndSendTelemetryUseCase = get(),
+        shouldSuppressBomberUseCase = get()
+    ) }
 
     single {
         com.google.android.gms.location.CurrentLocationRequest.Builder()
@@ -179,6 +184,8 @@ val appModule = module {
     factory { UpdateUserUseCase(userRepository = get()) }
 
     factory { UpdateDeviceUseCase(settingsRepository = get(), deviceRepository = get()) }
+
+    factory { ShouldSuppressBomberUseCase(settingsRepository = get()) }
 
     viewModel {
         MainViewModel(

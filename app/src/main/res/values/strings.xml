@@ -15,13 +15,17 @@
     <string name="server_url_placeholder">e.g. map.rccstudios.cc</string>
     <string name="send_telemetry_button">Send telemetry</string>
     <string name="logcat" translatable="false">Logcat</string>
-    <string name="logcat_empty">Empty</string>
     <string name="github_link">GitHub repos</string>
     <string name="github_link_desc">Star our repos and follow us!</string>
     <string name="tos_link">Server Terms of Service</string>
     <string name="tos_link_desc">See ToS to find out how server uses your data</string>
     <string name="update_button">Check for updates</string>
     <string name="update_button_desc">Check for updates and get the latest version of out app</string>
+    <string name="bomber_switch">Enable bombers</string>
+    <string name="bomber_switch_desc">Allow other people send you bombers</string>
+    <string name="bomber_periods_title">Do not disturb time for bombers</string>
+    <string name="bomber_periods_add_start">Add period starting time</string>
+    <string name="bomber_periods_add_end">Add period ending time</string>
     <!-- Account Screen -->
     <string name="register_title">Welcome to RCC Map!</string>
     <string name="register_button">Register</string>
@@ -58,11 +62,14 @@
     <string name="bomber_notification">Bomber Notifications</string>
     <string name="push_notification">Other Push Notifications</string>
     <!-- Other -->
+    <string name="add_button">Add</string>
+    <string name="remove_button">Remove</string>
     <string name="copy_button">Copy</string>
     <string name="refresh_button">Refresh</string>
     <string name="save_button">Save</string>
     <string name="edit_button">Edit</string>
     <string name="stop_button">Stop</string>
+    <string name="cancel_button">Cancel</string>
     <string name="location">Location</string>
     <string name="battery">Battery</string>
     <string name="network">Network</string>
@@ -80,4 +87,5 @@
     <string name="minutes">min</string>
     <string name="seconds">sec</string>
     <string name="not_set">Not set</string>
+    <string name="empty">Empty</string>
 </resources>
