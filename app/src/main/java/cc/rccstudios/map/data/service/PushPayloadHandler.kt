@@ -92,6 +92,7 @@ class PushPayloadHandler(
                 action = BomberService.ACTION_START
                 putExtra(BomberService.EXTRA_TITLE, data["title"])
                 putExtra(BomberService.EXTRA_BODY, data["body"])
+                putExtra(BomberService.EXTRA_SENDER, data["sender"])
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)

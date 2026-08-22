@@ -16,8 +16,15 @@ class BomberActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         showOverLockscreenAndTurnScreenOn()
 
+        val title = intent.getStringExtra(BomberService.EXTRA_TITLE)
+        val body = intent.getStringExtra(BomberService.EXTRA_BODY)
+        val sender = intent.getStringExtra(BomberService.EXTRA_SENDER)
+
         setContent {
-            BomberScreen(onStopClick = { stopBomber() })
+            BomberScreen(
+                onStopClick = { stopBomber() },
+                sender = sender
+            )
         }
     }
 

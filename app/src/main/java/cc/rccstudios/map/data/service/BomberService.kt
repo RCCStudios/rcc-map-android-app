@@ -31,6 +31,7 @@ class BomberService : Service() {
 
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_BODY = "extra_body"
+        const val EXTRA_SENDER = "extra_sender"
     }
 
     private var mediaPlayer: MediaPlayer? = null
@@ -67,7 +68,8 @@ class BomberService : Service() {
                 if (!effectsRunning) {
                     startEffects(
                         title = intent?.getStringExtra(EXTRA_TITLE),
-                        body = intent?.getStringExtra(EXTRA_BODY)
+                        body = intent?.getStringExtra(EXTRA_BODY),
+                        sender = intent?.getStringExtra(EXTRA_SENDER)
                     )
                     effectsRunning = true
                 }
@@ -78,8 +80,8 @@ class BomberService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
-    private fun startEffects(title: String?, body: String?) {
-        startForeground(NOTIFICATION_ID, buildBomberNotification(title, body))
+    private fun startEffects(title: String?, body: String?, sender: String?) {
+        startForeground(NOTIFICATION_ID, buildBomberNotification(title, body, sender))
         startVibration()
         startSound()
         startTorch()
@@ -155,9 +157,12 @@ class BomberService : Service() {
         }
     }
 
-    private fun buildBomberNotification(title: String?, body: String?): Notification {
+    private fun buildBomberNotification(title: String?, body: String?, sender: String?): Notification {
         val fullScreenIntent = Intent(this, BomberActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra(EXTRA_TITLE, title)
+            putExtra(EXTRA_BODY, body)
+            putExtra(EXTRA_SENDER, sender)
         }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
