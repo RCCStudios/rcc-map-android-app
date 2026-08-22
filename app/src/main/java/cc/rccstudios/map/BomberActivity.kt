@@ -7,18 +7,21 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import cc.rccstudios.map.data.service.BomberService
 import cc.rccstudios.map.ui.screens.bomber.BomberScreen
 
 class BomberActivity : ComponentActivity() {
 
+    private var title by mutableStateOf<String?>(null)
+    private var body by mutableStateOf<String?>(null)
+    private var sender by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showOverLockscreenAndTurnScreenOn()
-
-        val title = intent.getStringExtra(BomberService.EXTRA_TITLE)
-        val body = intent.getStringExtra(BomberService.EXTRA_BODY)
-        val sender = intent.getStringExtra(BomberService.EXTRA_SENDER)
 
         setContent {
             BomberScreen(
@@ -26,6 +29,12 @@ class BomberActivity : ComponentActivity() {
                 sender = sender
             )
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        sender = intent.getStringExtra(BomberService.EXTRA_SENDER)
     }
 
     private fun stopBomber() {

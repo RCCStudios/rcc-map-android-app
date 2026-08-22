@@ -65,14 +65,18 @@ class BomberService : Service() {
                 return START_NOT_STICKY
             }
             else -> {
+                val title = intent?.getStringExtra(EXTRA_TITLE)
+                val body = intent?.getStringExtra(EXTRA_BODY)
+                val sender = intent?.getStringExtra(EXTRA_SENDER)
+
                 if (!effectsRunning) {
-                    startEffects(
-                        title = intent?.getStringExtra(EXTRA_TITLE),
-                        body = intent?.getStringExtra(EXTRA_BODY),
-                        sender = intent?.getStringExtra(EXTRA_SENDER)
-                    )
+                    startEffects(title, body, sender)
                     effectsRunning = true
+                } else {
+                    notificationManager.notify(NOTIFICATION_ID, buildBomberNotification(title, body, sender))
+                    launchBomberActivity(title, body, sender)
                 }
+
             }
         }
         return START_NOT_STICKY
@@ -85,6 +89,16 @@ class BomberService : Service() {
         startVibration()
         startSound()
         startTorch()
+    }
+
+    private fun launchBomberActivity(title: String?, body: String?, sender: String?) {
+        val intent = Intent(this, BomberActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(EXTRA_TITLE, title)
+            putExtra(EXTRA_BODY, body)
+            putExtra(EXTRA_SENDER, sender)
+        }
+        startActivity(intent)
     }
 
     private fun stopEffects() {
