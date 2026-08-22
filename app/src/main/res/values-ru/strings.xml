@@ -65,4 +65,17 @@
     <string name="seconds">сек</string>
     <string name="save_button">Сохранить</string>
     <string name="not_set">Не установлен</string>
+    <string name="bomber">Вам прислали бомбер!</string>
+    <string name="bomber_switch">Включить бомберы</string>
+    <string name="bomber_switch_desc">Разрешить другим отправлять Вам бомберы</string>
+    <string name="bomber_periods_title">Время тишины для бомберов</string>
+    <string name="bomber_periods_add_start">Добавить время начала периода</string>
+    <string name="bomber_periods_add_end">Добавить время окончания периода</string>
+    <string name="bomber_desc">Кто-то отправил Вам бомбер!</string>
+    <string name="sender">Отправитель</string>
+    <string name="bomber_notification">Уведомления о бомберах</string>
+    <string name="push_notification">Остальные push-уведомления</string>
+    <string name="add_button">Добавить</string>
+    <string name="remove_button">Удалить</string>
+    <string name="cancel_button">Отмена</string>
 </resources>

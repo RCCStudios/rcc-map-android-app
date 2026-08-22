@@ -65,4 +65,17 @@
     <string name="seconds">Sek.</string>
     <string name="save_button">Speichern</string>
     <string name="not_set">Nicht festgelegt</string>
+    <string name="bomber">Sie haben einen Bomber erhalten!</string>
+    <string name="bomber_switch">Bomber aktivieren</string>
+    <string name="bomber_switch_desc">Anderen erlauben, Ihnen Bomber zu senden</string>
+    <string name="bomber_periods_title">Ruhezeiten für Bomber</string>
+    <string name="bomber_periods_add_start">Startzeit des Zeitraums hinzufügen</string>
+    <string name="bomber_periods_add_end">Endzeit des Zeitraums hinzufügen</string>
+    <string name="bomber_desc">Jemand hat Ihnen einen Bomber geschickt!</string>
+    <string name="sender">Absender</string>
+    <string name="bomber_notification">Bomber-Benachrichtigungen</string>
+    <string name="push_notification">Weitere Push-Benachrichtigungen</string>
+    <string name="add_button">Hinzufügen</string>
+    <string name="remove_button">Entfernen</string>
+    <string name="cancel_button">Abbrechen</string>
 </resources>
