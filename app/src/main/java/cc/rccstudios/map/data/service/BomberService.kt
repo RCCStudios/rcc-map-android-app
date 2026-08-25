@@ -20,6 +20,15 @@ import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.BomberActivity
 import cc.rccstudios.map.R
 import cc.rccstudios.map.data.service.TelemetryService.Companion.ACTION_STOP_NOTIFICATION
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class BomberService : Service() {
     companion object {
@@ -34,6 +43,8 @@ class BomberService : Service() {
         const val EXTRA_SENDER = "extra_sender"
     }
 
+    private val serviceScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private var torchJob: Job? = null
     private var mediaPlayer: MediaPlayer? = null
     private var torchCameraId: String? = null
     private var torchOn = false
@@ -110,6 +121,8 @@ class BomberService : Service() {
             release()
         }
         mediaPlayer = null
+        torchJob?.cancel()
+        torchJob = null
         setTorch(false)
         effectsRunning = false
     }
@@ -150,7 +163,15 @@ class BomberService : Service() {
         try {
             val id = torchCameraId ?: findFlashCameraId() ?: return
             torchCameraId = id
-            setTorch(true)
+            torchJob?.cancel()
+            torchJob = serviceScope.launch {
+                var state = false
+                while (isActive) {
+                    state = !state
+                    setTorch(state)
+                    delay(150L.milliseconds)
+                }
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to start torch", e)
         }
@@ -227,6 +248,7 @@ class BomberService : Service() {
 
     override fun onDestroy() {
         stopEffects()
+        serviceScope.cancel()
         super.onDestroy()
     }
 }
