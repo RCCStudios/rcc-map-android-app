@@ -242,9 +242,9 @@ fun SettingsScreen(
 
         val availableSounds = remember {
             listOf(
-                R.raw.bomber_alarm_1 to "sound1.mp3",
-                R.raw.bomber_alarm_2 to "sound2.mp3",
-                R.raw.bomber_alarm_3 to "sound3.mp3"
+                R.raw.bomber_alarm_1 to "siren1.mp3",
+                R.raw.bomber_alarm_2 to "alarm_nuclear.mp3",
+                R.raw.bomber_alarm_3 to "sponge_bob.mp3"
             )
         }
 
