@@ -1,5 +1,6 @@
 package cc.rccstudios.map.domain.repository
 
+import androidx.annotation.IdRes
 import cc.rccstudios.map.domain.model.TimePeriod
 import kotlinx.coroutines.flow.Flow
 
@@ -20,6 +21,7 @@ interface SettingsRepository {
     val telemetryIntervalFlow: Flow<Long>
     val bomberEnabledFlow: Flow<Boolean>
     val bomberSilencePeriodsFlow: Flow<List<TimePeriod>>
+    val bomberSoundIdFlow: Flow<Int>
 
     suspend fun saveToken(token: String)
     suspend fun saveFid(fid: String)
@@ -36,10 +38,10 @@ interface SettingsRepository {
     suspend fun saveScreenLockTrackingEnabled(enabled: Boolean)
     suspend fun saveTelemetryInterval(interval: Long)
     suspend fun saveBomberEnabled(enabled: Boolean)
-
     suspend fun addBomberSilencePeriod(period: TimePeriod)
     suspend fun removeBomberSilencePeriod(id: String)
     suspend fun updateBomberSilencePeriod(period: TimePeriod)
+    suspend fun savebomberSoundId(@IdRes id: Int)
 
     suspend fun getToken(): String?
     suspend fun getFid(): String?
@@ -57,4 +59,5 @@ interface SettingsRepository {
     suspend fun getTelemetryInterval(): Long
     suspend fun getBomberEnabled(): Boolean
     suspend fun getBomberSilencePeriods(): List<TimePeriod>
+    suspend fun getbomberSoundId(): Int
 }

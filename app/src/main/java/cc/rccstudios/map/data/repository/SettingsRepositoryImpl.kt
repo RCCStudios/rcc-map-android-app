@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import cc.rccstudios.map.R
 import cc.rccstudios.map.domain.model.TimePeriod
 import cc.rccstudios.map.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,7 @@ class SettingsRepositoryImpl(
         val TELEMETRY_INTERVAL = longPreferencesKey("telemetry_interval")
         val BOMBER_ENABLED = booleanPreferencesKey("bomber_enabled")
         val BOMBER_SILENCE_PERIODS = stringPreferencesKey("bomber_silence_periods")
+        val BOMBER_SOUND_ID = intPreferencesKey("bomber_sound_id")
     }
 
     override val tokenFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.TOKEN] }
@@ -61,6 +63,7 @@ class SettingsRepositoryImpl(
             runCatching { json.decodeFromString<List<TimePeriod>>(raw) }.getOrDefault(emptyList())
         } ?: emptyList()
     }
+    override val bomberSoundIdFlow: Flow<Int> = dataStore.data.map { it[PreferencesKeys.BOMBER_SOUND_ID] ?: R.raw.bomber_alarm_3 }
 
     override suspend fun saveToken(token: String) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.TOKEN] = token }
@@ -145,6 +148,12 @@ class SettingsRepositoryImpl(
         }
     }
 
+    override suspend fun savebomberSoundId(id: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BOMBER_SOUND_ID] = id
+        }
+    }
+
     override suspend fun getToken(): String? = tokenFlow.first()
     override suspend fun getFid(): String? = fidFlow.first()
     override suspend fun getUsername(): String? = usernameFlow.first()
@@ -161,6 +170,7 @@ class SettingsRepositoryImpl(
     override suspend fun getTelemetryInterval(): Long = telemetryIntervalFlow.first()
     override suspend fun getBomberEnabled(): Boolean = bomberEnabledFlow.first()
     override suspend fun getBomberSilencePeriods(): List<TimePeriod> = bomberSilencePeriodsFlow.first()
+    override suspend fun getbomberSoundId(): Int = bomberSoundIdFlow.first()
 
     private fun decodePeriods(raw: String?): List<TimePeriod> =
         raw?.let { runCatching { json.decodeFromString<List<TimePeriod>>(it) }.getOrDefault(emptyList()) }

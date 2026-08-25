@@ -20,6 +20,8 @@ import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.BomberActivity
 import cc.rccstudios.map.R
 import cc.rccstudios.map.data.service.TelemetryService.Companion.ACTION_STOP_NOTIFICATION
+import cc.rccstudios.map.domain.repository.SettingsRepository
+import cc.rccstudios.map.domain.usecase.UpdateDeviceUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -28,9 +30,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import kotlin.getValue
 import kotlin.time.Duration.Companion.milliseconds
 
-class BomberService : Service() {
+class BomberService : Service(), KoinComponent {
+    private val settingsRepository: SettingsRepository by inject()
+
     companion object {
         private const val TAG = "BomberService"
         const val NOTIFICATION_ID = 9001
@@ -139,23 +146,25 @@ class BomberService : Service() {
     }
 
     private fun startSound() {
-        try {
-            mediaPlayer = MediaPlayer().apply {
-                setAudioAttributes(
-                    AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_ALARM)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build()
-                )
-                val afd = resources.openRawResourceFd(R.raw.bomber_alarm_3)
-                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
-                afd.close()
-                isLooping = true
-                prepare()
-                start()
+        serviceScope.launch {
+            try {
+                mediaPlayer = MediaPlayer().apply {
+                    setAudioAttributes(
+                        AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_ALARM)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build()
+                    )
+                    val afd = resources.openRawResourceFd(settingsRepository.getbomberSoundId())
+                    setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                    afd.close()
+                    isLooping = true
+                    prepare()
+                    start()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to start sound", e)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to start sound", e)
         }
     }
 
