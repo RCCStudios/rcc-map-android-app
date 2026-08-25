@@ -26,6 +26,7 @@
     <string name="bomber_periods_title">Do not disturb time for bombers</string>
     <string name="bomber_periods_add_start">Add period starting time</string>
     <string name="bomber_periods_add_end">Add period ending time</string>
+    <string name="bomber_sound_title">Bomber sound</string>
     <!-- Account Screen -->
     <string name="register_title">Welcome to RCC Map!</string>
     <string name="register_button">Register</string>
@@ -70,6 +71,8 @@
     <string name="save_button">Save</string>
     <string name="edit_button">Edit</string>
     <string name="stop_button">Stop</string>
+    <string name="start_button">Start</string>
+    <string name="play_button">Play</string>
     <string name="cancel_button">Cancel</string>
     <string name="location">Location</string>
     <string name="battery">Battery</string>

@@ -1,10 +1,13 @@
 package cc.rccstudios.map.ui
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.net.Uri
+import androidx.annotation.IdRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cc.rccstudios.map.BuildConfig
+import cc.rccstudios.map.R
 import cc.rccstudios.map.domain.model.TimePeriod
 import cc.rccstudios.map.domain.model.UpdateStatus
 import cc.rccstudios.map.domain.repository.SettingsRepository
@@ -50,7 +53,9 @@ data class UiState(
     val telemetryInterval: Long = 60000L,
     val bomberEnabled: Boolean = true,
     val bomberSilencePeriods: List<TimePeriod> = emptyList(),
+    val bomberSoundId: Int = R.raw.bomber_alarm_1,
     val isLoading: Boolean = false,
+    val isSoundPreviewPlaying: Boolean = false,
     val logMessage: String = "",
     val updateInfo: UpdateStatus? = UpdateStatus.UpToDate
 )
@@ -69,6 +74,8 @@ class MainViewModel(
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private var mediaPlayer: MediaPlayer? = null
 
     private val urlInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
     private val usernameInputFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
@@ -159,12 +166,14 @@ class MainViewModel(
         viewModelScope.launch {
             combine(
                 settingsRepository.bomberEnabledFlow,
-                settingsRepository.bomberSilencePeriodsFlow
-            ) { bomberEnabled, bomberSilencePeriods ->
+                settingsRepository.bomberSilencePeriodsFlow,
+                settingsRepository.bomberSoundIdFlow
+            ) { bomberEnabled, bomberSilencePeriods, bomberSoundId ->
                 _uiState.update {
                     it.copy(
                         bomberEnabled = bomberEnabled,
-                        bomberSilencePeriods = bomberSilencePeriods
+                        bomberSilencePeriods = bomberSilencePeriods,
+                        bomberSoundId = bomberSoundId
                     )
                 }
             }.collect()
@@ -293,6 +302,12 @@ class MainViewModel(
 
     fun updateBomberSilencePeriod(period: TimePeriod) {
         viewModelScope.launch { settingsRepository.updateBomberSilencePeriod(period) }
+    }
+
+    fun onBomberSoundIdChange(@IdRes id: Int) {
+        stopSoundPreview()
+        _uiState.update { it.copy(bomberSoundId = id) }
+        viewModelScope.launch { settingsRepository.savebomberSoundId(id) }
     }
 
     fun updateUser(
@@ -437,6 +452,44 @@ class MainViewModel(
         }
     }
 
+    fun toggleSoundPreview(context: Context) {
+        if (_uiState.value.isSoundPreviewPlaying) {
+            stopSoundPreview()
+        } else {
+            playSoundPreview(context)
+        }
+    }
+
+    private fun playSoundPreview(context: Context) {
+        stopSoundPreview()
+
+        try {
+            val soundId = _uiState.value.bomberSoundId
+            mediaPlayer = MediaPlayer.create(context, soundId)?.apply {
+                setOnCompletionListener {
+                    _uiState.update { it.copy(isSoundPreviewPlaying = false) }
+                    stopSoundPreview()
+                }
+                start()
+            }
+            _uiState.update { it.copy(isSoundPreviewPlaying = true) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            stopSoundPreview()
+        }
+    }
+
+    private fun stopSoundPreview() {
+        mediaPlayer?.let { player ->
+            if (player.isPlaying) {
+                player.stop()
+            }
+            player.release()
+        }
+        mediaPlayer = null
+        _uiState.update { it.copy(isSoundPreviewPlaying = false) }
+    }
+
     fun sendTelemetry() {
         if (!_uiState.value.telemetryEnabled) {
             _uiState.update { it.copy(logMessage = "Telemetry is disabled") }
@@ -490,5 +543,9 @@ class MainViewModel(
 
     fun dismissUpdateDialog() {
         _uiState.update { it.copy(updateInfo = null) }
+    }
+
+    override fun onCleared() {
+        stopSoundPreview()
     }
 }

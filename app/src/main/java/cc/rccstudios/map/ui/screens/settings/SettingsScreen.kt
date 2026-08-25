@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
@@ -48,6 +49,7 @@ fun SettingsScreen(
     viewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
     val scrollState = rememberScrollState()
@@ -237,6 +239,28 @@ fun SettingsScreen(
                 }
             )
         }
+
+        val availableSounds = remember {
+            listOf(
+                R.raw.bomber_alarm_1 to "sound1.mp3",
+                R.raw.bomber_alarm_2 to "sound2.mp3",
+                R.raw.bomber_alarm_3 to "sound3.mp3"
+            )
+        }
+
+        SettingSoundSelector(
+            text = stringResource(R.string.bomber_sound_title),
+            selectedSoundId = state.bomberSoundId,
+            onSoundSelected = { soundId ->
+                viewModel.onBomberSoundIdChange(soundId)
+            },
+            sounds = availableSounds,
+            isPlaying = state.isSoundPreviewPlaying,
+            onPlayToggle = {
+                viewModel.toggleSoundPreview(context)
+            },
+            enabled = state.bomberEnabled
+        )
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
