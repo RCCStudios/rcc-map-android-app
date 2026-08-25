@@ -46,8 +46,9 @@
     <string name="map_placeholder">The map was supposed to be here, but it didn’t load</string>
     <!-- Bomber Screen -->
     <string name="bomber">You\'ve got a bomber!</string>
-    <string name="bomber_desc">Someone has sent you a bomber!</string>
+    <string name="bomber_desc" formatted="true">%1$s has sent you a bomber!</string>
     <string name="sender">Sender</string>
+    <string name="someone">Someone</string>
     <!-- Update Dialog -->
     <string name="update_available_title">New update available</string>
     <string name="update_changelog_header">Changelog</string>

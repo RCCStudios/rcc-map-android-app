@@ -92,14 +92,16 @@ class BomberService : Service() {
     }
 
     private fun launchBomberActivity(title: String?, body: String?, sender: String?) {
-        val intent = Intent(this, BomberActivity::class.java).apply {
+        startActivity(buildBomberActivityIntent(title, body, sender))
+    }
+
+    private fun buildBomberActivityIntent(title: String?, body: String?, sender: String?): Intent =
+        Intent(this, BomberActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(EXTRA_TITLE, title)
             putExtra(EXTRA_BODY, body)
             putExtra(EXTRA_SENDER, sender)
         }
-        startActivity(intent)
-    }
 
     private fun stopEffects() {
         vibrator.cancel()
@@ -172,12 +174,7 @@ class BomberService : Service() {
     }
 
     private fun buildBomberNotification(title: String?, body: String?, sender: String?): Notification {
-        val fullScreenIntent = Intent(this, BomberActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra(EXTRA_TITLE, title)
-            putExtra(EXTRA_BODY, body)
-            putExtra(EXTRA_SENDER, sender)
-        }
+        val fullScreenIntent = buildBomberActivityIntent(title, body, sender)
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
             this, 0, fullScreenIntent,
@@ -202,7 +199,12 @@ class BomberService : Service() {
         )
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(title ?: getString(R.string.bomber))
-            .setContentText(body ?: getString(R.string.bomber_desc))
+            .setContentText(
+                body ?: getString(
+                    R.string.bomber_desc,
+                    sender ?: getString(R.string.someone)
+                )
+            )
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setOngoing(true)
