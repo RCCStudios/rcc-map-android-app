@@ -22,7 +22,7 @@ class BomberActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showOverLockscreenAndTurnScreenOn()
-
+        handleIntent(intent)
         setContent {
             BomberScreen(
                 onStopClick = { stopBomber() },
@@ -34,7 +34,7 @@ class BomberActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        sender = intent.getStringExtra(BomberService.EXTRA_SENDER)
+        handleIntent(intent)
     }
 
     private fun stopBomber() {
@@ -42,6 +42,14 @@ class BomberActivity : ComponentActivity() {
             action = BomberService.ACTION_STOP
         })
         finish()
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        intent?.let {
+            title = it.getStringExtra(BomberService.EXTRA_TITLE)
+            body = it.getStringExtra(BomberService.EXTRA_BODY)
+            sender = it.getStringExtra(BomberService.EXTRA_SENDER)
+        }
     }
 
     private fun showOverLockscreenAndTurnScreenOn() {
