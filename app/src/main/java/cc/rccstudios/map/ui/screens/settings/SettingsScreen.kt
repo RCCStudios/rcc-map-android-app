@@ -242,7 +242,7 @@ fun SettingsScreen(
 
         val availableSounds = remember {
             listOf(
-                R.raw.bomber_alarm_1 to "siren1.mp3",
+                R.raw.bomber_alarm_1 to "siren.mp3",
                 R.raw.bomber_alarm_2 to "alarm_nuclear.mp3",
                 R.raw.bomber_alarm_3 to "sponge_bob.mp3"
             )
@@ -252,14 +252,19 @@ fun SettingsScreen(
             text = stringResource(R.string.bomber_sound_title),
             selectedSoundId = state.bomberSoundId,
             onSoundSelected = { soundId ->
+                haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
                 viewModel.onBomberSoundIdChange(soundId)
             },
             sounds = availableSounds,
             isPlaying = state.isSoundPreviewPlaying,
             onPlayToggle = {
+                if (!state.isSoundPreviewPlaying) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
                 viewModel.toggleSoundPreview(context)
-            },
-            enabled = state.bomberEnabled
+            }
         )
 
         HorizontalDivider(
