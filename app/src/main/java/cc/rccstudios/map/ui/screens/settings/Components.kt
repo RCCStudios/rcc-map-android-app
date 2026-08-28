@@ -32,7 +32,6 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
@@ -226,9 +225,9 @@ fun SettingTextField(
 fun SettingButton(
     text: String,
     onClick: () -> Unit,
-    enabled: Boolean,
     isLoading: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Button(
         onClick = onClick,
@@ -262,7 +261,7 @@ fun SettingButton(
     onClick: () -> Unit,
     icon: ImageVector,
     modifier: Modifier = Modifier,
-    enabled: Boolean? = null,
+    enabled: Boolean = true,
     description: String? = null
 ) {
     Card(
@@ -271,7 +270,7 @@ fun SettingButton(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        enabled = enabled ?: true,
+        enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -313,14 +312,14 @@ fun SettingButton(
 
 @Composable
 fun SettingButton(
-    isEnabled: Boolean,
     onToggle: (Boolean) -> Unit,
     enabledIcon: ImageVector,
     disabledIcon: ImageVector,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isEnabled) {
+        targetValue = if (enabled) {
             MaterialTheme.colorScheme.primaryContainer
         } else {
             MaterialTheme.colorScheme.errorContainer
@@ -329,7 +328,7 @@ fun SettingButton(
     )
 
     val contentColor by animateColorAsState(
-        targetValue = if (isEnabled) {
+        targetValue = if (enabled) {
             MaterialTheme.colorScheme.onPrimaryContainer
         } else {
             MaterialTheme.colorScheme.onErrorContainer
@@ -338,7 +337,7 @@ fun SettingButton(
     )
 
     Surface(
-        onClick = { onToggle(!isEnabled) },
+        onClick = { onToggle(!enabled) },
         shape = CircleShape,
         color = backgroundColor,
         contentColor = contentColor,
@@ -348,7 +347,7 @@ fun SettingButton(
             .padding(8.dp)
     ) {
         Icon(
-            imageVector = if (isEnabled) enabledIcon else disabledIcon,
+            imageVector = if (enabled) enabledIcon else disabledIcon,
             contentDescription = null,
             modifier = Modifier
                 .size(48.dp)

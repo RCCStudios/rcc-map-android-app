@@ -84,7 +84,7 @@ fun SettingsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SettingButton(
-                isEnabled = state.telemetryEnabled,
+                enabled = state.telemetryEnabled,
                 onToggle = {
                     if (it) {
                         haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
@@ -329,7 +329,6 @@ fun SettingsScreen(
                 haptic.performHapticFeedback(HapticFeedbackType.Confirm)
                 viewModel.sendTelemetry()
             },
-            enabled = isSendTelemetryButtonEnabled,
             isLoading = state.isLoading
         )
 
