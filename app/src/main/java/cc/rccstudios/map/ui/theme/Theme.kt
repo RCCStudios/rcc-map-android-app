@@ -22,7 +22,25 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = BrandTertiaryDark,
     onTertiary = OnBrandTertiaryDark,
     tertiaryContainer = BrandTertiaryContainerDark,
-    onTertiaryContainer = OnBrandTertiaryContainerDark
+    onTertiaryContainer = OnBrandTertiaryContainerDark,
+    background = SurfaceDark,
+    onBackground = OnSurfaceDark,
+    surface = SurfaceDark,
+    onSurface = OnSurfaceDark,
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = OnSurfaceVariantDark,
+    outline = OutlineDark,
+    outlineVariant = OutlineVariantDark,
+    inverseSurface = InverseSurfaceDark,
+    inverseOnSurface = InverseOnSurfaceDark,
+    inversePrimary = BrandGreen,
+    surfaceDim = SurfaceDimDark,
+    surfaceBright = SurfaceBrightDark,
+    surfaceContainerLowest = SurfaceContainerLowestDark,
+    surfaceContainerLow = SurfaceContainerLowDark,
+    surfaceContainer = SurfaceContainerDark,
+    surfaceContainerHigh = SurfaceContainerHighDark,
+    surfaceContainerHighest = SurfaceContainerHighestDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -37,7 +55,25 @@ private val LightColorScheme = lightColorScheme(
     tertiary = BrandTertiary,
     onTertiary = OnBrandTertiary,
     tertiaryContainer = BrandTertiaryContainer,
-    onTertiaryContainer = OnBrandTertiaryContainer
+    onTertiaryContainer = OnBrandTertiaryContainer,
+    background = SurfaceLight,
+    onBackground = OnSurfaceLight,
+    surface = SurfaceLight,
+    onSurface = OnSurfaceLight,
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = OnSurfaceVariantLight,
+    outline = OutlineLight,
+    outlineVariant = OutlineVariantLight,
+    inverseSurface = InverseSurfaceLight,
+    inverseOnSurface = InverseOnSurfaceLight,
+    inversePrimary = BrandGreenDark,
+    surfaceDim = SurfaceDimLight,
+    surfaceBright = SurfaceBrightLight,
+    surfaceContainerLowest = SurfaceContainerLowestLight,
+    surfaceContainerLow = SurfaceContainerLowLight,
+    surfaceContainer = SurfaceContainerLight,
+    surfaceContainerHigh = SurfaceContainerHighLight,
+    surfaceContainerHighest = SurfaceContainerHighestLight
 )
 
 @Composable
