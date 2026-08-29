@@ -19,6 +19,7 @@
     <string name="tos_link_desc">Lesen Sie die Nutzungsbedingungen, um zu erfahren, wie der Server Ihre Daten verwendet</string>
     <string name="update_button">Auf Updates prüfen</string>
     <string name="update_button_desc">Suchen Sie nach Updates, um die neueste Version unserer App zu erhalten</string>
+    <string name="bomber_sound_title">Bombergeräusch</string>
     <string name="register_title">Willkommen bei RCC Map!</string>
     <string name="register_button">Registrieren</string>
     <string name="log_in_title">Willkommen zurück!</string>
@@ -34,6 +35,7 @@
     <string name="dont_have_account">Noch kein Konto?</string>
     <string name="avatar_desc">Ihr Profilbild</string>
     <string name="map_placeholder">Die Karte sollte hier geladen werden, konnte aber nicht geladen werden</string>
+    <string name="someone">Jemand</string>
     <string name="update_available_title">Neues Update verfügbar</string>
     <string name="update_changelog_header">Änderungsprotokoll</string>
     <string name="update_default_changelog">Kein Änderungsprotokoll gefunden!</string>
@@ -77,5 +79,7 @@
     <string name="push_notification">Weitere Push-Benachrichtigungen</string>
     <string name="add_button">Hinzufügen</string>
     <string name="remove_button">Entfernen</string>
+    <string name="start_button">Start</string>
+    <string name="play_button">Spielen</string>
     <string name="cancel_button">Abbrechen</string>
 </resources>

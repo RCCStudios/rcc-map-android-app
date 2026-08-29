@@ -8,6 +8,7 @@
     <string name="network_tracking">Отслеживание сети</string>
     <string name="network_tracking_desc">Проверяет статус вашей сети, например, \"Wi-Fi\" или \"Мобильный\"</string>
     <string name="update_button_desc">Проверьте наличие обновлений и скачайте последнюю версию нашего приложения</string>
+    <string name="bomber_sound_title">Звук бомбера</string>
     <string name="register_title">Добро пожаловать в RCC Map!</string>
     <string name="register_button">Зарегистрироваться</string>
     <string name="log_in_button">Войти</string>
@@ -40,6 +41,7 @@
     <string name="copy_button">Скопировать</string>
     <string name="refresh_button">Обновить</string>
     <string name="update_button">Проверить наличие обновлений</string>
+    <string name="someone">Кто-то</string>
     <string name="update_available_title">Новое обновление доступно</string>
     <string name="update_changelog_header">Что нового</string>
     <string name="update_default_changelog">Не найдено информации о нововведениях!</string>
@@ -77,5 +79,7 @@
     <string name="push_notification">Остальные push-уведомления</string>
     <string name="add_button">Добавить</string>
     <string name="remove_button">Удалить</string>
+    <string name="play_button">Играть</string>
     <string name="cancel_button">Отмена</string>
+    <string name="start_button">Начать</string>
 </resources>
