@@ -491,14 +491,13 @@ class MainViewModel(
     }
 
     fun sendTelemetry() {
-        if (!_uiState.value.telemetryEnabled) {
-            _uiState.update { it.copy(logMessage = "Telemetry is disabled") }
-            return
-        }
-
+//        if (!_uiState.value.telemetryEnabled) {
+//            _uiState.update { it.copy(logMessage = "Telemetry is disabled") }
+//            return
+//        }
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, logMessage = "Sending telemetry") }
-            val result = collectAndSendTelemetryUseCase()
+            val result = collectAndSendTelemetryUseCase(skipCheck = true)
             if (result.isSuccess) {
                 _uiState.update { it.copy(isLoading = false, logMessage = "Telemetry has been sent successfully") }
             } else {

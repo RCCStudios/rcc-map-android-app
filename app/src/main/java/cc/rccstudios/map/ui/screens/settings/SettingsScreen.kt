@@ -318,11 +318,6 @@ fun SettingsScreen(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
-        val isSendTelemetryButtonEnabled = !state.token.isNullOrBlank() &&
-                state.serverUrl.isNotBlank() &&
-                state.telemetryEnabled &&
-                !state.isLoading
-
         SettingButton(
             text = stringResource(R.string.send_telemetry_button),
             onClick = {
