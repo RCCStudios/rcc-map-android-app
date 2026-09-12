@@ -27,6 +27,8 @@
     <string name="bomber_periods_add_start">Add period starting time</string>
     <string name="bomber_periods_add_end">Add period ending time</string>
     <string name="bomber_sound_title">Bomber sound</string>
+    <string name="brand_theme_switch">Use brand theme</string>
+    <string name="brand_theme_switch_desc">Select to use RCC Map brand green color instead of device\'s dynamic theme</string>
     <!-- Account Screen -->
     <string name="register_title">Welcome to RCC Map!</string>
     <string name="register_button">Register</string>
@@ -57,7 +59,7 @@
     <string name="update_download">Download</string>
     <string name="update_later">Later</string>
     <!-- Notification -->
-    <string name="telemetry_active_notification">Telemetry collection is carried out in real time. Expand for more data 🔽</string>
+    <string name="telemetry_active_notification">Telemetry collection is carried out in real time. Expand for more data.</string>
     <string name="telemetry_active">Telemetry collection is active</string>
     <string name="telemetry_error">Error while collecting telemetry</string>
     <string name="telemetry_disabled">Telemetry collection is disabled</string>

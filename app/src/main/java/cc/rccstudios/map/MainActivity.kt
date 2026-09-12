@@ -31,11 +31,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            RCCMapTheme {
-                val viewModel: MainViewModel = koinInject()
-                val state by viewModel.uiState.collectAsStateWithLifecycle()
-                val uriHandler = LocalUriHandler.current
+            val viewModel: MainViewModel = koinInject()
+            val state by viewModel.uiState.collectAsStateWithLifecycle()
+            val uriHandler = LocalUriHandler.current
 
+            RCCMapTheme(
+                dynamicColor = !state.brandThemeEnabled
+            ) {
                 LaunchedEffect(Unit) {
                     viewModel.checkUpdates()
                 }

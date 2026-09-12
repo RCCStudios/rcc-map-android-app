@@ -271,6 +271,24 @@ fun SettingsScreen(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         )
 
+        SettingSwitch(
+            text = stringResource(R.string.brand_theme_switch),
+            description = stringResource(R.string.brand_theme_switch_desc),
+            checked = state.brandThemeEnabled,
+            onCheckedChange = {
+                if (it) {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                } else {
+                    haptic.performHapticFeedback(HapticFeedbackType.ToggleOff)
+                }
+                viewModel.onBrandThemeEnabledChange(it)
+            }
+        )
+
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+        )
+
         SettingTextField(
             text = stringResource(R.string.server_url),
             placeholder = stringResource(R.string.server_url_placeholder),

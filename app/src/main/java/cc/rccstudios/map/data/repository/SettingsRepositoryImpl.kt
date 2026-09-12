@@ -38,6 +38,7 @@ class SettingsRepositoryImpl(
         val BOMBER_ENABLED = booleanPreferencesKey("bomber_enabled")
         val BOMBER_SILENCE_PERIODS = stringPreferencesKey("bomber_silence_periods")
         val BOMBER_SOUND_ID = intPreferencesKey("bomber_sound_id")
+        val BRAND_THEME_ENABLED = booleanPreferencesKey("brand_theme_enabled")
     }
 
     override val tokenFlow: Flow<String?> = dataStore.data.map { it[PreferencesKeys.TOKEN] }
@@ -64,6 +65,7 @@ class SettingsRepositoryImpl(
         } ?: emptyList()
     }
     override val bomberSoundIdFlow: Flow<Int> = dataStore.data.map { it[PreferencesKeys.BOMBER_SOUND_ID] ?: R.raw.bomber_alarm_3 }
+    override val brandThemeEnabledFlow: Flow<Boolean> = dataStore.data.map { it[PreferencesKeys.BRAND_THEME_ENABLED] ?: true }
 
     override suspend fun saveToken(token: String) {
         dataStore.edit { preferences -> preferences[PreferencesKeys.TOKEN] = token }
@@ -154,6 +156,12 @@ class SettingsRepositoryImpl(
         }
     }
 
+    override suspend fun saveBrandThemeEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BRAND_THEME_ENABLED] = enabled
+        }
+    }
+
     override suspend fun getToken(): String? = tokenFlow.first()
     override suspend fun getFid(): String? = fidFlow.first()
     override suspend fun getUsername(): String? = usernameFlow.first()
@@ -171,6 +179,7 @@ class SettingsRepositoryImpl(
     override suspend fun getBomberEnabled(): Boolean = bomberEnabledFlow.first()
     override suspend fun getBomberSilencePeriods(): List<TimePeriod> = bomberSilencePeriodsFlow.first()
     override suspend fun getbomberSoundId(): Int = bomberSoundIdFlow.first()
+    override suspend fun getBrandThemeEnabled(): Boolean = brandThemeEnabledFlow.first()
 
     private fun decodePeriods(raw: String?): List<TimePeriod> =
         raw?.let { runCatching { json.decodeFromString<List<TimePeriod>>(it) }.getOrDefault(emptyList()) }

@@ -54,6 +54,7 @@ data class UiState(
     val bomberEnabled: Boolean = true,
     val bomberSilencePeriods: List<TimePeriod> = emptyList(),
     val bomberSoundId: Int = R.raw.bomber_alarm_1,
+    val brandThemeEnabled: Boolean = true,
     val isLoading: Boolean = false,
     val isSoundPreviewPlaying: Boolean = false,
     val logMessage: String = "",
@@ -159,7 +160,9 @@ class MainViewModel(
 
         viewModelScope.launch {
             settingsRepository.telemetryIntervalFlow.collect { interval ->
-                _uiState.update { it.copy(telemetryInterval = interval) }
+                _uiState.update {
+                    it.copy(telemetryInterval = interval)
+                }
             }
         }
 
@@ -177,6 +180,14 @@ class MainViewModel(
                     )
                 }
             }.collect()
+        }
+
+        viewModelScope.launch {
+            settingsRepository.brandThemeEnabledFlow.collect { enabled ->
+                _uiState.update {
+                    it.copy(brandThemeEnabled = enabled)
+                }
+            }
         }
     }
 
@@ -308,6 +319,10 @@ class MainViewModel(
         stopSoundPreview()
         _uiState.update { it.copy(bomberSoundId = id) }
         viewModelScope.launch { settingsRepository.savebomberSoundId(id) }
+    }
+
+    fun onBrandThemeEnabledChange(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.saveBrandThemeEnabled(enabled) }
     }
 
     fun updateUser(

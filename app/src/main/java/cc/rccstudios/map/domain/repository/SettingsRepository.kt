@@ -22,6 +22,7 @@ interface SettingsRepository {
     val bomberEnabledFlow: Flow<Boolean>
     val bomberSilencePeriodsFlow: Flow<List<TimePeriod>>
     val bomberSoundIdFlow: Flow<Int>
+    val brandThemeEnabledFlow: Flow<Boolean>
 
     suspend fun saveToken(token: String)
     suspend fun saveFid(fid: String)
@@ -42,6 +43,7 @@ interface SettingsRepository {
     suspend fun removeBomberSilencePeriod(id: String)
     suspend fun updateBomberSilencePeriod(period: TimePeriod)
     suspend fun savebomberSoundId(@IdRes id: Int)
+    suspend fun saveBrandThemeEnabled(enabled: Boolean)
 
     suspend fun getToken(): String?
     suspend fun getFid(): String?
@@ -60,4 +62,5 @@ interface SettingsRepository {
     suspend fun getBomberEnabled(): Boolean
     suspend fun getBomberSilencePeriods(): List<TimePeriod>
     suspend fun getbomberSoundId(): Int
+    suspend fun getBrandThemeEnabled(): Boolean
 }
