@@ -150,7 +150,7 @@ class SettingsRepositoryImpl(
         }
     }
 
-    override suspend fun savebomberSoundId(id: Int) {
+    override suspend fun saveBomberSoundId(id: Int) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.BOMBER_SOUND_ID] = id
         }
@@ -178,7 +178,7 @@ class SettingsRepositoryImpl(
     override suspend fun getTelemetryInterval(): Long = telemetryIntervalFlow.first()
     override suspend fun getBomberEnabled(): Boolean = bomberEnabledFlow.first()
     override suspend fun getBomberSilencePeriods(): List<TimePeriod> = bomberSilencePeriodsFlow.first()
-    override suspend fun getbomberSoundId(): Int = bomberSoundIdFlow.first()
+    override suspend fun getBomberSoundId(): Int = bomberSoundIdFlow.first()
     override suspend fun getBrandThemeEnabled(): Boolean = brandThemeEnabledFlow.first()
 
     private fun decodePeriods(raw: String?): List<TimePeriod> =

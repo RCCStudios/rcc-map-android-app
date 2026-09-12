@@ -4,7 +4,6 @@ import android.app.Notification
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -19,9 +18,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import cc.rccstudios.map.BomberActivity
 import cc.rccstudios.map.R
-import cc.rccstudios.map.data.service.TelemetryService.Companion.ACTION_STOP_NOTIFICATION
 import cc.rccstudios.map.domain.repository.SettingsRepository
-import cc.rccstudios.map.domain.usecase.UpdateDeviceUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -155,7 +152,7 @@ class BomberService : Service(), KoinComponent {
                             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                             .build()
                     )
-                    val afd = resources.openRawResourceFd(settingsRepository.getbomberSoundId())
+                    val afd = resources.openRawResourceFd(settingsRepository.getBomberSoundId())
                     setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
                     afd.close()
                     isLooping = true

@@ -318,7 +318,7 @@ class MainViewModel(
     fun onBomberSoundIdChange(@IdRes id: Int) {
         stopSoundPreview()
         _uiState.update { it.copy(bomberSoundId = id) }
-        viewModelScope.launch { settingsRepository.savebomberSoundId(id) }
+        viewModelScope.launch { settingsRepository.saveBomberSoundId(id) }
     }
 
     fun onBrandThemeEnabledChange(enabled: Boolean) {

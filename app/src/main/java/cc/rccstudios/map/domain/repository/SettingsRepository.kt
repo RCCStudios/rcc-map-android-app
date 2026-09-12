@@ -42,7 +42,7 @@ interface SettingsRepository {
     suspend fun addBomberSilencePeriod(period: TimePeriod)
     suspend fun removeBomberSilencePeriod(id: String)
     suspend fun updateBomberSilencePeriod(period: TimePeriod)
-    suspend fun savebomberSoundId(@IdRes id: Int)
+    suspend fun saveBomberSoundId(@IdRes id: Int)
     suspend fun saveBrandThemeEnabled(enabled: Boolean)
 
     suspend fun getToken(): String?
@@ -61,6 +61,6 @@ interface SettingsRepository {
     suspend fun getTelemetryInterval(): Long
     suspend fun getBomberEnabled(): Boolean
     suspend fun getBomberSilencePeriods(): List<TimePeriod>
-    suspend fun getbomberSoundId(): Int
+    suspend fun getBomberSoundId(): Int
     suspend fun getBrandThemeEnabled(): Boolean
 }
